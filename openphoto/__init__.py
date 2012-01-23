@@ -4,7 +4,7 @@ import urllib
 import httplib2
 
 
-class OpenPhoto:
+class OpenPhoto(object):
     """ Client library for OpenPhoto """
 
     def __init__(self, host, consumer_key='', consumer_secret='',
