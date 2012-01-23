@@ -26,9 +26,12 @@ def main(args=sys.argv[1:]):
     parser.add_option('-F', action='append', type='string', dest='fields',
                       help="Fields")
     parser.add_option('-e', action='store', type='string', dest='endpoint',
+                      default='/photos/list.json',
                       help="Endpoint to call")
-    parser.add_option('-p', action="store_true", dest="pretty", default=False)
-    parser.add_option('-v', action="store_true", dest="verbose", default=False)
+    parser.add_option('-p', action="store_true", dest="pretty", default=False,
+                      help="pretty print the json")
+    parser.add_option('-v', action="store_true", dest="verbose", default=False,
+                      help="verbose output")
     parser.add_option('--encode', action="store_true", dest="encode", default=False)
 
     options, args = parser.parse_args(args)
