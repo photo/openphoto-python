@@ -1,4 +1,20 @@
-from distutils.core import setup
+requires = ['oauth2', 'httplib2']
+try:
+    import json
+except ImportError:
+    requires.append('simplejson')
+
+try:
+    from setuptools import setup
+    kw = {'entry_points':
+          """[console_scripts]\nopenphoto = openphoto.main:main\n""",
+          'zip_safe': False,
+          'install_requires': requires
+          }
+except ImportError:
+    from distutils.core import setup
+    kw = {'scripts': ['scripts/openphoto'],
+          'requires': requires}
 
 setup(name='openphoto',
       version='0.1',
@@ -6,7 +22,6 @@ setup(name='openphoto',
       author='James Walker',
       author_email='walkah@walkah.net',
       url='https://github.com/openphoto/openphoto-python',
-      requires=['oauth2'],
       packages=['openphoto'],
-      scripts=['scripts/openphoto'],
+      **kw
       )
