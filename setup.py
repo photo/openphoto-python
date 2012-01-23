@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(name='openphoto',
       version='0.1',
@@ -6,7 +6,7 @@ setup(name='openphoto',
       author='James Walker',
       author_email='walkah@walkah.net',
       url='https://github.com/openphoto/openphoto-python',
-      requires=['oauth2'],
       packages=['openphoto'],
+      install_requires=['oauth2'],
       scripts=['scripts/openphoto'],
       )
