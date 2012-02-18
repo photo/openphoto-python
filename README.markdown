@@ -12,7 +12,7 @@ python setup.py install
 <a name="python"></a>
 ### How to use the library
 
-To use the library you need to first include `OpenPhotoOAuth.php`, then instantiate an instance of the class and start making calls.
+To use the library you need to first ``import openphoto``, then instantiate an instance of the class and start making calls.
     
     from openphoto import OpenPhoto
     client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
