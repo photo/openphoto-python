@@ -50,7 +50,12 @@ def main(args=sys.argv[1:]):
         result = client.post(options.endpoint, params)
 
     if options.verbose:
-        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s\n==========\n\n" % (options.method, options.host, options.endpoint)
+        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)
+        if len( params ) > 0:
+        	print "Fields:"
+        	for kv in params.iteritems():
+        		print "  %s=%s" % kv
+        print "==========\n"
 
     if options.pretty:
         print json.dumps(json.loads(result), sort_keys=True, indent=4, separators=(',',':'))
