@@ -45,12 +45,17 @@ def main(args=sys.argv[1:]):
     client = OpenPhoto(options.host, consumer_key, consumer_secret, token, token_secret)
 
     if options.method == "GET":
-        result = client.get(options.endpoint)
+        result = client.get(options.endpoint, params)
     else:
-        result = client.post(options.endpoint)
+        result = client.post(options.endpoint, params)
 
     if options.verbose:
-        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s\n==========\n\n" % (options.method, options.host, options.endpoint)
+        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)
+        if len( params ) > 0:
+        	print "Fields:"
+        	for kv in params.iteritems():
+        		print "  %s=%s" % kv
+        print "==========\n"
 
     if options.pretty:
         print json.dumps(json.loads(result), sort_keys=True, indent=4, separators=(',',':'))
