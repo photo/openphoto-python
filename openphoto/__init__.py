@@ -2,6 +2,7 @@ import oauth2 as oauth
 import urlparse
 import urllib
 import httplib2
+import types
 
 
 class OpenPhoto(object):
@@ -36,6 +37,11 @@ class OpenPhoto(object):
         if self.consumer_key:
             consumer = oauth.Consumer(self.consumer_key, self.consumer_secret)
             token = oauth.Token(self.token, self.token_secret)
+
+            # ensure utf-8 encoding for all values.
+            params = dict([(k, v.encode('utf-8')
+                            if type(v) is types.UnicodeType else v)
+                           for (k, v) in params.items()])
 
             client = oauth.Client(consumer, token)
             body = urllib.urlencode(params)
