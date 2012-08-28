@@ -6,9 +6,9 @@ import urllib
 from optparse import OptionParser
 
 try:
-    import simplejson as json
-except:
     import json
+except ImportError:
+    import simplejson as json
 
 from openphoto import OpenPhoto
 
@@ -45,16 +45,16 @@ def main(args=sys.argv[1:]):
     client = OpenPhoto(options.host, consumer_key, consumer_secret, token, token_secret)
 
     if options.method == "GET":
-        result = client.get(options.endpoint, params)
+        result = client.get_raw(options.endpoint, **params)
     else:
-        result = client.post(options.endpoint, params)
+        result = client.post_raw(options.endpoint, **params)
 
     if options.verbose:
         print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)
         if len( params ) > 0:
-        	print "Fields:"
-        	for kv in params.iteritems():
-        		print "  %s=%s" % kv
+            print "Fields:"
+            for kv in params.iteritems():
+                print "  %s=%s" % kv
         print "==========\n"
 
     if options.pretty:

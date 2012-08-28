@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 requires = ['oauth2', 'httplib2']
 try:
     import json
@@ -17,7 +19,7 @@ except ImportError:
           'requires': requires}
 
 setup(name='openphoto',
-      version='0.1',
+      version='0.2',
       description='Client library for the openphoto project',
       author='James Walker',
       author_email='walkah@walkah.net',

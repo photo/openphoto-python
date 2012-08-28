@@ -5,7 +5,7 @@ Open Photo API / Python Library
 ----------------------------------------
 <a name="install"></a>
 ### Installation
-python setup.py install
+    python setup.py install
 
 ----------------------------------------
 
@@ -13,11 +13,27 @@ python setup.py install
 ### How to use the library
 
 To use the library you need to first ``import openphoto``, then instantiate an instance of the class and start making calls.
-    
+
+You can use the library in one of two ways:
+ * Direct GET/POST calls to the server
+ * Access via Python classes/methods
+
+<a name="get_post"></a>
+### Direct GET/POST:
+
     from openphoto import OpenPhoto
     client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
-    resp = client.get('/photos/list.json')
-    resp = client.post('/photo/62/update.json', {'tags': 'tag1,tag2'})
+    resp = client.get("/photos/list.json")
+    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
+
+<a name="python_classes"></a>
+### Python classes/methods
+
+    from openphoto import OpenPhoto
+    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
+    photos = client.photos_list()
+    photos[0].update(tags=["tag1", "tag2"])
+    print photos[0].tags
 
 ----------------------------------------
 
