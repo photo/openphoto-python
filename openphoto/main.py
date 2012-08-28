@@ -45,9 +45,9 @@ def main(args=sys.argv[1:]):
     client = OpenPhoto(options.host, consumer_key, consumer_secret, token, token_secret)
 
     if options.method == "GET":
-        result = client.get_raw(options.endpoint, **params)
+        result = client.get(options.endpoint, process_response=False, **params)
     else:
-        result = client.post_raw(options.endpoint, **params)
+        result = client.post(options.endpoint, process_response=False, **params)
 
     if options.verbose:
         print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)

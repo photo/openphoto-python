@@ -32,33 +32,18 @@ class OpenPhotoHttp:
         self._token = token
         self._token_secret = token_secret
 
-    def get(self, endpoint, **params):
+        # Remember the most recent HTTP request and response
+        self.last_url = None
+        self.last_params = None
+        self.last_response = None
+
+    def get(self, endpoint, process_response=True, **params):
         """
         Performs an HTTP GET from the specified endpoint (API path),
         passing parameters if given.
-        Returns the decoded JSON dictionary, and 
-        raises exceptions if an error code is received.
-        """
-        response = json.loads(self.get_raw(endpoint, **params))
-        self._process_response(response)
-        return response
-
-    def post(self, endpoint, **params):
-        """
-        Performs an HTTP POST to the specified endpoint (API path),
-        passing parameters if given.
-        Returns the decoded JSON dictionary, and 
-        raises exceptions if an error code is received.
-        """
-        response = json.loads(self.post_raw(endpoint, **params))
-        self._process_response(response)
-        return response
-
-    def get_raw(self, endpoint, **params):
-        """
-        Performs an HTTP GET from the specified endpoint (API path),
-        passing parameters if given.
-        Returns the raw HTTP content string.
+        Returns the decoded JSON dictionary, and raises exceptions if an 
+        error code is received.
+        Returns the raw response if process_response=False
         """
         params = self._process_params(params)
         url = urlparse.urlunparse(('http', self._host, endpoint, '',
@@ -71,13 +56,25 @@ class OpenPhotoHttp:
             client = httplib2.Http()
 
         _, content = client.request(url, "GET")
-        return content
 
-    def post_raw(self, endpoint, **params):
+        self.last_url = url
+        self.last_params = params
+        self.last_response = content
+
+        if process_response:
+            response = json.loads(content)
+            self._process_response(response)
+            return response
+        else:
+            return content
+
+    def post(self, endpoint, process_response=True, **params):
         """
         Performs an HTTP POST to the specified endpoint (API path),
         passing parameters if given.
-        Returns the raw HTTP content string.
+        Returns the decoded JSON dictionary, and raises exceptions if an 
+        error code is received.
+        Returns the raw response if process_response=False
         """
         params = self._process_params(params)
         url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
@@ -91,7 +88,17 @@ class OpenPhotoHttp:
         client = oauth.Client(consumer, token)
         body = urllib.urlencode(params)
         _, content = client.request(url, "POST", body)
-        return content
+
+        self.last_url = url
+        self.last_params = params
+        self.last_response = content
+
+        if process_response:
+            response = json.loads(content)
+            self._process_response(response)
+            return response
+        else:
+            return content
 
     @staticmethod
     def _process_params(params):
