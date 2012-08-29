@@ -46,14 +46,12 @@ class ApiPhoto(OpenPhotoHttp):
 
     def photos_update(self, photo_ids, **kwds):
         """ Updates a list of photos """
-        if not self._openphoto.post("/photos/update.json" % photo_ids, 
-                                    **kwds)["result"]:
+        if not self.post("/photos/update.json", ids=photo_ids, **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
 
     def photos_delete(self, photo_ids, **kwds):
         """ Deletes a list of photos """
-        if not self._openphoto.post("/photos/delete.json" % photo_ids, 
-                                    **kwds)["result"]:
+        if not self.post("/photos/delete.json", ids=photo_ids, **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
 
     def photo_upload(self, photo_file, **kwds):
