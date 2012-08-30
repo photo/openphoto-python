@@ -62,8 +62,7 @@ class OpenPhotoHttp:
         self.last_response = content
 
         if process_response:
-            response = json.loads(content)
-            self._process_response(response)
+            return self._process_response(content)
             return response
         else:
             return content
@@ -94,9 +93,7 @@ class OpenPhotoHttp:
         self.last_response = content
 
         if process_response:
-            response = json.loads(content)
-            self._process_response(response)
-            return response
+            return self._process_response(content)
         else:
             return content
 
@@ -118,10 +115,20 @@ class OpenPhotoHttp:
         return processed_params
 
     @staticmethod
-    def _process_response(response):
-        """ Raises an exception if an invalid response code is received """
+    def _process_response(content):
+        """ 
+        Decodes the JSON response, returning a dict.
+        Raises an exception if an invalid response code is received.
+        """
+        try:
+            response = json.loads(content)
+        except ValueError:
+            print "Response content:\n%s" % content
+            raise
+
         if response["code"] >= 200 and response["code"] < 300:
-            return
+            # Valid response code
+            return response
 
         error_message = "Code %d: %s" % (response["code"],
                                          response["message"])
