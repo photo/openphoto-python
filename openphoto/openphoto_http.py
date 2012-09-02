@@ -120,11 +120,7 @@ class OpenPhotoHttp:
         Decodes the JSON response, returning a dict.
         Raises an exception if an invalid response code is received.
         """
-        try:
-            response = json.loads(content)
-        except ValueError:
-            print "Response content:\n%s" % content
-            raise
+        response = json.loads(content)
 
         if response["code"] >= 200 and response["code"] < 300:
             # Valid response code
