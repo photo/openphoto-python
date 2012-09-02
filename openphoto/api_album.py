@@ -1,33 +1,40 @@
 from openphoto_http import OpenPhotoHttp, OpenPhotoError
 from objects import Album
 
-class ApiAlbum(OpenPhotoHttp):
-    def album_create(self, name, **kwds):
-        """ Create a new album and return it"""
-        result = self.post("/album/create.json", name=name, **kwds)["result"]
-        return Album(self, result)
+class ApiAlbums:
+    def __init__(self, client):
+        self._client = client
 
-    def album_delete(self, album_id, **kwds):
+    def list(self, **kwds):
+        """ Return a list of Album objects """
+        results = self._client.get("/albums/list.json", **kwds)["result"]
+        return [Album(self._client, album) for album in results]
+
+class ApiAlbum:
+    def __init__(self, client):
+        self._client = client
+
+    def create(self, name, **kwds):
+        """ Create a new album and return it"""
+        result = self._client.post("/album/create.json", name=name, **kwds)["result"]
+        return Album(self._client, result)
+
+    def delete(self, album, **kwds):
         """ Delete an album """
-        album = Album(self, {"id": album_id})
+        album = Album(self._client, {"id": album})
         album.delete(**kwds)
         
-    def album_form(self, album_id, **kwds):
+    def form(self, album, **kwds):
         raise NotImplementedError()
 
-    def album_add_photos(self, album_id, photo_ids, **kwds):
+    def add_photos(self, album, photos, **kwds):
         raise NotImplementedError()
 
-    def album_remove_photos(self, album_id, photo_ids, **kwds):
+    def remove_photos(self, album, photos, **kwds):
         raise NotImplementedError()
 
-    def albums_list(self, **kwds):
-        """ Return a list of Album objects """
-        results = self.get("/albums/list.json", **kwds)["result"]
-        return [Album(self, album) for album in results]
-
-    def album_update(self, album_id, **kwds):
+    def update(self, album, **kwds):
         """ Update an album """
-        album = Album(self, {"id": album_id})
+        album = Album(self._client, {"id": album})
         album.update(**kwds)
         # Don't return the album, since the API doesn't give us the modified album

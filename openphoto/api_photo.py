@@ -3,77 +3,85 @@ import base64
 from openphoto_http import OpenPhotoHttp, OpenPhotoError
 from objects import Photo
 
-class ApiPhoto(OpenPhotoHttp):
-    def photo_delete(self, photo_id, **kwds):
+class ApiPhotos:
+    def __init__(self, client):
+        self._client = client
+
+    def list(self, **kwds):
+        """ Returns a list of Photo objects """
+        photos = self._client.get("/photos/list.json", **kwds)["result"]
+        photos = self._client._result_to_list(photos)
+        return [Photo(self._client, photo) for photo in photos]
+
+    def update(self, photos, **kwds):
+        """ Updates a list of photos """
+        if not self._client.post("/photos/update.json", ids=photos, **kwds)["result"]:
+            raise OpenPhotoError("Update response returned False")
+
+    def delete(self, photos, **kwds):
+        """ Deletes a list of photos """
+        if not self._client.post("/photos/delete.json", ids=photos, **kwds)["result"]:
+            raise OpenPhotoError("Delete response returned False")
+
+
+class ApiPhoto:
+    def __init__(self, client):
+        self._client = client
+
+    def delete(self, photo, **kwds):
         """ Delete a photo """
-        photo = Photo(self, {"id": photo_id})
+        photo = Photo(self._client, {"id": photo})
         photo.delete(**kwds)
 
-    def photo_edit(self, photo_id, **kwds):
+    def edit(self, photo, **kwds):
         """ Returns an HTML form to edit a photo """
-        photo = Photo(self, {"id": photo_id})
+        photo = Photo(self._client, {"id": photo})
         return photo.edit(**kwds)
 
-    def photo_replace(self, photo_id, photo_file, **kwds):
+    def replace(self, photo, photo_file, **kwds):
         raise NotImplementedError()
 
-    def photo_replace_encoded(self, photo_id, photo_file, **kwds):
+    def replace_encoded(self, photo, photo_file, **kwds):
         raise NotImplementedError()
 
-    def photo_update(self, photo_id, **kwds):
+    def update(self, photo, **kwds):
         """ 
         Update a photo with the specified parameters.
         Returns the updated photo object
         """
-        photo = Photo(self, {"id": photo_id})
+        photo = Photo(self._client, {"id": photo})
         photo.update(**kwds)
         return photo
 
-    def photo_view(self, photo_id, **kwds):
+    def view(self, photo, **kwds):
         """ 
         Used to view the photo at a particular size. 
         Returns the requested photo object
         """
-        photo = Photo(self, {"id": photo_id})
+        photo = Photo(self._client, {"id": photo})
         photo.view(**kwds)
         return photo
 
-    def photos_list(self, **kwds):
-        """ Returns a list of Photo objects """
-        photos = self.get("/photos/list.json", **kwds)["result"]
-        photos = self._result_to_list(photos)
-        return [Photo(self, photo) for photo in photos]
+    def upload(self, photo_file, **kwds):
+        raise NotImplementedError("Use upload_encoded instead.")
 
-    def photos_update(self, photo_ids, **kwds):
-        """ Updates a list of photos """
-        if not self.post("/photos/update.json", ids=photo_ids, **kwds)["result"]:
-            raise OpenPhotoError("Update response returned False")
-
-    def photos_delete(self, photo_ids, **kwds):
-        """ Deletes a list of photos """
-        if not self.post("/photos/delete.json", ids=photo_ids, **kwds)["result"]:
-            raise OpenPhotoError("Delete response returned False")
-
-    def photo_upload(self, photo_file, **kwds):
-        raise NotImplementedError("Use photo_upload_encoded instead.")
-
-    def photo_upload_encoded(self, photo_file, **kwds):
+    def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
         encoded_photo = base64.b64encode(open(photo_file, "rb").read())
-        result = self.post("/photo/upload.json", photo=encoded_photo, 
-                           **kwds)["result"]
-        return Photo(self, result)
+        result = self._client.post("/photo/upload.json", photo=encoded_photo, 
+                                   **kwds)["result"]
+        return Photo(self._client, result)
 
-    def photo_dynamic_url(self, photo_id, **kwds):
+    def dynamic_url(self, photo, **kwds):
         raise NotImplementedError()
 
-    def photo_next_previous(self, photo_id, **kwds):
+    def next_previous(self, photo, **kwds):
         """ 
         Returns a dict containing the next and previous photo objects, 
         given a photo in the middle.
         """
-        photo = Photo(self, {"id": photo_id})
+        photo = Photo(self._client, {"id": photo})
         return photo.next_previous(**kwds)
 
-    def photo_transform(self, photo_id, **kwds):
+    def transform(self, photo, **kwds):
         raise NotImplementedError()
