@@ -40,3 +40,13 @@ class ApiAlbum:
             album = Album(self._client, {"id": album})
         album.update(**kwds)
         # Don't return the album, since the API doesn't give us the modified album
+
+    def view(self, album, **kwds):
+        """ 
+        View an album's contents.
+        Returns the requested album object.
+        """
+        if not isinstance(album, Album):
+            album = Album(self._client, {"id": album})
+        album.view(**kwds)
+        return album
