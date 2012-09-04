@@ -104,9 +104,18 @@ class Tag(OpenPhotoObject):
 class Album(OpenPhotoObject):
     def __init__(self, openphoto, json_dict):
         OpenPhotoObject.__init__(self, openphoto, json_dict)
-        # Update the cover attribute with a photo object
-        if hasattr(self, "cover") and self.cover is not None:
-            self.cover = Photo(openphoto, self.cover)
+        self._update_fields_with_objects()
+
+    def _update_fields_with_objects(self):
+        """ Convert dict fields into objects, where appropriate """
+        # Update the cover with a photo object
+        if hasattr(self, "cover") and isinstance(self.cover, dict):
+            self.cover = Photo(self._openphoto, self.cover)
+        # Update the photo list with photo objects
+        if hasattr(self, "photos") and isinstance(self.photos, list):
+            for i, photo in enumerate(self.photos):
+                if isinstance(photo, dict):
+                    self.photos[i] = Photo(self._openphoto, photo)
 
     def delete(self, **kwds):
         """ Delete this album """
@@ -124,12 +133,16 @@ class Album(OpenPhotoObject):
 
     def update(self, **kwds):
         """ Update this album with the specified parameters """
-        self._openphoto.post("/album/%s/update.json" % self.id, 
-                             **kwds)["result"]
+        new_dict = self._openphoto.post("/album/%s/update.json" % self.id, 
+                                        **kwds)["result"]
+
         # Since the API doesn't give us the modified album, we need to
         # update our fields based on the kwds that were sent
         self._set_fields(kwds)
 
+        # Replace the above line with the below once frontend issue #937 is resolved
+#        self._set_fields(new_dict)
+#        self._update_fields_with_objects()
         
     def view(self, **kwds):
         """ 
@@ -138,10 +151,5 @@ class Album(OpenPhotoObject):
         """
         result = self._openphoto.get("/album/%s/view.json" % self.id, 
                                      **kwds)["result"]
-        # Update the cover attribute with a photo object
-        if result["cover"] is not None:
-            result["cover"] = Photo(self._openphoto, result["cover"])
-        # Update the photo list with photo objects
-        for i, photo in enumerate(result["photos"]):
-            result["photos"][i] = Photo(self._openphoto, result["photos"][i])
         self._replace_fields(result)
+        self._update_fields_with_objects()
