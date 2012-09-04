@@ -1,4 +1,4 @@
-from openphoto_http import OpenPhotoHttp, OpenPhotoError
+from errors import *
 from objects import Tag
 
 class ApiTags:
@@ -21,13 +21,13 @@ class ApiTag:
 
     def delete(self, tag, **kwds):
         """ Delete a tag """
-        tag = Tag(self._client, {"id": tag})
+        if not isinstance(tag, Tag):
+            tag = Tag(self._client, {"id": tag})
         tag.delete(**kwds)
 
     def update(self, tag, **kwds):
         """ Update a tag """
-        tag = Tag(self._client, {"id": tag})
+        if not isinstance(tag, Tag):
+            tag = Tag(self._client, {"id": tag})
         tag.update(**kwds)
         return tag
-
-

@@ -7,17 +7,8 @@ try:
 except ImportError:
     import simplejson as json
 
-class OpenPhotoError(Exception):
-    """ Indicates that an OpenPhoto operation failed """
-    pass
-
-class OpenPhotoDuplicateError(OpenPhotoError):
-    """ Indicates that an upload operation failed due to a duplicate photo """
-    pass
-
-class NotImplementedError(OpenPhotoError):
-    """ Indicates that the API function has not yet been coded - please help! """
-    pass
+from objects import OpenPhotoObject
+from errors import *
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -102,16 +93,30 @@ class OpenPhotoHttp:
         """ Converts Unicode/lists/booleans inside HTTP parameters """
         processed_params = {}
         for key, value in params.items():
+            # Extract IDs from objects
+            if isinstance(value, OpenPhotoObject):
+                value = value.id
+
             # Use UTF-8 encoding
             if isinstance(value, unicode):
                 value = value.encode('utf-8')
+
             # Handle lists
             if isinstance(value, list):
-                value = ",".join(value)
+                # Make a copy of the list, to avoid overwriting the original
+                new_list = list(value)
+                # Extract IDs from objects in the list
+                for i, item in enumerate(new_list):
+                    if isinstance(item, OpenPhotoObject):
+                        new_list[i] = item.id
+                # Convert list to string
+                value = ",".join(new_list)
+
             # Handle booleans
             if isinstance(value, bool):
                 value = 1 if value else 0
             processed_params[key] = value
+
         return processed_params
 
     @staticmethod

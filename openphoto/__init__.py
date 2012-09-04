@@ -1,4 +1,5 @@
-from openphoto_http import OpenPhotoHttp, OpenPhotoError, OpenPhotoDuplicateError
+from openphoto_http import OpenPhotoHttp
+from errors import *
 import api_photo
 import api_tag
 import api_album

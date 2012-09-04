@@ -1,4 +1,4 @@
-from openphoto_http import OpenPhotoError, NotImplementedError
+from errors import *
 
 class OpenPhotoObject:
     """ Base object supporting the storage of custom fields as attributes """

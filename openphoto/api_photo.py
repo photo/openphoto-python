@@ -1,6 +1,6 @@
 import base64
 
-from openphoto_http import OpenPhotoHttp, OpenPhotoError
+from errors import *
 from objects import Photo
 
 class ApiPhotos:
@@ -30,12 +30,14 @@ class ApiPhoto:
 
     def delete(self, photo, **kwds):
         """ Delete a photo """
-        photo = Photo(self._client, {"id": photo})
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
         photo.delete(**kwds)
 
     def edit(self, photo, **kwds):
         """ Returns an HTML form to edit a photo """
-        photo = Photo(self._client, {"id": photo})
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
         return photo.edit(**kwds)
 
     def replace(self, photo, photo_file, **kwds):
@@ -49,7 +51,8 @@ class ApiPhoto:
         Update a photo with the specified parameters.
         Returns the updated photo object
         """
-        photo = Photo(self._client, {"id": photo})
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
         photo.update(**kwds)
         return photo
 
@@ -58,7 +61,8 @@ class ApiPhoto:
         Used to view the photo at a particular size. 
         Returns the requested photo object
         """
-        photo = Photo(self._client, {"id": photo})
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
         photo.view(**kwds)
         return photo
 
@@ -80,7 +84,8 @@ class ApiPhoto:
         Returns a dict containing the next and previous photo objects, 
         given a photo in the middle.
         """
-        photo = Photo(self._client, {"id": photo})
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
         return photo.next_previous(**kwds)
 
     def transform(self, photo, **kwds):

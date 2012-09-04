@@ -1,4 +1,4 @@
-from openphoto_http import OpenPhotoHttp, OpenPhotoError
+from errors import *
 from objects import Album
 
 class ApiAlbums:
@@ -21,7 +21,8 @@ class ApiAlbum:
 
     def delete(self, album, **kwds):
         """ Delete an album """
-        album = Album(self._client, {"id": album})
+        if not isinstance(album, Album):
+            album = Album(self._client, {"id": album})
         album.delete(**kwds)
         
     def form(self, album, **kwds):
@@ -35,6 +36,7 @@ class ApiAlbum:
 
     def update(self, album, **kwds):
         """ Update an album """
-        album = Album(self._client, {"id": album})
+        if not isinstance(album, Album):
+            album = Album(self._client, {"id": album})
         album.update(**kwds)
         # Don't return the album, since the API doesn't give us the modified album
