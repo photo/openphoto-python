@@ -65,12 +65,13 @@ class TestAlbums(test_base.TestBase):
     def test_private(self):
         """ Test that private albums can be created, and are visible """
         # Create and check that the album now exists
+        album_name = "private_album"
         album = self.client.album.create(album_name, visible=False)
-        self.assertIn(album_name, self.client.albums.list())
+        self.assertIn(album_name, [a.name for a in self.client.albums.list()])
 
         # Delete and check that the album is now gone
         album.delete()
-        self.assertNotIn(album_name, self.client.albums.list())
+        self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 
     def test_form(self):
         """ If album.form gets implemented, write a test! """
