@@ -109,8 +109,8 @@ class OpenPhotoHttp:
                 for i, item in enumerate(new_list):
                     if isinstance(item, OpenPhotoObject):
                         new_list[i] = item.id
-                # Convert list to string
-                value = ",".join(new_list)
+                # Convert list to unicode string
+                value = u','.join([unicode(item) for item in new_list])
 
             # Handle booleans
             if isinstance(value, bool):
