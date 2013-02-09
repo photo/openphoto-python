@@ -144,6 +144,8 @@ class OpenPhotoHttp:
     @staticmethod
     def _result_to_list(result):
         """ Handle the case where the result contains no items """
+        if not result:
+            return []
         if result[0]["totalRows"] == 0:
             return []
         else:
