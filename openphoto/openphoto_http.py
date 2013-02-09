@@ -23,6 +23,7 @@ class OpenPhotoHttp:
         self._token = token
         self._token_secret = token_secret
 
+        self._logfile = None
         if log_filename:
             self._logfile = open(log_filename, "w")
 
