@@ -16,6 +16,8 @@ except ImportError:
            "********************************************************************\n")
     raise
 
+LOG_FILENAME = "tests.log"
+
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
     TEST_TAG = "test_tag"
@@ -31,7 +33,8 @@ class TestBase(unittest.TestCase):
         """ Ensure there is nothing on the server before running any tests """
         cls.client = openphoto.OpenPhoto(tokens.host,
                              tokens.consumer_key, tokens.consumer_secret,
-                             tokens.token, tokens.token_secret)
+                             tokens.token, tokens.token_secret,
+                             log_filename=LOG_FILENAME)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
