@@ -8,10 +8,12 @@ class OpenPhoto(OpenPhotoHttp):
     """ Client library for OpenPhoto """
     def __init__(self, host, 
                  consumer_key='', consumer_secret='',
-                 token='', token_secret=''):
+                 token='', token_secret='',
+                 log_filename=None):
         OpenPhotoHttp.__init__(self, host, 
                                consumer_key, consumer_secret,
-                               token, token_secret)
+                               token, token_secret,
+                               log_filename)
  
         self.photos = api_photo.ApiPhotos(self)
         self.photo = api_photo.ApiPhoto(self)
