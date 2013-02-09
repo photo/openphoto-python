@@ -56,7 +56,7 @@ class TestAlbums(test_base.TestBase):
         self.assertFalse(hasattr(album, "photos"))
 
         # Get the photos in the album using the Album object directly
-        album.view()
+        album.view(includeElements=True)
         # Make sure all photos are in the album
         for photo in self.photos:
             self.assertIn(photo.id, [p.id for p in album.photos])
