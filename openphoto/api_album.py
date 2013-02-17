@@ -41,7 +41,7 @@ class ApiAlbum:
         album.update(**kwds)
 
         # Don't return the album, since the API currently doesn't give us the modified album
-        # Uncomment the following once frontend issue #937 is resolved
+        # TODO: Uncomment the following once frontend issue #937 is resolved
 #        return album
 
     def view(self, album, **kwds):
