@@ -12,15 +12,44 @@ except:
 
 from openphoto import OpenPhoto
 
-def main(args=sys.argv[1:]):
-    consumer_key = os.getenv('consumerKey')
-    consumer_secret = os.getenv('consumerSecret')
-    token = os.getenv('token')
-    token_secret = os.getenv('tokenSecret')
+def get_auth(config_file):
+    """ 
+    Loads config data from the specified file.
+    If config_file is None, uses the default config file location.
+    If config_file doesn't exist, returns an empty authentication config.
+    """
+    config = {'host': 'localhost',
+              'consumerKey': '', 'consumerSecret': '',
+              'token': '', 'tokenSecret':'',
+              }
 
+    if not config_file:
+        config_path = os.getenv('XDG_CONFIG_HOME')
+        if not config_path:
+            config_path = os.path.join(os.getenv('HOME'), ".config")
+        config_file = os.path.join(config_path, "openphoto", "config")
+
+    if not os.path.isfile(config_file):
+        print "Config file '%s' doesn't exist - authentication won't be used" % config_file
+        return config
+
+    print "Using config from '%s'" % config_file
+    for line_number, line in enumerate(open(config_file)):
+        line = line.split('#')[0].strip() # Remove comments and surrounding whitespace
+        if line:
+            try:
+                var,val = line.rsplit("=",1)
+                config[var.strip().strip('"')] = val.strip().strip('"') # Remove whitespace and quotes
+            except:
+                print "WARNING: could not parse line %d: '%s'" % (line_number, line)
+    return config
+
+def main(args=sys.argv[1:]):
     parser = OptionParser()
     parser.add_option('-H', '--host', action='store', type='string', dest='host', 
-                      help="Hostname of the OpenPhoto install", default="localhost")
+                      help="Hostname of the OpenPhoto install")
+    parser.add_option('-c', '--config', action='store', type='string', dest='config_file',
+                      help="Path to OpenPhoto config file")
     parser.add_option('-X', action='store', type='choice', dest='method', choices=('GET', 'POST'),
                       help="Method to use (GET or POST)", default="GET")
     parser.add_option('-F', action='append', type='string', dest='fields',
@@ -42,7 +71,14 @@ def main(args=sys.argv[1:]):
             (key, value) = string.split(field, '=')
             params[key] = value
 
-    client = OpenPhoto(options.host, consumer_key, consumer_secret, token, token_secret)
+    config = get_auth(options.config_file)
+
+    # Override host if given on the commandline
+    if options.host:
+        config['host'] = options.host
+
+    client = OpenPhoto(config['host'], config['consumerKey'], config['consumerSecret'],
+                       config['token'], config['tokenSecret'])
 
     if options.method == "GET":
         result = client.get(options.endpoint, params)
@@ -50,7 +86,7 @@ def main(args=sys.argv[1:]):
         result = client.post(options.endpoint, params)
 
     if options.verbose:
-        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)
+        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, config['host'], options.endpoint)
         if len( params ) > 0:
         	print "Fields:"
         	for kv in params.iteritems():
