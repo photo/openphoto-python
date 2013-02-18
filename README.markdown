@@ -24,23 +24,23 @@ To use the library you need to first ``import openphoto``, then instantiate an i
 <a name="cli"></a>
 ### Using from the command line
 
-You'll then want to export your secrets to the environment.
-We suggest putting them in a file and sourcing it prior to running `openphoto` commands.
+You'll then want to export your authentication credentials to the environment.
+The command line tool will look for the following config file in ~/.config/openphoto/config
+(the -c switch lets you specify a different config file location):
+
+    # ~/.config/openphoto/config
+    host = your.host.com
+    consumerKey = your_consumer_key
+    consumerSecret = your_consumer_secret
+    token = your_access_token
+    tokenSecret = your_access_token_secret
+
 <a href="#credentials">Click here for instructions on getting credentials</a>.
-
-    # env.sh
-    export consumerKey=your_consumer_key
-    export consumerSecret=your_consumer_secret
-    export token=your_access_token
-    export tokenSecret=your_access_token_secret
-
-You'll need to source that file once for each terminal session.
-    
-    source env.sh
 
 These are the options you can pass to the shell program.
 
     -h # display help text
+    -c config_file # default=~/.config/openphoto/config
     -H hostname # default=localhost
     -e endpoint # default=/photos/list.json
     -X method # default=GET
