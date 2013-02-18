@@ -12,28 +12,26 @@ except:
 
 from openphoto import OpenPhoto
 
-def get_auth(config_file):
+def get_default_config_path():
+    config_path = os.getenv('XDG_CONFIG_HOME')
+    if not config_path:
+        config_path = os.path.join(os.getenv('HOME'), ".config")
+    return os.path.join(config_path, "openphoto", "config")
+
+def read_config(config_file):
     """ 
     Loads config data from the specified file.
-    If config_file is None, uses the default config file location.
-    If config_file doesn't exist, returns an empty authentication config.
+    If config_file doesn't exist, returns an empty authentication config for localhost.
     """
     config = {'host': 'localhost',
               'consumerKey': '', 'consumerSecret': '',
               'token': '', 'tokenSecret':'',
               }
 
-    if not config_file:
-        config_path = os.getenv('XDG_CONFIG_HOME')
-        if not config_path:
-            config_path = os.path.join(os.getenv('HOME'), ".config")
-        config_file = os.path.join(config_path, "openphoto", "config")
-
     if not os.path.isfile(config_file):
         print "Config file '%s' doesn't exist - authentication won't be used" % config_file
         return config
 
-    print "Using config from '%s'" % config_file
     for line_number, line in enumerate(open(config_file)):
         line = line.split('#')[0].strip() # Remove comments and surrounding whitespace
         if line:
@@ -43,6 +41,8 @@ def get_auth(config_file):
             except:
                 print "WARNING: could not parse line %d: '%s'" % (line_number, line)
     return config
+
+#################################################################
 
 def main(args=sys.argv[1:]):
     parser = OptionParser()
@@ -71,7 +71,11 @@ def main(args=sys.argv[1:]):
             (key, value) = string.split(field, '=')
             params[key] = value
 
-    config = get_auth(options.config_file)
+    if not options.config_file:
+        options.config_file = get_default_config_path()
+    if options.verbose:
+        print "Using config from '%s'" % options.config_file
+    config = read_config(options.config_file)
 
     # Override host if given on the commandline
     if options.host:
