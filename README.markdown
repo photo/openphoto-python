@@ -5,7 +5,7 @@ Open Photo API / Python Library
 ----------------------------------------
 <a name="install"></a>
 ### Installation
-python setup.py install
+    python setup.py install
 
 ----------------------------------------
 
@@ -13,18 +13,40 @@ python setup.py install
 ### How to use the library
 
 To use the library you need to first ``import openphoto``, then instantiate an instance of the class and start making calls.
-    
+
+You can use the library in one of two ways:
+
+ * Direct GET/POST calls to the server
+ * Access via Python classes/methods
+
+<a name="get_post"></a>
+### Direct GET/POST:
+
     from openphoto import OpenPhoto
     client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
-    resp = client.get('/photos/list.json')
-    resp = client.post('/photo/62/update.json', {'tags': 'tag1,tag2'})
+    resp = client.get("/photos/list.json")
+    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
+
+<a name="python_classes"></a>
+### Python classes/methods
+
+    from openphoto import OpenPhoto
+    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
+    photos = client.photos.list()
+    photos[0].update(tags=["tag1", "tag2"])
+    print photos[0].tags
+
+The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
+
+* client.photos.list() -> /photos/list.json
+* photos[0].update() -> /photo/&lt;id&gt;/update.json
 
 ----------------------------------------
 
 <a name="cli"></a>
 ### Using from the command line
 
-You'll then want to export your secrets to the environment.
+When using the command line tools, you'll want to export your secrets to the environment.
 We suggest putting them in a file and sourcing it prior to running `openphoto` commands.
 <a href="#credentials">Click here for instructions on getting credentials</a>.
 
@@ -97,3 +119,4 @@ Now you can run commands to the OpenPhoto API from your shell!
 You can get your credentals by clicking on the arrow next to your email address once you're logged into your site and then clicking on settings.
 If you don't have any credentials then you can create one for yourself by going to `/v1/oauth/flow`.
 Once completed go back to the settings page and you should see the credential you just created
+
