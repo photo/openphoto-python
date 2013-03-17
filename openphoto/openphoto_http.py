@@ -1,6 +1,7 @@
 import oauth2 as oauth
 import urlparse
 import urllib
+import urllib2
 import httplib2
 try:
     import json
@@ -78,12 +79,14 @@ class OpenPhotoHttp:
         client = oauth.Client(consumer, token)
 
         if files:
+            # Parameters must be signed and encoded into the multipart body
+            params = self._sign_params(client, url, params)
             headers, body = encode_multipart_formdata(params, files)
+            request = urllib2.Request(url, body, headers)
+            content = urllib2.urlopen(request).read()
         else:
-            headers = {}
             body = urllib.urlencode(params)
-
-        _, content = client.request(url, "POST", body, headers)
+            _, content = client.request(url, "POST", body)
 
         self.last_url = url
         self.last_params = params
@@ -93,6 +96,17 @@ class OpenPhotoHttp:
             return self._process_response(content)
         else:
             return content
+
+    @staticmethod
+    def _sign_params(client, url, params):
+        """Use OAuth to sign a dictionary of params"""
+        request = oauth.Request.from_consumer_and_token(consumer=client.consumer,
+                                                        token=client.token,
+                                                        http_method="POST",
+                                                        http_url=url,
+                                                        parameters=params)
+        request.sign_request(client.method, client.consumer, client.token)
+        return dict(urlparse.parse_qsl(request.to_postdata()))
 
     @staticmethod
     def _process_params(params):
