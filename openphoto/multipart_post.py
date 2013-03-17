@@ -1,3 +1,4 @@
+import os
 import mimetypes
 import mimetools
 
@@ -20,7 +21,7 @@ def encode_multipart_formdata(params, files):
         lines.append("Content-Disposition: form-data; name=\"%s\"; filename=\"%s\"" % (name, filename))
         lines.append("Content-Type: %s" % content_type)
         lines.append("")
-        lines.append(open(filename, "rb").read())
+        lines.append(open(os.path.expanduser(filename), "rb").read())
     lines.append("--" + boundary + "--")
     lines.append("")
 
