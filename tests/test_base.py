@@ -99,15 +99,15 @@ class TestBase(unittest.TestCase):
         """ Upload three test photos """
         album = cls.client.album.create(cls.TEST_ALBUM, visible=True)
         photos = [
-            cls.client.photo.upload_encoded("tests/test_photo1.jpg",
-                                            title=cls.TEST_TITLE,
-                                            tags=cls.TEST_TAG),
-            cls.client.photo.upload_encoded("tests/test_photo2.jpg",
-                                            title=cls.TEST_TITLE,
-                                            tags=cls.TEST_TAG),
-            cls.client.photo.upload_encoded("tests/test_photo3.jpg",
-                                            title=cls.TEST_TITLE,
-                                            tags=cls.TEST_TAG),
+            cls.client.photo.upload("tests/test_photo1.jpg",
+                                    title=cls.TEST_TITLE,
+                                    tags=cls.TEST_TAG),
+            cls.client.photo.upload("tests/test_photo2.jpg",
+                                    title=cls.TEST_TITLE,
+                                    tags=cls.TEST_TAG),
+            cls.client.photo.upload("tests/test_photo3.jpg",
+                                    title=cls.TEST_TITLE,
+                                    tags=cls.TEST_TAG),
             ]
         # Remove the auto-generated month/year tags
         tags_to_remove = [p for p in photos[0].tags if p != cls.TEST_TAG]
