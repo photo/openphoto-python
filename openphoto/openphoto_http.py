@@ -9,6 +9,7 @@ except ImportError:
 
 from objects import OpenPhotoObject
 from errors import *
+from multipart_post import encode_multipart_formdata
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -58,7 +59,7 @@ class OpenPhotoHttp:
         else:
             return content
 
-    def post(self, endpoint, process_response=True, **params):
+    def post(self, endpoint, process_response=True, files = {}, **params):
         """
         Performs an HTTP POST to the specified endpoint (API path),
         passing parameters if given.
@@ -74,10 +75,15 @@ class OpenPhotoHttp:
 
         consumer = oauth.Consumer(self._consumer_key, self._consumer_secret)
         token = oauth.Token(self._token, self._token_secret)
-
         client = oauth.Client(consumer, token)
-        body = urllib.urlencode(params)
-        _, content = client.request(url, "POST", body)
+
+        if files:
+            headers, body = encode_multipart_formdata(params, files)
+        else:
+            headers = {}
+            body = urllib.urlencode(params)
+
+        _, content = client.request(url, "POST", body, headers)
 
         self.last_url = url
         self.last_params = params
