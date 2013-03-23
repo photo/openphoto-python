@@ -1,3 +1,4 @@
+import urllib
 from errors import *
 
 class OpenPhotoObject:
@@ -98,12 +99,12 @@ class Photo(OpenPhotoObject):
 class Tag(OpenPhotoObject):
     def delete(self, **kwds):
         """ Delete this tag """
-        self._openphoto.post("/tag/%s/delete.json" % self.id, **kwds)
+        self._openphoto.post("/tag/%s/delete.json" % urllib.quote(self.id), **kwds)
         self._replace_fields({})
 
     def update(self, **kwds):
         """ Update this tag with the specified parameters """
-        new_dict = self._openphoto.post("/tag/%s/update.json" % self.id, 
+        new_dict = self._openphoto.post("/tag/%s/update.json" % urllib.quote(self.id), 
                                         **kwds)["result"]
         self._replace_fields(new_dict)
 

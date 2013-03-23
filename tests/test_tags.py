@@ -59,8 +59,6 @@ class TestTags(test_base.TestBase):
         self.assertEqual(self.tags[0].owner, owner)
         self.assertEqual(ret_val.owner, owner)
 
-    @unittest.expectedFailure # Tag create fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
     def test_tag_with_spaces(self):
         """ Run test_create_delete using a tag containing spaces """
         self.test_create_delete("tag with spaces")
