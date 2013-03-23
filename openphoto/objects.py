@@ -142,14 +142,8 @@ class Album(OpenPhotoObject):
         """ Update this album with the specified parameters """
         new_dict = self._openphoto.post("/album/%s/update.json" % self.id, 
                                         **kwds)["result"]
-
-        # Since the API doesn't give us the modified album, we need to
-        # update our fields based on the kwds that were sent
-        self._set_fields(kwds)
-
-        # Replace the above line with the below once frontend issue #937 is resolved
-#        self._set_fields(new_dict)
-#        self._update_fields_with_objects()
+        self._replace_fields(new_dict)
+        self._update_fields_with_objects()
         
     def view(self, **kwds):
         """ 
