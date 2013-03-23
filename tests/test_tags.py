@@ -27,9 +27,9 @@ class TestTags(test_base.TestBase):
         # Check that the tag is now gone
         self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-    # NOTE: this test doesn't work, since it's not possible to update the tag owner
-    # It's unclear what tag/update is for, since there are no fields that can be updated!
-    @unittest.skip
+    # TODO: Un-skip and update this tests once there are tag fields that can be updated.
+    # The owner field cannot be updated.
+    @unittest.skip("Can't test the tag.update endpoint, since there are no fields that can be updated")
     def test_update(self):
         """ Test that a tag can be updated """
         # Update the tag using the OpenPhoto class, passing in the tag object
@@ -63,9 +63,13 @@ class TestTags(test_base.TestBase):
         """ Run test_create_delete using a tag containing spaces """
         self.test_create_delete("tag with spaces")
 
-    # We mustn't run this test until Issue #919 is resolved,
-    # since it creates an undeletable tag
-    @unittest.skip("Tags with double-slashes cannot be deleted - Issue #919")
-    def test_tag_with_double_slashes(self):
+    def test_tag_with_slashes(self):
         """ Run test_create_delete using a tag containing slashes """
-        self.test_create_delete("tag/with//slashes")
+        self.test_create_delete("tag/with/slashes")
+
+    # TODO: Un-skip this test once issue #919 is resolved -
+    #       tags with double-slashes cannot be deleted
+    @unittest.expectedFailure
+    def test_tag_with_double_slashes(self):
+        """ Run test_create_delete using a tag containing double-slashes """
+        self.test_create_delete("tag//with//double//slashes")
