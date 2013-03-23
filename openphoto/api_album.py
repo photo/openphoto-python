@@ -1,4 +1,4 @@
-<<from errors import *
+from errors import *
 from objects import Album
 
 class ApiAlbums:
