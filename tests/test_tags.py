@@ -3,31 +3,33 @@ import openphoto
 import test_base
 
 class TestTags(test_base.TestBase):
-    @unittest.expectedFailure # Tag create fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
-    def test_create_delete(self, tag_name="create_tag"):
+    def test_create_delete(self, tag_id="create_tag"):
         """ Create a tag then delete it """
         # Create a tag
-        tag = self.client.tag.create(tag_name)
+        self.assertTrue(self.client.tag.create(tag_id))
+        # Check that the tag doesn't exist (It has no photos, so it's invisible)
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-        # Check the return value
-        self.assertEqual(tag.id, tag_name)
+        # Create a tag on one of the photos
+        self.photos[0].update(tagsAdd=tag_id)
         # Check that the tag now exists
-        self.assertIn(tag_name, self.client.tags.list())
+        self.assertIn(tag_id, [t.id for t in self.client.tags.list()])
 
         # Delete the tag
-        self.client.tag.delete(tag_name)
+        self.client.tag.delete(tag_id)
         # Check that the tag is now gone
-        self.assertNotIn(tag_name, self.client.tags.list())
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-        # Create and delete using the Tag object directly
-        tag = self.client.tag.create(tag_name)
+        # Create then delete using the Tag object directly
+        self.photos[0].update(tagsAdd=tag_id)
+        tag = [t for t in self.client.tags.list() if t.id == tag_id][0]
         tag.delete()
         # Check that the tag is now gone
-        self.assertNotIn(tag_name, self.client.tags.list())
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-    @unittest.expectedFailure # Tag update fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
+    # NOTE: this test doesn't work, since it's not possible to update the tag owner
+    # It's unclear what tag/update is for, since there are no fields that can be updated!
+    @unittest.skip
     def test_update(self):
         """ Test that a tag can be updated """
         # Update the tag using the OpenPhoto class, passing in the tag object
