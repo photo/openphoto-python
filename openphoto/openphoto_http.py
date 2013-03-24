@@ -2,6 +2,7 @@ import oauth2 as oauth
 import urlparse
 import urllib
 import httplib2
+import logging
 try:
     import json
 except ImportError:
@@ -16,16 +17,14 @@ DUPLICATE_RESPONSE = {"code": 409,
 class OpenPhotoHttp:
     """ Base class to handle HTTP requests to an OpenPhoto server """
     def __init__(self, host, consumer_key='', consumer_secret='',
-                 token='', token_secret='', log_filename=None):
+                 token='', token_secret=''):
         self._host = host
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
         self._token = token
         self._token_secret = token_secret
 
-        self._logfile = None
-        if log_filename:
-            self._logfile = open(log_filename, "w")
+        self._logger = logging.getLogger("openphoto")
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -52,11 +51,10 @@ class OpenPhotoHttp:
 
         _, content = client.request(url, "GET")
 
-        if self._logfile:
-            print >> self._logfile, "----------------------------"
-            print >> self._logfile, "GET %s" % url
-            print >> self._logfile, "----------------------------"
-            print >> self._logfile, content
+        self._logger.info("============================")
+        self._logger.info("GET %s" % url)
+        self._logger.info("---")
+        self._logger.info(content)
 
         self.last_url = url
         self.last_params = params
@@ -90,12 +88,13 @@ class OpenPhotoHttp:
 
         _, content = client.request(url, "POST", body)
 
-        if self._logfile:
-            print >> self._logfile, "----------------------------"
-            print >> self._logfile, "POST %s" % url
-            print >> self._logfile, body
-            print >> self._logfile, "----------------------------"
-            print >> self._logfile, content
+        # TODO: Don't log file data in multipart forms
+        self._logger.info("============================")
+        self._logger.info("POST %s" % url)
+        if body:
+            self._logger.info(body)
+        self._logger.info("---")
+        self._logger.info(content)
 
         self.last_url = url
         self.last_params = params

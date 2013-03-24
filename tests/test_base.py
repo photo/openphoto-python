@@ -1,4 +1,5 @@
 import unittest
+import logging
 import openphoto
 
 try:
@@ -16,8 +17,6 @@ except ImportError:
            "********************************************************************\n")
     raise
 
-LOG_FILENAME = "tests.log"
-
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
     TEST_TAG = "test_tag"
@@ -28,13 +27,18 @@ class TestBase(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kwds)
         self.photos = []
 
+        LOG_FILENAME = "tests.log"
+        logging.basicConfig(filename="tests.log",
+                            filemode="w",
+                            format="%(message)s",
+                            level=logging.INFO)
+
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
         cls.client = openphoto.OpenPhoto(tokens.host,
                              tokens.consumer_key, tokens.consumer_secret,
-                             tokens.token, tokens.token_secret,
-                             log_filename=LOG_FILENAME)
+                             tokens.token, tokens.token_secret)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
@@ -96,6 +100,11 @@ class TestBase(unittest.TestCase):
         if len(self.albums) != 1:
             print "Albums: %s" % self.albums
             raise Exception("Album creation failed")
+
+        logging.info("\nRunning %s..." % self.id())
+
+    def tearDown(self):
+        logging.info("Finished %s\n" % self.id())
 
     @classmethod
     def _create_test_photos(cls):
