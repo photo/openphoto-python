@@ -15,11 +15,11 @@ class TestPhotos(test_base.TestBase):
         # Check that they're gone
         self.assertEqual(self.client.photos.list(), [])
 
-        # Re-upload the photos
-        ret_val = self.client.photo.upload_encoded("tests/test_photo1.jpg",
-                                                   title=self.TEST_TITLE)
-        self.client.photo.upload_encoded("tests/test_photo2.jpg",
-                                         title=self.TEST_TITLE)
+        # Re-upload the photos, one of them using Bas64 encoding
+        ret_val = self.client.photo.upload("tests/test_photo1.jpg",
+                                           title=self.TEST_TITLE)
+        self.client.photo.upload("tests/test_photo2.jpg",
+                                 title=self.TEST_TITLE)
         self.client.photo.upload_encoded("tests/test_photo3.jpg",
                                          title=self.TEST_TITLE)
 
@@ -56,8 +56,8 @@ class TestPhotos(test_base.TestBase):
         """ Ensure that duplicate photos are rejected """
         # Attempt to upload a duplicate
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
-            self.client.photo.upload_encoded("tests/test_photo1.jpg",
-                                             title=self.TEST_TITLE)
+            self.client.photo.upload("tests/test_photo1.jpg",
+                                     title=self.TEST_TITLE)
 
         # Check there are still three photos
         self.photos = self.client.photos.list()
@@ -123,13 +123,13 @@ class TestPhotos(test_base.TestBase):
     def test_next_previous(self):
         """ Test the next/previous links of the middle photo """
         next_prev = self.client.photo.next_previous(self.photos[1])
-        self.assertEqual(next_prev["previous"].id, self.photos[0].id)
-        self.assertEqual(next_prev["next"].id, self.photos[2].id)
+        self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
+        self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
         # Do the same using the Photo object directly
         next_prev = self.photos[1].next_previous()
-        self.assertEqual(next_prev["previous"].id, self.photos[0].id)
-        self.assertEqual(next_prev["next"].id, self.photos[2].id)
+        self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
+        self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
     def test_replace(self):
         """ If photo.replace gets implemented, write a test! """
@@ -140,11 +140,6 @@ class TestPhotos(test_base.TestBase):
         """ If photo.replace_encoded gets implemented, write a test! """
         with self.assertRaises(openphoto.NotImplementedError):
             self.client.photo.replace_encoded(None, None)
-
-    def test_upload(self):
-        """ If photo.upload gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
-            self.client.photo.upload(None)
 
     def test_dynamic_url(self):
         """ If photo.dynamic_url gets implemented, write a test! """

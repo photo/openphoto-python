@@ -74,14 +74,21 @@ class Photo(OpenPhotoObject):
         raise NotImplementedError()
 
     def next_previous(self, **kwds):
-        """ Returns a dict containing the next and previous photo objects """
+        """ 
+        Returns a dict containing the next and previous photo lists
+        (there may be more than one next/previous photo returned). 
+        """
         result = self._openphoto.get("/photo/%s/nextprevious.json" % self.id, 
                                      **kwds)["result"]
         value = {}
         if "next" in result:
-            value["next"] = Photo(self._openphoto, result["next"])
+            value["next"] = []
+            for photo in result["next"]:
+                value["next"].append(Photo(self._openphoto, photo))
         if "previous" in result:
-            value["previous"] = Photo(self._openphoto, result["previous"])
+            value["previous"] = []
+            for photo in result["previous"]:
+                value["previous"].append(Photo(self._openphoto, photo))
         return value
 
     def transform(self, **kwds):
