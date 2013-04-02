@@ -6,9 +6,9 @@ import urllib
 from optparse import OptionParser
 
 try:
-    import simplejson as json
-except:
     import json
+except ImportError:
+    import simplejson as json
 
 from openphoto import OpenPhoto
 
@@ -85,22 +85,42 @@ def main(args=sys.argv[1:]):
                        config['token'], config['tokenSecret'])
 
     if options.method == "GET":
-        result = client.get(options.endpoint, params)
+        result = client.get(options.endpoint, process_response=False, **params)
     else:
-        result = client.post(options.endpoint, params)
+        params, files = extract_files(params)
+        result = client.post(options.endpoint, process_response=False, files=files, **params)
 
     if options.verbose:
         print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, config['host'], options.endpoint)
         if len( params ) > 0:
-        	print "Fields:"
-        	for kv in params.iteritems():
-        		print "  %s=%s" % kv
+            print "Fields:"
+            for kv in params.iteritems():
+                print "  %s=%s" % kv
         print "==========\n"
 
     if options.pretty:
         print json.dumps(json.loads(result), sort_keys=True, indent=4, separators=(',',':'))
     else:
         print result
+
+def extract_files(params):
+    """
+    Extract filenames from the "photo" parameter, so they can be uploaded, returning (updated_params, files).
+    Uses the same technique as openphoto-php:
+      * Filename can only be in the "photo" parameter
+      * Filename must be prefixed with "@"
+      * Filename must exist
+    ...otherwise the parameter is not extracted
+    """
+    files = {}
+    updated_params = {}
+    for name in params:
+        if name == "photo" and params[name].startswith("@") and os.path.isfile(os.path.expanduser(params[name][1:])):
+            files[name] = params[name][1:]
+        else:
+            updated_params[name] = params[name]
+
+    return updated_params, files
 
 if __name__ == "__main__":
     main()
