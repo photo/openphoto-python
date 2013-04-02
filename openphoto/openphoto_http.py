@@ -3,6 +3,7 @@ import urlparse
 import urllib
 import urllib2
 import httplib2
+import logging
 try:
     import json
 except ImportError:
@@ -24,6 +25,8 @@ class OpenPhotoHttp:
         self._consumer_secret = consumer_secret
         self._token = token
         self._token_secret = token_secret
+
+        self._logger = logging.getLogger("openphoto")
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -49,6 +52,11 @@ class OpenPhotoHttp:
             client = httplib2.Http()
 
         _, content = client.request(url, "GET")
+
+        self._logger.info("============================")
+        self._logger.info("GET %s" % url)
+        self._logger.info("---")
+        self._logger.info(content)
 
         self.last_url = url
         self.last_params = params
@@ -87,6 +95,14 @@ class OpenPhotoHttp:
         else:
             body = urllib.urlencode(params)
             _, content = client.request(url, "POST", body)
+
+        # TODO: Don't log file data in multipart forms
+        self._logger.info("============================")
+        self._logger.info("POST %s" % url)
+        if body:
+            self._logger.info(body)
+        self._logger.info("---")
+        self._logger.info(content)
 
         self.last_url = url
         self.last_params = params

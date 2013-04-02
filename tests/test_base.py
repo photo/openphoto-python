@@ -1,4 +1,5 @@
 import unittest
+import logging
 import openphoto
 
 try:
@@ -25,6 +26,12 @@ class TestBase(unittest.TestCase):
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
         self.photos = []
+
+        LOG_FILENAME = "tests.log"
+        logging.basicConfig(filename="tests.log",
+                            filemode="w",
+                            format="%(message)s",
+                            level=logging.INFO)
 
     @classmethod
     def setUpClass(cls):
@@ -94,6 +101,11 @@ class TestBase(unittest.TestCase):
         if len(self.albums) != 1:
             print "Albums: %s" % self.albums
             raise Exception("Album creation failed")
+
+        logging.info("\nRunning %s..." % self.id())
+
+    def tearDown(self):
+        logging.info("Finished %s\n" % self.id())
 
     @classmethod
     def _create_test_photos(cls):
