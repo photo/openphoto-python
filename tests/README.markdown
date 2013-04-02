@@ -13,7 +13,7 @@ A computer, Python 2.7 and an empty OpenPhoto instance.
 
 Create a tests/tokens.py file containing the following:
 
-    # tests/token.py
+    # tests/tokens.py
     consumer_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
     consumer_secret = "xxxxxxxxxx"
     token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"

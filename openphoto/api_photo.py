@@ -67,7 +67,9 @@ class ApiPhoto:
         return photo
 
     def upload(self, photo_file, **kwds):
-        raise NotImplementedError("Use upload_encoded instead.")
+        result = self._client.post("/photo/upload.json", files={'photo': photo_file}, 
+                                   **kwds)["result"]
+        return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
