@@ -1,7 +1,9 @@
 import oauth2 as oauth
 import urlparse
 import urllib
+import urllib2
 import httplib2
+import logging
 try:
     import json
 except ImportError:
@@ -9,6 +11,7 @@ except ImportError:
 
 from objects import OpenPhotoObject
 from errors import *
+from multipart_post import encode_multipart_formdata
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -22,6 +25,8 @@ class OpenPhotoHttp:
         self._consumer_secret = consumer_secret
         self._token = token
         self._token_secret = token_secret
+
+        self._logger = logging.getLogger("openphoto")
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -48,6 +53,11 @@ class OpenPhotoHttp:
 
         _, content = client.request(url, "GET")
 
+        self._logger.info("============================")
+        self._logger.info("GET %s" % url)
+        self._logger.info("---")
+        self._logger.info(content)
+
         self.last_url = url
         self.last_params = params
         self.last_response = content
@@ -58,7 +68,7 @@ class OpenPhotoHttp:
         else:
             return content
 
-    def post(self, endpoint, process_response=True, **params):
+    def post(self, endpoint, process_response=True, files = {}, **params):
         """
         Performs an HTTP POST to the specified endpoint (API path),
         passing parameters if given.
@@ -74,10 +84,25 @@ class OpenPhotoHttp:
 
         consumer = oauth.Consumer(self._consumer_key, self._consumer_secret)
         token = oauth.Token(self._token, self._token_secret)
-
         client = oauth.Client(consumer, token)
-        body = urllib.urlencode(params)
-        _, content = client.request(url, "POST", body)
+
+        if files:
+            # Parameters must be signed and encoded into the multipart body
+            params = self._sign_params(client, url, params)
+            headers, body = encode_multipart_formdata(params, files)
+            request = urllib2.Request(url, body, headers)
+            content = urllib2.urlopen(request).read()
+        else:
+            body = urllib.urlencode(params)
+            _, content = client.request(url, "POST", body)
+
+        # TODO: Don't log file data in multipart forms
+        self._logger.info("============================")
+        self._logger.info("POST %s" % url)
+        if body:
+            self._logger.info(body)
+        self._logger.info("---")
+        self._logger.info(content)
 
         self.last_url = url
         self.last_params = params
@@ -87,6 +112,17 @@ class OpenPhotoHttp:
             return self._process_response(content)
         else:
             return content
+
+    @staticmethod
+    def _sign_params(client, url, params):
+        """Use OAuth to sign a dictionary of params"""
+        request = oauth.Request.from_consumer_and_token(consumer=client.consumer,
+                                                        token=client.token,
+                                                        http_method="POST",
+                                                        http_url=url,
+                                                        parameters=params)
+        request.sign_request(client.method, client.consumer, client.token)
+        return dict(urlparse.parse_qsl(request.to_postdata()))
 
     @staticmethod
     def _process_params(params):
