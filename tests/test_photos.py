@@ -123,13 +123,13 @@ class TestPhotos(test_base.TestBase):
     def test_next_previous(self):
         """ Test the next/previous links of the middle photo """
         next_prev = self.client.photo.next_previous(self.photos[1])
-        self.assertEqual(next_prev["previous"].id, self.photos[0].id)
-        self.assertEqual(next_prev["next"].id, self.photos[2].id)
+        self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
+        self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
         # Do the same using the Photo object directly
         next_prev = self.photos[1].next_previous()
-        self.assertEqual(next_prev["previous"].id, self.photos[0].id)
-        self.assertEqual(next_prev["next"].id, self.photos[2].id)
+        self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
+        self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
     def test_replace(self):
         """ If photo.replace gets implemented, write a test! """

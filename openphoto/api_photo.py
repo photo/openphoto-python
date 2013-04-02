@@ -81,8 +81,8 @@ class ApiPhoto:
 
     def next_previous(self, photo, **kwds):
         """ 
-        Returns a dict containing the next and previous photo objects, 
-        given a photo in the middle.
+        Returns a dict containing the next and previous photo lists
+        (there may be more than one next/previous photo returned). 
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
