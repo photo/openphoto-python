@@ -16,13 +16,13 @@ class TestTags(test_base.TestBase):
         self.assertIn(tag_name, self.client.tags.list())
 
         # Delete the tag
-        self.client.tag.delete(tag_name)
+        self.assertTrue(self.client.tag.delete(tag_name))
         # Check that the tag is now gone
         self.assertNotIn(tag_name, self.client.tags.list())
 
         # Create and delete using the Tag object directly
         tag = self.client.tag.create(tag_name)
-        tag.delete()
+        self.assertTrue(tag.delete())
         # Check that the tag is now gone
         self.assertNotIn(tag_name, self.client.tags.list())
 
