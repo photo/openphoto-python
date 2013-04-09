@@ -7,12 +7,11 @@ try:
 except ImportError:
     print ("********************************************************************\n"
            "You need to create a 'tokens.py' file containing the following:\n\n"
-           "   host = \"<test_url>\"\n"
+           "   host = \"<hostname>\"\n"
            "   consumer_key = \"<test_consumer_key>\"\n"
            "   consumer_secret = \"<test_consumer_secret>\"\n"
            "   token = \"<test_token>\"\n"
            "   token_secret = \"<test_token_secret>\"\n"
-           "   host = \"<hostname>\"\n\n"
            "WARNING: Don't use a production OpenPhoto instance for this!\n"
            "********************************************************************\n")
     raise
