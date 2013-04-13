@@ -14,25 +14,38 @@ class ApiPhotos:
         return [Photo(self._client, photo) for photo in photos]
 
     def update(self, photos, **kwds):
-        """ Updates a list of photos """
+        """
+        Updates a list of photos.
+        Returns True if successful.
+        Raises OpenPhotoError if not.
+        """
         if not self._client.post("/photos/update.json", ids=photos, **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
+        return True
 
     def delete(self, photos, **kwds):
-        """ Deletes a list of photos """
+        """
+        Deletes a list of photos.
+        Returns True if successful.
+        Raises OpenPhotoError if not.
+        """
         if not self._client.post("/photos/delete.json", ids=photos, **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
-
+        return True
 
 class ApiPhoto:
     def __init__(self, client):
         self._client = client
 
     def delete(self, photo, **kwds):
-        """ Delete a photo """
+        """
+        Delete a photo.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
-        photo.delete(**kwds)
+        return photo.delete(**kwds)
 
     def edit(self, photo, **kwds):
         """ Returns an HTML form to edit a photo """
@@ -67,7 +80,9 @@ class ApiPhoto:
         return photo
 
     def upload(self, photo_file, **kwds):
-        raise NotImplementedError("Use upload_encoded instead.")
+        result = self._client.post("/photo/upload.json", files={'photo': photo_file}, 
+                                   **kwds)["result"]
+        return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
@@ -81,8 +96,8 @@ class ApiPhoto:
 
     def next_previous(self, photo, **kwds):
         """ 
-        Returns a dict containing the next and previous photo objects, 
-        given a photo in the middle.
+        Returns a dict containing the next and previous photo lists
+        (there may be more than one next/previous photo returned). 
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})

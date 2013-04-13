@@ -20,11 +20,15 @@ class ApiAlbum:
         return Album(self._client, result)
 
     def delete(self, album, **kwds):
-        """ Delete an album """
+        """
+        Delete an album.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})
-        album.delete(**kwds)
-        
+        return album.delete(**kwds)
+
     def form(self, album, **kwds):
         raise NotImplementedError()
 
@@ -41,7 +45,7 @@ class ApiAlbum:
         album.update(**kwds)
 
         # Don't return the album, since the API currently doesn't give us the modified album
-        # Uncomment the following once frontend issue #937 is resolved
+        # TODO: Uncomment the following once frontend issue #937 is resolved
 #        return album
 
     def view(self, album, **kwds):

@@ -7,7 +7,7 @@ class TestAlbums(test_base.TestBase):
     def test_create_delete(self):
         """ Create an album then delete it """
         album_name = "create_delete_album"
-        album = self.client.album.create(album_name, visible=True)
+        album = self.client.album.create(album_name)
 
         # Check the return value
         self.assertEqual(album.name, album_name)
@@ -15,13 +15,13 @@ class TestAlbums(test_base.TestBase):
         self.assertIn(album_name, [a.name for a in self.client.albums.list()])
 
         # Delete the album
-        self.client.album.delete(album.id)
+        self.assertTrue(self.client.album.delete(album.id))
         # Check that the album is now gone
         self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 
         # Create it again, and delete it using the Album object
-        album = self.client.album.create(album_name, visible=True)
-        album.delete()
+        album = self.client.album.create(album_name)
+        self.assertTrue(album.delete())
         # Check that the album is now gone
         self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 
@@ -56,22 +56,10 @@ class TestAlbums(test_base.TestBase):
         self.assertFalse(hasattr(album, "photos"))
 
         # Get the photos in the album using the Album object directly
-        album.view()
+        album.view(includeElements=True)
         # Make sure all photos are in the album
         for photo in self.photos:
             self.assertIn(photo.id, [p.id for p in album.photos])
-
-    @unittest.expectedFailure # Private albums are not visible - issue #929
-    def test_private(self):
-        """ Test that private albums can be created, and are visible """
-        # Create and check that the album now exists
-        album_name = "private_album"
-        album = self.client.album.create(album_name, visible=False)
-        self.assertIn(album_name, [a.name for a in self.client.albums.list()])
-
-        # Delete and check that the album is now gone
-        album.delete()
-        self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 
     def test_form(self):
         """ If album.form gets implemented, write a test! """

@@ -39,9 +39,14 @@ class OpenPhotoObject:
 
 class Photo(OpenPhotoObject):
     def delete(self, **kwds):
-        """ Delete this photo """
-        self._openphoto.post("/photo/%s/delete.json" % self.id, **kwds)
+        """
+        Delete this photo.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
+        result = self._openphoto.post("/photo/%s/delete.json" % self.id, **kwds)["result"]
         self._replace_fields({})
+        return result
 
     def edit(self, **kwds):
         """ Returns an HTML form to edit the photo """
@@ -74,14 +79,21 @@ class Photo(OpenPhotoObject):
         raise NotImplementedError()
 
     def next_previous(self, **kwds):
-        """ Returns a dict containing the next and previous photo objects """
+        """ 
+        Returns a dict containing the next and previous photo lists
+        (there may be more than one next/previous photo returned). 
+        """
         result = self._openphoto.get("/photo/%s/nextprevious.json" % self.id, 
                                      **kwds)["result"]
         value = {}
         if "next" in result:
-            value["next"] = Photo(self._openphoto, result["next"])
+            value["next"] = []
+            for photo in result["next"]:
+                value["next"].append(Photo(self._openphoto, photo))
         if "previous" in result:
-            value["previous"] = Photo(self._openphoto, result["previous"])
+            value["previous"] = []
+            for photo in result["previous"]:
+                value["previous"].append(Photo(self._openphoto, photo))
         return value
 
     def transform(self, **kwds):
@@ -97,9 +109,14 @@ class Photo(OpenPhotoObject):
 
 class Tag(OpenPhotoObject):
     def delete(self, **kwds):
-        """ Delete this tag """
-        self._openphoto.post("/tag/%s/delete.json" % self.id, **kwds)
+        """
+        Delete this tag.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
+        result = self._openphoto.post("/tag/%s/delete.json" % self.id, **kwds)["result"]
         self._replace_fields({})
+        return result
 
     def update(self, **kwds):
         """ Update this tag with the specified parameters """
@@ -125,9 +142,14 @@ class Album(OpenPhotoObject):
                     self.photos[i] = Photo(self._openphoto, photo)
 
     def delete(self, **kwds):
-        """ Delete this album """
-        self._openphoto.post("/album/%s/delete.json" % self.id, **kwds)
+        """
+        Delete this album.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
+        result = self._openphoto.post("/album/%s/delete.json" % self.id, **kwds)["result"]
         self._replace_fields({})
+        return result
 
     def form(self, **kwds):
         raise NotImplementedError()
