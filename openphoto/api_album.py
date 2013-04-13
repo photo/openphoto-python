@@ -20,11 +20,15 @@ class ApiAlbum:
         return Album(self._client, result)
 
     def delete(self, album, **kwds):
-        """ Delete an album """
+        """
+        Delete an album.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})
-        album.delete(**kwds)
-        
+        return album.delete(**kwds)
+
     def form(self, album, **kwds):
         raise NotImplementedError()
 
