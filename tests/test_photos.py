@@ -151,18 +151,8 @@ class TestPhotos(test_base.TestBase):
         photo = self.photos[0]
         self.assertEqual(photo.rotation, "0")
         photo = self.client.photo.transform(photo, rotate=90)
-
-        # Need an explicit update, since transform API doesn't return the rotated photo
-        # Remove the following line once Issue #955 is resolved
-        photo = self.client.photo.view(self.photos[0])
-
         self.assertEqual(photo.rotation, "90")
 
         # Do the same using the Photo object directly
         photo.transform(rotate=90)
-
-        # Need an explicit update, since transform API doesn't return the rotated photo
-        # Remove the following line once Issue #955 is resolved
-        photo = self.client.photo.view(photo)
-
         self.assertEqual(photo.rotation, "180")

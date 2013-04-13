@@ -98,14 +98,12 @@ class Photo(OpenPhotoObject):
 
     def transform(self, **kwds):
         """
-        Performs transformation specified in **kwds 
+        Performs transformation specified in **kwds
         Example: transform(rotate=90)
         """
         new_dict = self._openphoto.post("/photo/%s/transform.json" % self.id,
                                         **kwds)["result"]
-        # The API doesn't currently return the transformed photo
-        # Uncomment the below once frontend issue #955 is resolved
-#        self._replace_fields(new_dict)
+        self._replace_fields(new_dict)
 
 class Tag(OpenPhotoObject):
     def delete(self, **kwds):

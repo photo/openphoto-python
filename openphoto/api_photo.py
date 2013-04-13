@@ -111,6 +111,4 @@ class ApiPhoto:
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
         photo.transform(**kwds)
-        # The API doesn't currently return the transformed photo
-        # Uncomment the below once frontend issue #955 is resolved
-#        return photo
+        return photo
