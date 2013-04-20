@@ -87,19 +87,19 @@ class OpenPhotoHttp:
 
         if files:
             # Parameters must be signed and encoded into the multipart body
-            params = self._sign_params(client, url, params)
-            headers, body = encode_multipart_formdata(params, files)
+            signed_params = self._sign_params(client, url, params)
+            headers, body = encode_multipart_formdata(signed_params, files)
         else:
             body = urllib.urlencode(params)
             headers = None
 
         _, content = client.request(url, "POST", body, headers)
 
-        # TODO: Don't log file data in multipart forms
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
-        if body:
-            self._logger.info(body)
+        self._logger.info("params: %s" % repr(params))
+        if files:
+            self._logger.info("files:  %s" % repr(files))
         self._logger.info("---")
         self._logger.info(content)
 
