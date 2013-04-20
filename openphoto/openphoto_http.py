@@ -1,7 +1,6 @@
 import oauth2 as oauth
 import urlparse
 import urllib
-import urllib2
 import httplib2
 import logging
 try:
@@ -90,11 +89,11 @@ class OpenPhotoHttp:
             # Parameters must be signed and encoded into the multipart body
             params = self._sign_params(client, url, params)
             headers, body = encode_multipart_formdata(params, files)
-            request = urllib2.Request(url, body, headers)
-            content = urllib2.urlopen(request).read()
         else:
             body = urllib.urlencode(params)
-            _, content = client.request(url, "POST", body)
+            headers = None
+
+        _, content = client.request(url, "POST", body, headers)
 
         # TODO: Don't log file data in multipart forms
         self._logger.info("============================")
