@@ -50,7 +50,7 @@ class OpenPhotoHttp:
         else:
             client = httplib2.Http()
 
-        _, content = client.request(url, "GET")
+        response, content = client.request(url, "GET")
 
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
@@ -59,11 +59,10 @@ class OpenPhotoHttp:
 
         self.last_url = url
         self.last_params = params
-        self.last_response = content
+        self.last_response = (response, content)
 
         if process_response:
-            return self._process_response(content)
-            return response
+            return self._process_response(response, content)
         else:
             return content
 
@@ -93,7 +92,7 @@ class OpenPhotoHttp:
             body = urllib.urlencode(params)
             headers = None
 
-        _, content = client.request(url, "POST", body, headers)
+        response, content = client.request(url, "POST", body, headers)
 
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
@@ -105,10 +104,10 @@ class OpenPhotoHttp:
 
         self.last_url = url
         self.last_params = params
-        self.last_response = content
+        self.last_response = (response, content)
 
         if process_response:
-            return self._process_response(content)
+            return self._process_response(response, content)
         else:
             return content
 
@@ -155,26 +154,32 @@ class OpenPhotoHttp:
         return processed_params
 
     @staticmethod
-    def _process_response(content):
+    def _process_response(response, content):
         """ 
         Decodes the JSON response, returning a dict.
         Raises an exception if an invalid response code is received.
         """
-        response = json.loads(content)
+        try:
+            json_response = json.loads(content)
+            code = json_response["code"]
+            message = json_response["message"]
+        except ValueError, KeyError:
+            # Response wasn't OpenPhoto JSON - check the HTTP status code
+            if 200 <= response.status < 300:
+                # Status code was valid, so just reraise the exception
+                raise
+            elif response.status == 404:
+                raise OpenPhoto404Error("HTTP Error %d: %s" % (response.status, response.reason))
+            else:
+                raise OpenPhotoError("HTTP Error %d: %s" % (response.status, response.reason))
 
-        if response["code"] >= 200 and response["code"] < 300:
-            # Valid response code
-            return response
-
-        error_message = "Code %d: %s" % (response["code"],
-                                         response["message"])
-
-        # Special case for a duplicate photo error
-        if (response["code"] == DUPLICATE_RESPONSE["code"] and 
-               DUPLICATE_RESPONSE["message"] in response["message"]):
-            raise OpenPhotoDuplicateError(error_message)
-        
-        raise OpenPhotoError(error_message)
+        if 200 <= code < 300:
+            return json_response
+        elif (code == DUPLICATE_RESPONSE["code"] and
+               DUPLICATE_RESPONSE["message"] in message):
+            raise OpenPhotoDuplicateError("Code %d: %s" % (code, message))
+        else:
+            raise OpenPhotoError("Code %d: %s" % (code, message))
 
     @staticmethod
     def _result_to_list(result):
