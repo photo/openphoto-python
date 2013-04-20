@@ -26,7 +26,6 @@ class TestBase(unittest.TestCase):
         unittest.TestCase.__init__(self, *args, **kwds)
         self.photos = []
 
-        LOG_FILENAME = "tests.log"
         logging.basicConfig(filename="tests.log",
                             filemode="w",
                             format="%(message)s",
