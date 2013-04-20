@@ -86,7 +86,7 @@ class TestBase(unittest.TestCase):
         self.tags = self.client.tags.list()
         if (len(self.tags) != 1 or
                 self.tags[0].id != self.TEST_TAG or
-                self.tags[0].count != 3):
+                str(self.tags[0].count) != "3"):
             print "[Regenerating Tags]"
             self._delete_all()
             self._create_test_photos()
