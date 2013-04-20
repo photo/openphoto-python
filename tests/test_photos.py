@@ -23,9 +23,11 @@ class TestPhotos(test_base.TestBase):
         self.client.photo.upload_encoded("tests/test_photo3.jpg",
                                          title=self.TEST_TITLE)
 
-        # Check there are now three photos
+        # Check there are now three photos with the correct titles
         self.photos = self.client.photos.list()
         self.assertEqual(len(self.photos), 3)
+        for photo in self.photos:
+            self.assertEqual(photo.title, self.TEST_TITLE)
 
         # Check that the upload return value was correct
         pathOriginals = [photo.pathOriginal for photo in self.photos]
