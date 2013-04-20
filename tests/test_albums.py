@@ -3,6 +3,7 @@ import openphoto
 import test_base
 
 class TestAlbums(test_base.TestBase):
+    testcase_name = "album API"
 
     def test_create_delete(self):
         """ Create an album then delete it """

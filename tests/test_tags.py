@@ -3,6 +3,8 @@ import openphoto
 import test_base
 
 class TestTags(test_base.TestBase):
+    testcase_name = "tag API"
+
     @unittest.expectedFailure # Tag create fails - Issue #927
     # NOTE: the below has not been tested/debugged, since it fails at the first step
     def test_create_delete(self, tag_name="create_tag"):

@@ -22,6 +22,8 @@ class TestBase(unittest.TestCase):
     TEST_TAG = "test_tag"
     TEST_ALBUM = "test_album"
     MAXIMUM_TEST_PHOTOS = 4 # Never have more the 4 photos on the test server
+    testcase_name = "(unknown testcase)"
+    api_version = None
 
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
@@ -36,9 +38,15 @@ class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
+        if cls.api_version is None:
+            print "\nTesting Latest %s" % cls.testcase_name
+        else:
+            print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
+
         cls.client = openphoto.OpenPhoto(tokens.host,
-                             tokens.consumer_key, tokens.consumer_secret,
-                             tokens.token, tokens.token_secret)
+                                         tokens.consumer_key, tokens.consumer_secret,
+                                         tokens.token, tokens.token_secret,
+                                         cls.api_version)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "

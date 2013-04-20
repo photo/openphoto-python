@@ -4,6 +4,8 @@ import openphoto
 import test_base
 
 class TestFramework(test_base.TestBase):
+    testcase_name = "framework"
+
     def setUp(self):
         """Override the default setUp, since we don't need a populated database"""
         logging.info("\nRunning %s..." % self.id())
