@@ -96,7 +96,7 @@ class OpenPhotoHttp:
             body = urllib.urlencode(params)
             _, content = client.request(url, "POST", body)
 
-        # TODO: Don't log file data in multipart forms 
+        # TODO: Don't log file data in multipart forms
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
         if body:
