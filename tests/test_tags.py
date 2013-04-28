@@ -3,6 +3,8 @@ import openphoto
 import test_base
 
 class TestTags(test_base.TestBase):
+    testcase_name = "tag API"
+
     def test_create_delete(self, tag_id="create_tag"):
         """ Create a tag then delete it """
         # Create a tag

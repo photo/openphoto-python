@@ -18,12 +18,13 @@ DUPLICATE_RESPONSE = {"code": 409,
 class OpenPhotoHttp:
     """ Base class to handle HTTP requests to an OpenPhoto server """
     def __init__(self, host, consumer_key='', consumer_secret='',
-                 token='', token_secret=''):
+                 token='', token_secret='', api_version=None):
         self._host = host
         self._consumer_key = consumer_key
         self._consumer_secret = consumer_secret
         self._token = token
         self._token_secret = token_secret
+        self._api_version = api_version
 
         self._logger = logging.getLogger("openphoto")
 
@@ -36,11 +37,18 @@ class OpenPhotoHttp:
         """
         Performs an HTTP GET from the specified endpoint (API path),
         passing parameters if given.
-        Returns the decoded JSON dictionary, and raises exceptions if an 
+        The api_version is prepended to the endpoint,
+        if it was specified when the OpenPhoto object was created.
+
+        Returns the decoded JSON dictionary, and raises exceptions if an
         error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self._api_version is not None:
+            endpoint = "/v%d%s" % (self._api_version, endpoint)
         url = urlparse.urlunparse(('http', self._host, endpoint, '',
                                    urllib.urlencode(params), ''))
         if self._consumer_key:
@@ -70,13 +78,20 @@ class OpenPhotoHttp:
         """
         Performs an HTTP POST to the specified endpoint (API path),
         passing parameters if given.
-        Returns the decoded JSON dictionary, and raises exceptions if an 
+        The api_version is prepended to the endpoint,
+        if it was specified when the OpenPhoto object was created.
+
+        Returns the decoded JSON dictionary, and raises exceptions if an
         error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self._api_version is not None:
+            endpoint = "/v%d%s" % (self._api_version, endpoint)
         url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
-        
+
         if not self._consumer_key:
             raise OpenPhotoError("Cannot issue POST without OAuth tokens")
 

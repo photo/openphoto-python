@@ -88,13 +88,23 @@ class Photo(OpenPhotoObject):
                                      **kwds)["result"]
         value = {}
         if "next" in result:
+            # Workaround for APIv1
+            if not isinstance(result["next"], list):
+                result["next"] = [result["next"]]
+
             value["next"] = []
             for photo in result["next"]:
                 value["next"].append(Photo(self._openphoto, photo))
+
         if "previous" in result:
+            # Workaround for APIv1
+            if not isinstance(result["previous"], list):
+                result["previous"] = [result["previous"]]
+
             value["previous"] = []
             for photo in result["previous"]:
                 value["previous"].append(Photo(self._openphoto, photo))
+
         return value
 
     def transform(self, **kwds):

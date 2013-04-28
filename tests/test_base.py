@@ -21,6 +21,8 @@ class TestBase(unittest.TestCase):
     TEST_TAG = "test_tag"
     TEST_ALBUM = "test_album"
     MAXIMUM_TEST_PHOTOS = 4 # Never have more the 4 photos on the test server
+    testcase_name = "(unknown testcase)"
+    api_version = None
 
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
@@ -34,9 +36,15 @@ class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
+        if cls.api_version is None:
+            print "\nTesting Latest %s" % cls.testcase_name
+        else:
+            print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
+
         cls.client = openphoto.OpenPhoto(tokens.host,
-                             tokens.consumer_key, tokens.consumer_secret,
-                             tokens.token, tokens.token_secret)
+                                         tokens.consumer_key, tokens.consumer_secret,
+                                         tokens.token, tokens.token_secret,
+                                         cls.api_version)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
@@ -67,7 +75,7 @@ class TestBase(unittest.TestCase):
         self.photos = self.client.photos.list()
         if len(self.photos) != 3:
 #            print self.photos
-            print "\n[Regenerating Photos]"
+            print "[Regenerating Photos]"
             if len(self.photos) > 0:
                 self._delete_all()
             self._create_test_photos()
@@ -76,8 +84,8 @@ class TestBase(unittest.TestCase):
         self.tags = self.client.tags.list()
         if (len(self.tags) != 1 or
                 self.tags[0].id != self.TEST_TAG or
-                self.tags[0].count != 3):
-            print "\n[Regenerating Tags]"
+                str(self.tags[0].count) != "3"):
+            print "[Regenerating Tags]"
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()
@@ -90,7 +98,7 @@ class TestBase(unittest.TestCase):
         if (len(self.albums) != 1 or
                 self.albums[0].name != self.TEST_ALBUM or
                 self.albums[0].count != "3"):
-            print "\n[Regenerating Albums]"
+            print "[Regenerating Albums]"
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()

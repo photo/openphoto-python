@@ -3,6 +3,8 @@ import openphoto
 import test_base
 
 class TestPhotos(test_base.TestBase):
+    testcase_name = "photo API"
+
     def test_delete_upload(self):
         """ Test photo deletion and upload """
         # Delete one photo using the OpenPhoto class, passing in the id
