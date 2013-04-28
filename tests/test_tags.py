@@ -3,31 +3,33 @@ import openphoto
 import test_base
 
 class TestTags(test_base.TestBase):
-    @unittest.expectedFailure # Tag create fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
-    def test_create_delete(self, tag_name="create_tag"):
+    def test_create_delete(self, tag_id="create_tag"):
         """ Create a tag then delete it """
         # Create a tag
-        tag = self.client.tag.create(tag_name)
+        self.assertTrue(self.client.tag.create(tag_id))
+        # Check that the tag doesn't exist (It has no photos, so it's invisible)
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-        # Check the return value
-        self.assertEqual(tag.id, tag_name)
+        # Create a tag on one of the photos
+        self.photos[0].update(tagsAdd=tag_id)
         # Check that the tag now exists
-        self.assertIn(tag_name, self.client.tags.list())
+        self.assertIn(tag_id, [t.id for t in self.client.tags.list()])
 
         # Delete the tag
-        self.assertTrue(self.client.tag.delete(tag_name))
+        self.assertTrue(self.client.tag.delete(tag_id))
         # Check that the tag is now gone
-        self.assertNotIn(tag_name, self.client.tags.list())
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-        # Create and delete using the Tag object directly
-        tag = self.client.tag.create(tag_name)
+        # Create then delete using the Tag object directly
+        self.photos[0].update(tagsAdd=tag_id)
+        tag = [t for t in self.client.tags.list() if t.id == tag_id][0]
         self.assertTrue(tag.delete())
         # Check that the tag is now gone
-        self.assertNotIn(tag_name, self.client.tags.list())
+        self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
-    @unittest.expectedFailure # Tag update fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
+    # TODO: Un-skip and update this tests once there are tag fields that can be updated.
+    # The owner field cannot be updated.
+    @unittest.skip("Can't test the tag.update endpoint, since there are no fields that can be updated")
     def test_update(self):
         """ Test that a tag can be updated """
         # Update the tag using the OpenPhoto class, passing in the tag object
@@ -57,15 +59,17 @@ class TestTags(test_base.TestBase):
         self.assertEqual(self.tags[0].owner, owner)
         self.assertEqual(ret_val.owner, owner)
 
-    @unittest.expectedFailure # Tag create fails - Issue #927
-    # NOTE: the below has not been tested/debugged, since it fails at the first step
     def test_tag_with_spaces(self):
         """ Run test_create_delete using a tag containing spaces """
         self.test_create_delete("tag with spaces")
 
-    # We mustn't run this test until Issue #919 is resolved,
-    # since it creates an undeletable tag
-    @unittest.skip("Tags with double-slashes cannot be deleted - Issue #919")
-    def test_tag_with_double_slashes(self):
+    def test_tag_with_slashes(self):
         """ Run test_create_delete using a tag containing slashes """
-        self.test_create_delete("tag/with//slashes")
+        self.test_create_delete("tag/with/slashes")
+
+    # TODO: Un-skip this test once issue #919 is resolved -
+    #       tags with double-slashes cannot be deleted
+    @unittest.expectedFailure
+    def test_tag_with_double_slashes(self):
+        """ Run test_create_delete using a tag containing double-slashes """
+        self.test_create_delete("tag//with//double//slashes")
