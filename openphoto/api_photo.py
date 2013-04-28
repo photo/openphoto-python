@@ -104,4 +104,11 @@ class ApiPhoto:
         return photo.next_previous(**kwds)
 
     def transform(self, photo, **kwds):
-        raise NotImplementedError()
+        """
+        Performs transformation specified in **kwds 
+        Example: transform(photo, rotate=90)
+        """
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
+        photo.transform(**kwds)
+        return photo

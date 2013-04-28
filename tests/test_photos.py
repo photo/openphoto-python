@@ -149,6 +149,12 @@ class TestPhotos(test_base.TestBase):
             self.client.photo.dynamic_url(None)
 
     def test_transform(self):
-        """ If photo.transform gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
-            self.client.photo.transform(None)
+        """ Test photo rotation """
+        photo = self.photos[0]
+        self.assertEqual(photo.rotation, "0")
+        photo = self.client.photo.transform(photo, rotate=90)
+        self.assertEqual(photo.rotation, "90")
+
+        # Do the same using the Photo object directly
+        photo.transform(rotate=90)
+        self.assertEqual(photo.rotation, "180")

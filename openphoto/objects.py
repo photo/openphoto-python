@@ -107,8 +107,13 @@ class Photo(OpenPhotoObject):
         return value
 
     def transform(self, **kwds):
-        raise NotImplementedError()
-
+        """
+        Performs transformation specified in **kwds
+        Example: transform(rotate=90)
+        """
+        new_dict = self._openphoto.post("/photo/%s/transform.json" % self.id,
+                                        **kwds)["result"]
+        self._replace_fields(new_dict)
 
 class Tag(OpenPhotoObject):
     def delete(self, **kwds):
@@ -167,14 +172,8 @@ class Album(OpenPhotoObject):
         """ Update this album with the specified parameters """
         new_dict = self._openphoto.post("/album/%s/update.json" % self.id, 
                                         **kwds)["result"]
-
-        # Since the API doesn't give us the modified album, we need to
-        # update our fields based on the kwds that were sent
-        self._set_fields(kwds)
-
-        # Replace the above line with the below once frontend issue #937 is resolved
-#        self._set_fields(new_dict)
-#        self._update_fields_with_objects()
+        self._replace_fields(new_dict)
+        self._update_fields_with_objects()
         
     def view(self, **kwds):
         """ 
