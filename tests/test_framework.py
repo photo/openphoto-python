@@ -44,5 +44,5 @@ class TestFramework(test_base.TestBase):
         # If the API version is unsupported, we should get an error
         # (it's a ValueError, since the returned 404 HTML page is not valid JSON)
         client = self.create_client_from_base(api_version=openphoto.LATEST_API_VERSION + 1)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(openphoto.OpenPhoto404Error):
             client.get("hello.json")
