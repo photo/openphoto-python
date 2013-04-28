@@ -9,7 +9,7 @@ A computer, Python 2.7 and an empty OpenPhoto instance.
 
 ---------------------------------------
 <a name="setup"></a>
-### Setting up 
+### Setting up
 
 Create a tests/tokens.py file containing the following:
 
@@ -34,7 +34,9 @@ The "-c" lets you stop the tests gracefully with \[CTRL\]-c.
 The easiest way to run a subset of the tests is with nose:
 
     cd /path/to/openphoto-python
-    nosetests -v -s tests/test_albums.py:TestAlbums.test_view
+    nosetests -v -s --nologcapture tests/test_albums.py:TestAlbums.test_view
+
+All HTTP requests and responses are recorded in the file "tests.log".
 
 ---------------------------------------
 <a name="test_details"></a>
