@@ -1,3 +1,4 @@
+import urllib
 from errors import *
 
 class OpenPhotoObject:
@@ -122,13 +123,13 @@ class Tag(OpenPhotoObject):
         Returns True if successful.
         Raises an OpenPhotoError if not.
         """
-        result = self._openphoto.post("/tag/%s/delete.json" % self.id, **kwds)["result"]
+        result = self._openphoto.post("/tag/%s/delete.json" % urllib.quote(self.id), **kwds)["result"]
         self._replace_fields({})
         return result
 
     def update(self, **kwds):
         """ Update this tag with the specified parameters """
-        new_dict = self._openphoto.post("/tag/%s/update.json" % self.id, 
+        new_dict = self._openphoto.post("/tag/%s/update.json" % urllib.quote(self.id), 
                                         **kwds)["result"]
         self._replace_fields(new_dict)
 
