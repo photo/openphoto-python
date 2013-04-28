@@ -16,14 +16,14 @@ class TestTags(test_base.TestBase):
         self.assertIn(tag_id, [t.id for t in self.client.tags.list()])
 
         # Delete the tag
-        self.client.tag.delete(tag_id)
+        self.assertTrue(self.client.tag.delete(tag_id))
         # Check that the tag is now gone
         self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 
         # Create then delete using the Tag object directly
         self.photos[0].update(tagsAdd=tag_id)
         tag = [t for t in self.client.tags.list() if t.id == tag_id][0]
-        tag.delete()
+        self.assertTrue(tag.delete())
         # Check that the tag is now gone
         self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
 

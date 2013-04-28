@@ -69,7 +69,7 @@ class TestBase(unittest.TestCase):
         self.photos = self.client.photos.list()
         if len(self.photos) != 3:
 #            print self.photos
-            print "[Regenerating Photos]"
+            print "\n[Regenerating Photos]"
             if len(self.photos) > 0:
                 self._delete_all()
             self._create_test_photos()
@@ -79,7 +79,7 @@ class TestBase(unittest.TestCase):
         if (len(self.tags) != 1 or
                 self.tags[0].id != self.TEST_TAG or
                 self.tags[0].count != 3):
-            print "[Regenerating Tags]"
+            print "\n[Regenerating Tags]"
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()
@@ -92,7 +92,7 @@ class TestBase(unittest.TestCase):
         if (len(self.albums) != 1 or
                 self.albums[0].name != self.TEST_ALBUM or
                 self.albums[0].count != "3"):
-            print "[Regenerating Albums]"
+            print "\n[Regenerating Albums]"
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()

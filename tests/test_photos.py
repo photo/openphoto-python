@@ -6,11 +6,11 @@ class TestPhotos(test_base.TestBase):
     def test_delete_upload(self):
         """ Test photo deletion and upload """
         # Delete one photo using the OpenPhoto class, passing in the id
-        self.client.photo.delete(self.photos[0].id)
+        self.assertTrue(self.client.photo.delete(self.photos[0].id))
         # Delete one photo using the OpenPhoto class, passing in the object
-        self.client.photo.delete(self.photos[1])
+        self.assertTrue(self.client.photo.delete(self.photos[1]))
         # And another using the Photo object directly
-        self.photos[2].delete()
+        self.assertTrue(self.photos[2].delete())
 
         # Check that they're gone
         self.assertEqual(self.client.photos.list(), [])
@@ -32,7 +32,7 @@ class TestPhotos(test_base.TestBase):
         self.assertIn(ret_val.pathOriginal, pathOriginals)
 
         # Delete all photos in one go
-        self.client.photos.delete(self.photos)
+        self.assertTrue(self.client.photos.delete(self.photos))
 
         # Check they're gone
         self.photos = self.client.photos.list()
@@ -147,6 +147,12 @@ class TestPhotos(test_base.TestBase):
             self.client.photo.dynamic_url(None)
 
     def test_transform(self):
-        """ If photo.transform gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
-            self.client.photo.transform(None)
+        """ Test photo rotation """
+        photo = self.photos[0]
+        self.assertEqual(photo.rotation, "0")
+        photo = self.client.photo.transform(photo, rotate=90)
+        self.assertEqual(photo.rotation, "90")
+
+        # Do the same using the Photo object directly
+        photo.transform(rotate=90)
+        self.assertEqual(photo.rotation, "180")
