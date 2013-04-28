@@ -97,8 +97,13 @@ class Photo(OpenPhotoObject):
         return value
 
     def transform(self, **kwds):
-        raise NotImplementedError()
-
+        """
+        Performs transformation specified in **kwds
+        Example: transform(rotate=90)
+        """
+        new_dict = self._openphoto.post("/photo/%s/transform.json" % self.id,
+                                        **kwds)["result"]
+        self._replace_fields(new_dict)
 
 class Tag(OpenPhotoObject):
     def delete(self, **kwds):
