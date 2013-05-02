@@ -70,7 +70,6 @@ These are the options you can pass to the shell program.
     -F params # i.e. -F 'title=my title' -F 'tags=mytag1,mytag1'
     -p # pretty print the json
     -v # verbose output
-    --encode # base 64 encode the photo
 
 Now you can run commands to the OpenPhoto API from your shell!
 

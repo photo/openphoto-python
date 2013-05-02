@@ -63,7 +63,6 @@ def main(args=sys.argv[1:]):
                       help="pretty print the json")
     parser.add_option('-v', action="store_true", dest="verbose", default=False,
                       help="verbose output")
-    parser.add_option('--encode', action="store_true", dest="encode", default=False)
 
     options, args = parser.parse_args(args)
 
