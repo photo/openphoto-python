@@ -47,10 +47,10 @@ The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenp
 ### Using from the command line
 
 When using the command line tool, you'll want to export your authentication credentials to the environment.
-The command line tool will look for the following config file in ~/.config/openphoto/config
-(the -c switch lets you specify a different config file location):
+The command line tool will look for the following config file in ~/.config/openphoto/default
+(the -c switch lets you specify a different config file):
 
-    # ~/.config/openphoto/config
+    # ~/.config/openphoto/default
     host = your.host.com
     consumerKey = your_consumer_key
     consumerSecret = your_consumer_secret
@@ -62,7 +62,8 @@ The command line tool will look for the following config file in ~/.config/openp
 These are the options you can pass to the shell program.
 
     -h # display help text
-    -c config_file # default=~/.config/openphoto/config
+    -c config_file # Either the name of a config file in ~/.config/openphoto/
+                   # or a full path to a config file
     -H hostname # default=localhost
     -e endpoint # default=/photos/list.json
     -X method # default=GET

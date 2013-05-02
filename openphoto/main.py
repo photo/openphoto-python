@@ -12,14 +12,16 @@ except ImportError:
 
 from openphoto import OpenPhoto
 
-def get_default_config_path():
+def get_config_path(config_file):
     config_path = os.getenv('XDG_CONFIG_HOME')
     if not config_path:
         config_path = os.path.join(os.getenv('HOME'), ".config")
-    return os.path.join(config_path, "openphoto", "config")
+    if not config_file:
+        config_file = "default"
+    return os.path.join(config_path, "openphoto", config_file)
 
 def read_config(config_file):
-    """ 
+    """
     Loads config data from the specified file.
     If config_file doesn't exist, returns an empty authentication config for localhost.
     """
@@ -46,10 +48,10 @@ def read_config(config_file):
 
 def main(args=sys.argv[1:]):
     parser = OptionParser()
-    parser.add_option('-H', '--host', action='store', type='string', dest='host', 
+    parser.add_option('-H', '--host', action='store', type='string', dest='host',
                       help="Hostname of the OpenPhoto install")
     parser.add_option('-c', '--config', action='store', type='string', dest='config_file',
-                      help="Path to OpenPhoto config file")
+                      help="Configuration file to use")
     parser.add_option('-X', action='store', type='choice', dest='method', choices=('GET', 'POST'),
                       help="Method to use (GET or POST)", default="GET")
     parser.add_option('-F', action='append', type='string', dest='fields',
@@ -71,11 +73,10 @@ def main(args=sys.argv[1:]):
             (key, value) = string.split(field, '=')
             params[key] = value
 
-    if not options.config_file:
-        options.config_file = get_default_config_path()
+    config_path = get_config_path(options.config_file)
+    config = read_config(config_path)
     if options.verbose:
-        print "Using config from '%s'" % options.config_file
-    config = read_config(options.config_file)
+        print "Using config from '%s'" % config_path
 
     # Override host if given on the commandline
     if options.host:
