@@ -3,6 +3,8 @@ import os
 import sys
 import string
 import urllib
+import StringIO
+import ConfigParser
 from optparse import OptionParser
 
 try:
@@ -25,24 +27,33 @@ def read_config(config_file):
     Loads config data from the specified file.
     If config_file doesn't exist, returns an empty authentication config for localhost.
     """
-    config = {'host': 'localhost',
-              'consumerKey': '', 'consumerSecret': '',
-              'token': '', 'tokenSecret':'',
-              }
-
-    if not os.path.isfile(config_file):
+    section = "DUMMY"
+    defaults = {'host': 'localhost',
+                'consumerKey': '', 'consumerSecret': '',
+                'token': '', 'tokenSecret':'',
+                }
+    # Insert an section header at the start of the config file, so ConfigParser can understand it
+    # Also prepend a [DEFAULT] section, since it's the only way to specify case-sensitive defaults
+    buf = StringIO.StringIO()
+    buf.write("[DEFAULT]\n")
+    for key in defaults:
+        buf.write("%s=%s\n" % (key, defaults[key]))
+    buf.write('[%s]\n' % section)
+    if os.path.isfile(config_file):
+        buf.write(open(config_file).read())
+    else:
         print "Config file '%s' doesn't exist - authentication won't be used" % config_file
-        return config
 
-    for line_number, line in enumerate(open(config_file)):
-        line = line.split('#')[0].strip() # Remove comments and surrounding whitespace
-        if line:
-            try:
-                var,val = line.rsplit("=",1)
-                config[var.strip().strip('"')] = val.strip().strip('"') # Remove whitespace and quotes
-            except:
-                print "WARNING: could not parse line %d: '%s'" % (line_number, line)
-    return config
+    buf.seek(0, os.SEEK_SET)
+    parser = ConfigParser.SafeConfigParser()
+    parser.optionxform = str # Case-sensitive options
+    parser.readfp(buf)
+
+    # Trim quotes
+    config = parser.items(section)
+    config = [(item[0], item[1].replace('"', '')) for item in config]
+    config = [(item[0], item[1].replace("'", "")) for item in config]
+    return dict(config)
 
 #################################################################
 
