@@ -1,21 +1,7 @@
+import os
 import unittest
 import logging
 import openphoto
-
-try:
-    import tokens
-except ImportError:
-    print ("********************************************************************\n"
-           "You need to create a 'tokens.py' file containing the following:\n\n"
-           "   host = \"<test_url>\"\n"
-           "   consumer_key = \"<test_consumer_key>\"\n"
-           "   consumer_secret = \"<test_consumer_secret>\"\n"
-           "   token = \"<test_token>\"\n"
-           "   token_secret = \"<test_token_secret>\"\n"
-           "   host = \"<hostname>\"\n\n"
-           "WARNING: Don't use a production OpenPhoto instance for this!\n"
-           "********************************************************************\n")
-    raise
 
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
@@ -36,24 +22,23 @@ class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
-        cls.client = openphoto.OpenPhoto(tokens.host,
-                             tokens.consumer_key, tokens.consumer_secret,
-                             tokens.token, tokens.token_secret)
+        config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
+        cls.client = openphoto.OpenPhoto(config_file=config_file)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
         if cls.client.tags.list() != []:
             raise ValueError("The test server (%s) contains tags. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
         if cls.client.albums.list() != []:
             raise ValueError("The test server (%s) contains albums. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
     @classmethod
     def tearDownClass(cls):
