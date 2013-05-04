@@ -12,7 +12,7 @@ Open Photo API / Python Library
 <a name="python"></a>
 ### How to use the library
 
-To use the library you need to first ``import openphoto``, then instantiate an instance of the class and start making calls.
+To use the library you need to first ``import openphoto`` then instantiate an instance of the class and start making calls.
 
 You can use the library in one of two ways:
 
@@ -46,7 +46,7 @@ The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenp
 <a name="cli"></a>
 ### Using from the command line
 
-When using the command line tool, you'll want to export your authentication credentials to the environment.
+When using the command line tool, you'll want to export your authentication credentials to the environment. 
 The command line tool will look for the following config file in ~/.config/openphoto/default
 (the -c switch lets you specify a different config file):
 
@@ -59,64 +59,59 @@ The command line tool will look for the following config file in ~/.config/openp
 
 <a href="#credentials">Click here for instructions on getting credentials</a>.
 
-These are the options you can pass to the shell program.
+These are the options you can pass to the shell program:
 
-    -h # display help text
-    -c config_file # Either the name of a config file in ~/.config/openphoto/
-                   # or a full path to a config file
-    -H hostname # default=localhost
-    -e endpoint # default=/photos/list.json
-    -X method # default=GET
-    -F params # i.e. -F 'title=my title' -F 'tags=mytag1,mytag1'
-    -p # pretty print the json
-    -v # verbose output
+    -h             # Display help text
+    -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
+    -H hostname    # Overrides config_file for unauthenticated API calls [default=localhost]
+    -e endpoint    # [default=/photos/list.json]
+    -X method      # [default=GET]
+    -F params      # e.g. -F 'title=my title' -F 'tags=mytag1,mytag2'
+    -p             # Pretty print the json
+    -v             # Verbose output
 
-Now you can run commands to the OpenPhoto API from your shell!
+You can run commands to the OpenPhoto API from your shell!
 
+    # Upload a public photo to the host specified in ~/.config/openphoto/default
+    openphoto -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
+    {
+        "code":201,
+        "message":"Photo 1eo uploaded successfully",
+        "result":{
+            "actor":"user@example.com",
+            "albums":[],
+            ...
+            ...
+        }
+    }
+    
+    # Get a thumbnail URL from current.openphoto.me (unauthenticated access)
     openphoto -H current.openphoto.me -p -e /photo/62/view.json -F 'returnSizes=20x20'
     {
-      "message" : "Photo 62",
-      "code" : 200,
-      "result" : {
-        "tags" : [
-          
-        ],
-        "id" : "62",
-        "appId" : "current.openphoto.me",
-        "pathBase" : "\/base\/201108\/1312956581-opmeqViHrD.jpg",
-        "dateUploadedMonth" : "08",
-        "dateTakenMonth" : "08",
-        "exifCameraMake" : "",
-        "dateTaken" : "1312956581",
-        "title" : "Tomorrowland Main Stage 2011",
-        "height" : "968",
-        "description" : "",
-        "creativeCommons" : "BY-NC",
-        "dateTakenYear" : "2011",
-        "dateUploadedDay" : "09",
-        "longitude" : "4",
-        "host" : "opmecurrent.s3.amazonaws.com",
-        "hash" : "0455675a8c42148238b81ed1d8db655c45ae055a",
-        "status" : "1",
-        "width" : "1296",
-        "dateTakenDay" : "09",
-        "permission" : "1",
-        "pathOriginal" : "\/original\/201108\/1312956581-opmeqViHrD.jpg",
-        "size" : "325",
-        "dateUploadedYear" : "2011",
-        "views" : "0",
-        "latitude" : "50.8333",
-        "dateUploaded" : "1312956583",
-        "exifCameraModel" : "",
-        "Name" : "62",
-        "path20x20" : "http:\/\/current.openphoto.me\/photo\/62\/create\/ceb90\/20x20.jpg"
-      }
-    }
+        "code":200,
+        "message":"Photo 62",
+        "result":{
+            "actor":"",
+            "albums":[
+                "1"
+            ],
+            ...
+            ...
+            "path20x20":"http://current.openphoto.me/photo/62/create/36c0a/20x20.jpg",
+            "pathBase":"http://awesomeness.openphoto.me/base/201203/7ae997-Boracay-Philippines-007.jpg",
+            "permission":"1",
+            "photo20x20":[
+                "http://current.openphoto.me/photo/62/create/36c0a/20x20.jpg",
+                13,
+                20
+            ],
+            ...
+            ...
+        }
+    }    
 
 <a name="credentials"></a>
 #### Getting your credentials
 
 You can get your credentals by clicking on the arrow next to your email address once you're logged into your site and then clicking on settings.
-If you don't have any credentials then you can create one for yourself by going to `/v1/oauth/flow`.
-Once completed go back to the settings page and you should see the credential you just created
-
+If you don't have any credentials then you can create one for yourself using the "Create a new app" button.
