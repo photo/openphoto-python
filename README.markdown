@@ -8,47 +8,10 @@ Open Photo API / Python Library
     python setup.py install
 
 ----------------------------------------
+<a name="credentials"></a>
+### Credentials
 
-<a name="python"></a>
-### How to use the library
-
-To use the library you need to first ``import openphoto`` then instantiate an instance of the class and start making calls.
-
-You can use the library in one of two ways:
-
- * Direct GET/POST calls to the server
- * Access via Python classes/methods
-
-<a name="get_post"></a>
-### Direct GET/POST:
-
-    from openphoto import OpenPhoto
-    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
-    resp = client.get("/photos/list.json")
-    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
-
-<a name="python_classes"></a>
-### Python classes/methods
-
-    from openphoto import OpenPhoto
-    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
-    photos = client.photos.list()
-    photos[0].update(tags=["tag1", "tag2"])
-    print photos[0].tags
-
-The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
-
-* client.photos.list() -> /photos/list.json
-* photos[0].update() -> /photo/&lt;id&gt;/update.json
-
-----------------------------------------
-
-<a name="cli"></a>
-### Using from the command line
-
-When using the command line tool, you'll want to export your authentication credentials to the environment.
-The command line tool will look for the following config file in ~/.config/openphoto/default
-(the -c switch lets you specify a different config file):
+For full access to your photos, you need to create the following config file in ``~/.config/openphoto/default``
 
     # ~/.config/openphoto/default
     host = your.host.com
@@ -57,7 +20,51 @@ The command line tool will look for the following config file in ~/.config/openp
     token = your_access_token
     tokenSecret = your_access_token_secret
 
-<a href="#credentials">Click here for instructions on getting credentials</a>.
+The ``config_file`` switch lets you specify a different config file.
+
+To get your credentials:
+ * Log into your Trovebox site
+ * Click the arrow on the top-right and select 'Settings'
+ * Click the 'Create a new app' button
+ * Click the 'View' link beside the newly created app
+
+----------------------------------------
+<a name="python"></a>
+### How to use the library
+
+You can use the library in one of two ways:
+
+ * Direct GET/POST calls to the server
+ * Access via Python classes/methods
+
+<a name="get_post"></a>
+#### Direct GET/POST:
+
+    from openphoto import OpenPhoto
+    client = OpenPhoto()
+    resp = client.get("/photos/list.json")
+    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
+
+<a name="python_classes"></a>
+#### Python classes/methods
+
+    from openphoto import OpenPhoto
+    client = OpenPhoto()
+    photos = client.photos.list()
+    photos[0].update(tags=["tag1", "tag2"])
+    print photos[0].tags
+
+The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
+
+* ``client.photos.list() -> /photos/list.json``
+* ``photos[0].update()   -> /photo/<id>/update.json``
+
+----------------------------------------
+
+<a name="cli"></a>
+### Using from the command line
+
+You can run commands to the OpenPhoto API from your shell!
 
 These are the options you can pass to the shell program:
 
@@ -70,7 +77,8 @@ These are the options you can pass to the shell program:
     -p             # Pretty print the json
     -v             # Verbose output
 
-You can run commands to the OpenPhoto API from your shell!
+<a name="cli-examples"></a>
+#### Command line examples
 
     # Upload a public photo to the host specified in ~/.config/openphoto/default
     openphoto -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
@@ -109,12 +117,3 @@ You can run commands to the OpenPhoto API from your shell!
             ...
         }
     }    
-
-<a name="credentials"></a>
-#### Getting your credentials
-
-To get your credentials:
- * Log into your Trovebox site
- * Click the arrow on the top-right and select 'Settings'.
- * Click the 'Create a new app' button.
- * Click the 'View' link beside the newly created app.
