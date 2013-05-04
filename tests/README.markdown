@@ -5,22 +5,26 @@ Tests for the Open Photo API / Python Library
 ----------------------------------------
 <a name="requirements"></a>
 ### Requirements
-A computer, Python 2.7 and an empty OpenPhoto instance.
+A computer, Python 2.7 and an empty OpenPhoto test host.
 
 ---------------------------------------
 <a name="setup"></a>
 ### Setting up 
 
-Create a tests/tokens.py file containing the following:
+Create a ``~/.config/openphoto/test`` config file containing the following:
 
-    # tests/tokens.py
-    consumer_key = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    consumer_secret = "xxxxxxxxxx"
-    token = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-    token_secret = "xxxxxxxxxx"
-    host = "your_hostname"
+    # ~/.config/openphoto/test
+    host = your.host.com
+    consumerKey = your_consumer_key
+    consumerSecret = your_consumer_secret
+    token = your_access_token
+    tokenSecret = your_access_token_secret
 
 Make sure this is an empty test server, **not a production OpenPhoto server!!!**
+
+You can specify an alternate test config file with the following environment variable:
+
+    export OPENPHOTO_TEST_CONFIG=test2
 
 ---------------------------------------
 <a name="running"></a>
