@@ -59,10 +59,10 @@ def read_config(config_file):
 
 def main(args=sys.argv[1:]):
     parser = OptionParser()
-    parser.add_option('-H', '--host', action='store', type='string', dest='host',
-                      help="Hostname of the OpenPhoto install")
     parser.add_option('-c', '--config', action='store', type='string', dest='config_file',
                       help="Configuration file to use")
+    parser.add_option('-H', '--host', action='store', type='string', dest='host',
+                      help="Hostname of the OpenPhoto server (overrides config_file)")
     parser.add_option('-X', action='store', type='choice', dest='method', choices=('GET', 'POST'),
                       help="Method to use (GET or POST)", default="GET")
     parser.add_option('-F', action='append', type='string', dest='fields',
@@ -71,9 +71,9 @@ def main(args=sys.argv[1:]):
                       default='/photos/list.json',
                       help="Endpoint to call")
     parser.add_option('-p', action="store_true", dest="pretty", default=False,
-                      help="pretty print the json")
+                      help="Pretty print the json")
     parser.add_option('-v', action="store_true", dest="verbose", default=False,
-                      help="verbose output")
+                      help="Verbose output")
 
     options, args = parser.parse_args(args)
 
@@ -83,14 +83,15 @@ def main(args=sys.argv[1:]):
             (key, value) = string.split(field, '=')
             params[key] = value
 
-    config_path = get_config_path(options.config_file)
-    config = read_config(config_path)
-    if options.verbose:
-        print "Using config from '%s'" % config_path
-
-    # Override host if given on the commandline
+    # Host option overrides config file settings
     if options.host:
-        config['host'] = options.host
+        config = {'host': options.host, 'consumerKey': '', 'consumerSecret': '',
+                  'token': '', 'tokenSecret': ''}
+    else:
+        config_path = get_config_path(options.config_file)
+        config = read_config(config_path)
+        if options.verbose:
+            print "Using config from '%s'" % config_path
 
     client = OpenPhoto(config['host'], config['consumerKey'], config['consumerSecret'],
                        config['token'], config['tokenSecret'])
