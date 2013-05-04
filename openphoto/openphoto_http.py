@@ -1,9 +1,12 @@
+import os
 import oauth2 as oauth
 import urlparse
 import urllib
 import urllib2
 import httplib2
 import logging
+import StringIO
+import ConfigParser
 try:
     import json
 except ImportError:
@@ -17,16 +20,36 @@ DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
 
 class OpenPhotoHttp:
-    """ Base class to handle HTTP requests to an OpenPhoto server """
-    def __init__(self, host, consumer_key='', consumer_secret='',
+    """
+    Base class to handle HTTP requests to an OpenPhoto server.
+    If no parameters are specified, config is loaded from the default
+        location (~/.config/openphoto/default).
+    The config_file parameter is used to specify an alternate config file.
+    If the host parameter is specified, no config file is loaded.
+    """
+    def __init__(self, config_file=None, host=None,
+                 consumer_key='', consumer_secret='',
                  token='', token_secret=''):
-        self._host = host
-        self._consumer_key = consumer_key
-        self._consumer_secret = consumer_secret
-        self._token = token
-        self._token_secret = token_secret
 
         self._logger = logging.getLogger("openphoto")
+
+        if host is None:
+            self.config_path = self._get_config_path(config_file)
+            config = self._read_config(self.config_path)
+            self._host = config['host']
+            self._consumer_key = config['consumerKey']
+            self._consumer_secret = config['consumerSecret']
+            self._token = config['token']
+            self._token_secret = config['tokenSecret']
+        else:
+            self._host = host
+            self._consumer_key = consumer_key
+            self._consumer_secret = consumer_secret
+            self._token = token
+            self._token_secret = token_secret
+
+        if host is not None and config_file is not None:
+            raise ValueError("Cannot specify both host and config_file")
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -36,9 +59,9 @@ class OpenPhotoHttp:
     def get(self, endpoint, process_response=True, **params):
         """
         Performs an HTTP GET from the specified endpoint (API path),
-        passing parameters if given.
-        Returns the decoded JSON dictionary, and raises exceptions if an 
-        error code is received.
+            passing parameters if given.
+        Returns the decoded JSON dictionary, and raises exceptions if an
+            error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
@@ -71,9 +94,9 @@ class OpenPhotoHttp:
     def post(self, endpoint, process_response=True, files = {}, **params):
         """
         Performs an HTTP POST to the specified endpoint (API path),
-        passing parameters if given.
-        Returns the decoded JSON dictionary, and raises exceptions if an 
-        error code is received.
+            passing parameters if given.
+        Returns the decoded JSON dictionary, and raises exceptions if an
+            error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
@@ -186,3 +209,42 @@ class OpenPhotoHttp:
             return []
         else:
             return result
+
+    @staticmethod
+    def _get_config_path(config_file):
+        config_path = os.getenv('XDG_CONFIG_HOME')
+        if not config_path:
+            config_path = os.path.join(os.getenv('HOME'), ".config")
+        if not config_file:
+            config_file = "default"
+        return os.path.join(config_path, "openphoto", config_file)
+
+    def _read_config(self, config_file):
+        """
+        Loads config data from the specified file.
+        If config_file doesn't exist, returns an empty authentication config for localhost.
+        """
+        section = "DUMMY"
+        defaults = {'host': 'localhost',
+                    'consumerKey': '', 'consumerSecret': '',
+                    'token': '', 'tokenSecret':'',
+                    }
+        # Insert an section header at the start of the config file, so ConfigParser can understand it
+        # Also prepend a [DEFAULT] section, since it's the only way to specify case-sensitive defaults
+        buf = StringIO.StringIO()
+        buf.write("[DEFAULT]\n")
+        for key in defaults:
+            buf.write("%s=%s\n" % (key, defaults[key]))
+        buf.write('[%s]\n' % section)
+        buf.write(open(config_file).read())
+
+        buf.seek(0, os.SEEK_SET)
+        parser = ConfigParser.SafeConfigParser()
+        parser.optionxform = str # Case-sensitive options
+        parser.readfp(buf)
+
+        # Trim quotes
+        config = parser.items(section)
+        config = [(item[0], item[1].replace('"', '')) for item in config]
+        config = [(item[0], item[1].replace("'", "")) for item in config]
+        return dict(config)

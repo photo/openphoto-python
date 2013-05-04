@@ -46,7 +46,7 @@ The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenp
 <a name="cli"></a>
 ### Using from the command line
 
-When using the command line tool, you'll want to export your authentication credentials to the environment. 
+When using the command line tool, you'll want to export your authentication credentials to the environment.
 The command line tool will look for the following config file in ~/.config/openphoto/default
 (the -c switch lets you specify a different config file):
 
@@ -63,7 +63,7 @@ These are the options you can pass to the shell program:
 
     -h             # Display help text
     -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
-    -H hostname    # Overrides config_file for unauthenticated API calls [default=localhost]
+    -H hostname    # Overrides config_file for unauthenticated API calls
     -e endpoint    # [default=/photos/list.json]
     -X method      # [default=GET]
     -F params      # e.g. -F 'title=my title' -F 'tags=mytag1,mytag2'
@@ -113,5 +113,8 @@ You can run commands to the OpenPhoto API from your shell!
 <a name="credentials"></a>
 #### Getting your credentials
 
-You can get your credentals by clicking on the arrow next to your email address once you're logged into your site and then clicking on settings.
-If you don't have any credentials then you can create one for yourself using the "Create a new app" button.
+To get your credentials:
+ * Log into your Trovebox site
+ * Click the arrow on the top-right and select 'Settings'.
+ * Click the 'Create a new app' button.
+ * Click the 'View' link beside the newly created app.

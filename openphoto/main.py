@@ -3,8 +3,6 @@ import os
 import sys
 import string
 import urllib
-import StringIO
-import ConfigParser
 from optparse import OptionParser
 
 try:
@@ -13,47 +11,6 @@ except ImportError:
     import simplejson as json
 
 from openphoto import OpenPhoto
-
-def get_config_path(config_file):
-    config_path = os.getenv('XDG_CONFIG_HOME')
-    if not config_path:
-        config_path = os.path.join(os.getenv('HOME'), ".config")
-    if not config_file:
-        config_file = "default"
-    return os.path.join(config_path, "openphoto", config_file)
-
-def read_config(config_file):
-    """
-    Loads config data from the specified file.
-    If config_file doesn't exist, returns an empty authentication config for localhost.
-    """
-    section = "DUMMY"
-    defaults = {'host': 'localhost',
-                'consumerKey': '', 'consumerSecret': '',
-                'token': '', 'tokenSecret':'',
-                }
-    # Insert an section header at the start of the config file, so ConfigParser can understand it
-    # Also prepend a [DEFAULT] section, since it's the only way to specify case-sensitive defaults
-    buf = StringIO.StringIO()
-    buf.write("[DEFAULT]\n")
-    for key in defaults:
-        buf.write("%s=%s\n" % (key, defaults[key]))
-    buf.write('[%s]\n' % section)
-    if os.path.isfile(config_file):
-        buf.write(open(config_file).read())
-    else:
-        print "Config file '%s' doesn't exist - authentication won't be used" % config_file
-
-    buf.seek(0, os.SEEK_SET)
-    parser = ConfigParser.SafeConfigParser()
-    parser.optionxform = str # Case-sensitive options
-    parser.readfp(buf)
-
-    # Trim quotes
-    config = parser.items(section)
-    config = [(item[0], item[1].replace('"', '')) for item in config]
-    config = [(item[0], item[1].replace("'", "")) for item in config]
-    return dict(config)
 
 #################################################################
 
@@ -85,16 +42,28 @@ def main(args=sys.argv[1:]):
 
     # Host option overrides config file settings
     if options.host:
-        config = {'host': options.host, 'consumerKey': '', 'consumerSecret': '',
-                  'token': '', 'tokenSecret': ''}
+        client = OpenPhoto(host=options.host)
     else:
-        config_path = get_config_path(options.config_file)
-        config = read_config(config_path)
-        if options.verbose:
-            print "Using config from '%s'" % config_path
-
-    client = OpenPhoto(config['host'], config['consumerKey'], config['consumerSecret'],
-                       config['token'], config['tokenSecret'])
+        try:
+            client = OpenPhoto(config_file=options.config_file)
+        except IOError as error:
+            print error
+            print
+            print "You must create a configuration file with the following contents:"
+            print "    host = your.host.com"
+            print "    consumerKey = your_consumer_key"
+            print "    consumerSecret = your_consumer_secret"
+            print "    token = your_access_token"
+            print "    tokenSecret = your_access_token_secret"
+            print
+            print "To get your credentials:"
+            print " * Log into your Trovebox site"
+            print " * Click the arrow on the top-right and select 'Settings'."
+            print " * Click the 'Create a new app' button."
+            print " * Click the 'View' link beside the newly created app."
+            print
+            print error
+            sys.exit(1)
 
     if options.method == "GET":
         result = client.get(options.endpoint, process_response=False, **params)
