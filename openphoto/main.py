@@ -3,6 +3,8 @@ import os
 import sys
 import string
 import urllib
+import StringIO
+import ConfigParser
 from optparse import OptionParser
 
 try:
@@ -12,15 +14,55 @@ except ImportError:
 
 from openphoto import OpenPhoto
 
-def main(args=sys.argv[1:]):
-    consumer_key = os.getenv('consumerKey')
-    consumer_secret = os.getenv('consumerSecret')
-    token = os.getenv('token')
-    token_secret = os.getenv('tokenSecret')
+def get_config_path(config_file):
+    config_path = os.getenv('XDG_CONFIG_HOME')
+    if not config_path:
+        config_path = os.path.join(os.getenv('HOME'), ".config")
+    if not config_file:
+        config_file = "default"
+    return os.path.join(config_path, "openphoto", config_file)
 
+def read_config(config_file):
+    """
+    Loads config data from the specified file.
+    If config_file doesn't exist, returns an empty authentication config for localhost.
+    """
+    section = "DUMMY"
+    defaults = {'host': 'localhost',
+                'consumerKey': '', 'consumerSecret': '',
+                'token': '', 'tokenSecret':'',
+                }
+    # Insert an section header at the start of the config file, so ConfigParser can understand it
+    # Also prepend a [DEFAULT] section, since it's the only way to specify case-sensitive defaults
+    buf = StringIO.StringIO()
+    buf.write("[DEFAULT]\n")
+    for key in defaults:
+        buf.write("%s=%s\n" % (key, defaults[key]))
+    buf.write('[%s]\n' % section)
+    if os.path.isfile(config_file):
+        buf.write(open(config_file).read())
+    else:
+        print "Config file '%s' doesn't exist - authentication won't be used" % config_file
+
+    buf.seek(0, os.SEEK_SET)
+    parser = ConfigParser.SafeConfigParser()
+    parser.optionxform = str # Case-sensitive options
+    parser.readfp(buf)
+
+    # Trim quotes
+    config = parser.items(section)
+    config = [(item[0], item[1].replace('"', '')) for item in config]
+    config = [(item[0], item[1].replace("'", "")) for item in config]
+    return dict(config)
+
+#################################################################
+
+def main(args=sys.argv[1:]):
     parser = OptionParser()
-    parser.add_option('-H', '--host', action='store', type='string', dest='host', 
-                      help="Hostname of the OpenPhoto install", default="localhost")
+    parser.add_option('-c', '--config', action='store', type='string', dest='config_file',
+                      help="Configuration file to use")
+    parser.add_option('-H', '--host', action='store', type='string', dest='host',
+                      help="Hostname of the OpenPhoto server (overrides config_file)")
     parser.add_option('-X', action='store', type='choice', dest='method', choices=('GET', 'POST'),
                       help="Method to use (GET or POST)", default="GET")
     parser.add_option('-F', action='append', type='string', dest='fields',
@@ -29,10 +71,9 @@ def main(args=sys.argv[1:]):
                       default='/photos/list.json',
                       help="Endpoint to call")
     parser.add_option('-p', action="store_true", dest="pretty", default=False,
-                      help="pretty print the json")
+                      help="Pretty print the json")
     parser.add_option('-v', action="store_true", dest="verbose", default=False,
-                      help="verbose output")
-    parser.add_option('--encode', action="store_true", dest="encode", default=False)
+                      help="Verbose output")
 
     options, args = parser.parse_args(args)
 
@@ -42,7 +83,18 @@ def main(args=sys.argv[1:]):
             (key, value) = string.split(field, '=')
             params[key] = value
 
-    client = OpenPhoto(options.host, consumer_key, consumer_secret, token, token_secret)
+    # Host option overrides config file settings
+    if options.host:
+        config = {'host': options.host, 'consumerKey': '', 'consumerSecret': '',
+                  'token': '', 'tokenSecret': ''}
+    else:
+        config_path = get_config_path(options.config_file)
+        config = read_config(config_path)
+        if options.verbose:
+            print "Using config from '%s'" % config_path
+
+    client = OpenPhoto(config['host'], config['consumerKey'], config['consumerSecret'],
+                       config['token'], config['tokenSecret'])
 
     if options.method == "GET":
         result = client.get(options.endpoint, process_response=False, **params)
@@ -51,7 +103,7 @@ def main(args=sys.argv[1:]):
         result = client.post(options.endpoint, process_response=False, files=files, **params)
 
     if options.verbose:
-        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, options.host, options.endpoint)
+        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, config['host'], options.endpoint)
         if len( params ) > 0:
             print "Fields:"
             for kv in params.iteritems():
