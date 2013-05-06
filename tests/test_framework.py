@@ -27,7 +27,7 @@ class TestFramework(test_base.TestBase):
 
     def test_specified_api_version(self):
         # For all API versions >0, we get a generic hello world message
-        for api_version in range(1, openphoto.LATEST_API_VERSION + 1):
+        for api_version in range(1, test_base.get_test_server_api() + 1):
             client = self.create_client_from_base(api_version=api_version)
             result = client.get("hello.json")
             self.assertEqual(result['message'], "Hello, world!")

@@ -61,3 +61,15 @@ Ensure there are:
 **TearDownClass:**
 
 Remove all photos, tags and albums
+
+### Testing old servers
+
+By default, all currently supported API versions will be tested.
+It's useful to test servers that only support older API versions.
+To restrict the testing to a specific maximum API version, use the
+``OPENPHOTO_TEST_SERVER_API`` environment variable.
+
+For example, to restrict testing to APIv1 and APIv2:
+
+    export OPENPHOTO_TEST_SERVER_API=2
+
