@@ -245,6 +245,6 @@ class OpenPhotoHttp:
 
         # Trim quotes
         config = parser.items(section)
-        config = [(item[0], item[1].replace('"', '')) for item in config]
-        config = [(item[0], item[1].replace("'", "")) for item in config]
+        config = [(item[0].replace('"', ''), item[1].replace('"', '')) for item in config]
+        config = [(item[0].replace("'", ""), item[1].replace("'", "")) for item in config]
         return dict(config)
