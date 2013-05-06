@@ -8,7 +8,11 @@ class TestTags(test_base.TestBase):
     testcase_name = "tag API"
 
     def test_create_delete(self, tag_id="create_tag"):
-        """ Create a tag then delete it """
+        """
+        Create a tag then delete it.
+        This test is a little contrived, since the tag create/delete
+        endpoints are only intended for internal use.
+        """
         # Create a tag
         self.assertTrue(self.client.tag.create(tag_id))
         # Check that the tag doesn't exist (It has no photos, so it's invisible)
@@ -23,13 +27,21 @@ class TestTags(test_base.TestBase):
         self.assertTrue(self.client.tag.delete(tag_id))
         # Check that the tag is now gone
         self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
+        # Also remove the tag from the photo
+        self.photos[0].update(tagsRemove=tag_id)
 
-        # Create then delete using the Tag object directly
+        # Create the tag again
         self.photos[0].update(tagsAdd=tag_id)
+        self.assertIn(tag_id, [t.id for t in self.client.tags.list()])
+
+        # Delete using the tag object directly
         tag = [t for t in self.client.tags.list() if t.id == tag_id][0]
         self.assertTrue(tag.delete())
+
         # Check that the tag is now gone
         self.assertNotIn(tag_id, [t.id for t in self.client.tags.list()])
+        # Also remove the tag from the photo
+        self.photos[0].update(tagsRemove=tag_id)
 
     # TODO: Un-skip and update this tests once there are tag fields that can be updated.
     # The owner field cannot be updated.
