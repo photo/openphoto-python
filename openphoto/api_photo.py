@@ -14,25 +14,38 @@ class ApiPhotos:
         return [Photo(self._client, photo) for photo in photos]
 
     def update(self, photos, **kwds):
-        """ Updates a list of photos """
+        """
+        Updates a list of photos.
+        Returns True if successful.
+        Raises OpenPhotoError if not.
+        """
         if not self._client.post("/photos/update.json", ids=photos, **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
+        return True
 
     def delete(self, photos, **kwds):
-        """ Deletes a list of photos """
+        """
+        Deletes a list of photos.
+        Returns True if successful.
+        Raises OpenPhotoError if not.
+        """
         if not self._client.post("/photos/delete.json", ids=photos, **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
-
+        return True
 
 class ApiPhoto:
     def __init__(self, client):
         self._client = client
 
     def delete(self, photo, **kwds):
-        """ Delete a photo """
+        """
+        Delete a photo.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
-        photo.delete(**kwds)
+        return photo.delete(**kwds)
 
     def edit(self, photo, **kwds):
         """ Returns an HTML form to edit a photo """
@@ -91,4 +104,11 @@ class ApiPhoto:
         return photo.next_previous(**kwds)
 
     def transform(self, photo, **kwds):
-        raise NotImplementedError()
+        """
+        Performs transformation specified in **kwds 
+        Example: transform(photo, rotate=90)
+        """
+        if not isinstance(photo, Photo):
+            photo = Photo(self._client, {"id": photo})
+        photo.transform(**kwds)
+        return photo

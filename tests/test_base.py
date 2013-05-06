@@ -8,12 +8,14 @@ class TestBase(unittest.TestCase):
     TEST_TAG = "test_tag"
     TEST_ALBUM = "test_album"
     MAXIMUM_TEST_PHOTOS = 4 # Never have more the 4 photos on the test server
+    testcase_name = "(unknown testcase)"
+    api_version = None
+    config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
 
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
         self.photos = []
 
-        LOG_FILENAME = "tests.log"
         logging.basicConfig(filename="tests.log",
                             filemode="w",
                             format="%(message)s",
@@ -22,8 +24,13 @@ class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
-        config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
-        cls.client = openphoto.OpenPhoto(config_file=config_file)
+        if cls.api_version is None:
+            print "\nTesting Latest %s" % cls.testcase_name
+        else:
+            print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
+
+        cls.client = openphoto.OpenPhoto(config_file=cls.config_file,
+                                         api_version=cls.api_version)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
@@ -63,7 +70,7 @@ class TestBase(unittest.TestCase):
         self.tags = self.client.tags.list()
         if (len(self.tags) != 1 or
                 self.tags[0].id != self.TEST_TAG or
-                self.tags[0].count != 3):
+                str(self.tags[0].count) != "3"):
             print "[Regenerating Tags]"
             self._delete_all()
             self._create_test_photos()

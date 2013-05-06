@@ -59,6 +59,17 @@ The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenp
 * ``client.photos.list() -> /photos/list.json``
 * ``photos[0].update()   -> /photo/<id>/update.json``
 
+<a name="api_versioning"></a>
+### API Versioning
+
+It may be useful to lock your application to a particular version of the OpenPhoto API.
+This ensures that future API updates won't cause unexpected breakages.
+
+To do this, add the optional ```api_version``` parameter when creating the client object:
+
+    from openphoto import OpenPhoto
+    client = OpenPhoto(api_version=2)
+
 ----------------------------------------
 
 <a name="cli"></a>

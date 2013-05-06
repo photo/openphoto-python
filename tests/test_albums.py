@@ -3,6 +3,7 @@ import openphoto
 import test_base
 
 class TestAlbums(test_base.TestBase):
+    testcase_name = "album API"
 
     def test_create_delete(self):
         """ Create an album then delete it """
@@ -15,13 +16,13 @@ class TestAlbums(test_base.TestBase):
         self.assertIn(album_name, [a.name for a in self.client.albums.list()])
 
         # Delete the album
-        self.client.album.delete(album.id)
+        self.assertTrue(self.client.album.delete(album.id))
         # Check that the album is now gone
         self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 
         # Create it again, and delete it using the Album object
         album = self.client.album.create(album_name)
-        album.delete()
+        self.assertTrue(album.delete())
         # Check that the album is now gone
         self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
 

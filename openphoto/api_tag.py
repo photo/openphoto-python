@@ -15,15 +15,18 @@ class ApiTag:
         self._client = client
 
     def create(self, tag, **kwds):
-        """ Create a new tag and return it """
-        result = self._client.post("/tag/create.json", tag=tag, **kwds)["result"]
-        return Tag(self._client, result)
+        """ Create a new tag. The API returns true if the tag was sucessfully created """
+        return self._client.post("/tag/create.json", tag=tag, **kwds)["result"]
 
     def delete(self, tag, **kwds):
-        """ Delete a tag """
+        """
+        Delete a tag.
+        Returns True if successful.
+        Raises an OpenPhotoError if not.
+        """
         if not isinstance(tag, Tag):
             tag = Tag(self._client, {"id": tag})
-        tag.delete(**kwds)
+        return tag.delete(**kwds)
 
     def update(self, tag, **kwds):
         """ Update a tag """

@@ -2,7 +2,6 @@ import os
 import oauth2 as oauth
 import urlparse
 import urllib
-import urllib2
 import httplib2
 import logging
 import StringIO
@@ -25,11 +24,16 @@ class OpenPhotoHttp:
     If no parameters are specified, config is loaded from the default
         location (~/.config/openphoto/default).
     The config_file parameter is used to specify an alternate config file.
-    If the host parameter is specified, no config file is loaded.
+    If the host parameter is specified, no config file is loaded and
+        OAuth tokens (consumer*, token*) can optionally be specified.
+    All requests will include the api_version path, if specified.
+    This should be used to ensure that your application will continue to work
+        even if the OpenPhoto API is updated to a new revision.
     """
     def __init__(self, config_file=None, host=None,
                  consumer_key='', consumer_secret='',
-                 token='', token_secret=''):
+                 token='', token_secret='', api_version=None):
+        self._api_version = api_version
 
         self._logger = logging.getLogger("openphoto")
 
@@ -60,11 +64,18 @@ class OpenPhotoHttp:
         """
         Performs an HTTP GET from the specified endpoint (API path),
             passing parameters if given.
+        The api_version is prepended to the endpoint,
+            if it was specified when the OpenPhoto object was created.
+
         Returns the decoded JSON dictionary, and raises exceptions if an
             error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self._api_version is not None:
+            endpoint = "/v%d%s" % (self._api_version, endpoint)
         url = urlparse.urlunparse(('http', self._host, endpoint, '',
                                    urllib.urlencode(params), ''))
         if self._consumer_key:
@@ -74,7 +85,7 @@ class OpenPhotoHttp:
         else:
             client = httplib2.Http()
 
-        _, content = client.request(url, "GET")
+        response, content = client.request(url, "GET")
 
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
@@ -83,11 +94,10 @@ class OpenPhotoHttp:
 
         self.last_url = url
         self.last_params = params
-        self.last_response = content
+        self.last_response = (response, content)
 
         if process_response:
-            return self._process_response(content)
-            return response
+            return self._process_response(response, content)
         else:
             return content
 
@@ -95,13 +105,20 @@ class OpenPhotoHttp:
         """
         Performs an HTTP POST to the specified endpoint (API path),
             passing parameters if given.
+        The api_version is prepended to the endpoint,
+            if it was specified when the OpenPhoto object was created.
+
         Returns the decoded JSON dictionary, and raises exceptions if an
             error code is received.
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self._api_version is not None:
+            endpoint = "/v%d%s" % (self._api_version, endpoint)
         url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
-        
+
         if not self._consumer_key:
             raise OpenPhotoError("Cannot issue POST without OAuth tokens")
 
@@ -111,28 +128,28 @@ class OpenPhotoHttp:
 
         if files:
             # Parameters must be signed and encoded into the multipart body
-            params = self._sign_params(client, url, params)
-            headers, body = encode_multipart_formdata(params, files)
-            request = urllib2.Request(url, body, headers)
-            content = urllib2.urlopen(request).read()
+            signed_params = self._sign_params(client, url, params)
+            headers, body = encode_multipart_formdata(signed_params, files)
         else:
             body = urllib.urlencode(params)
-            _, content = client.request(url, "POST", body)
+            headers = None
 
-        # TODO: Don't log file data in multipart forms
+        response, content = client.request(url, "POST", body, headers)
+
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
-        if body:
-            self._logger.info(body)
+        self._logger.info("params: %s" % repr(params))
+        if files:
+            self._logger.info("files:  %s" % repr(files))
         self._logger.info("---")
         self._logger.info(content)
 
         self.last_url = url
         self.last_params = params
-        self.last_response = content
+        self.last_response = (response, content)
 
         if process_response:
-            return self._process_response(content)
+            return self._process_response(response, content)
         else:
             return content
 
@@ -179,26 +196,32 @@ class OpenPhotoHttp:
         return processed_params
 
     @staticmethod
-    def _process_response(content):
+    def _process_response(response, content):
         """ 
         Decodes the JSON response, returning a dict.
         Raises an exception if an invalid response code is received.
         """
-        response = json.loads(content)
+        try:
+            json_response = json.loads(content)
+            code = json_response["code"]
+            message = json_response["message"]
+        except ValueError, KeyError:
+            # Response wasn't OpenPhoto JSON - check the HTTP status code
+            if 200 <= response.status < 300:
+                # Status code was valid, so just reraise the exception
+                raise
+            elif response.status == 404:
+                raise OpenPhoto404Error("HTTP Error %d: %s" % (response.status, response.reason))
+            else:
+                raise OpenPhotoError("HTTP Error %d: %s" % (response.status, response.reason))
 
-        if response["code"] >= 200 and response["code"] < 300:
-            # Valid response code
-            return response
-
-        error_message = "Code %d: %s" % (response["code"],
-                                         response["message"])
-
-        # Special case for a duplicate photo error
-        if (response["code"] == DUPLICATE_RESPONSE["code"] and 
-               DUPLICATE_RESPONSE["message"] in response["message"]):
-            raise OpenPhotoDuplicateError(error_message)
-        
-        raise OpenPhotoError(error_message)
+        if 200 <= code < 300:
+            return json_response
+        elif (code == DUPLICATE_RESPONSE["code"] and
+               DUPLICATE_RESPONSE["message"] in message):
+            raise OpenPhotoDuplicateError("Code %d: %s" % (code, message))
+        else:
+            raise OpenPhotoError("Code %d: %s" % (code, message))
 
     @staticmethod
     def _result_to_list(result):
