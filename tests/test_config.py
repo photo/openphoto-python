@@ -33,6 +33,7 @@ class TestConfig(unittest.TestCase):
         f.write("tokenSecret = '%s_token_secret'\n" % config_file)
 
     def test_default_config(self):
+        """ Ensure the default config is loaded """
         self.create_config("default", "Test Default Host")
         client = openphoto.OpenPhoto()
         self.assertEqual(client._host, "Test Default Host")
@@ -42,6 +43,7 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(client._token_secret, "default_token_secret")
 
     def test_custom_config(self):
+        """ Ensure a custom config can be loaded """
         self.create_config("default", "Test Default Host")
         self.create_config("custom", "Test Custom Host")
         client = openphoto.OpenPhoto(config_file="custom")
@@ -51,7 +53,19 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(client._token, "custom_token")
         self.assertEqual(client._token_secret, "custom_token_secret")
 
+    def test_full_config_path(self):
+        """ Ensure a full custom config path can be loaded """
+        self.create_config("path", "Test Path Host")
+        full_path = os.path.abspath(CONFIG_PATH)
+        client = openphoto.OpenPhoto(config_file=os.path.join(full_path, "path"))
+        self.assertEqual(client._host, "Test Path Host")
+        self.assertEqual(client._consumer_key, "path_consumer_key")
+        self.assertEqual(client._consumer_secret, "path_consumer_secret")
+        self.assertEqual(client._token, "path_token")
+        self.assertEqual(client._token_secret, "path_token_secret")
+
     def test_host_override(self):
+        """ Ensure that specifying a host overrides the default config """
         self.create_config("default", "Test Default Host")
         client = openphoto.OpenPhoto(host="host_override")
         self.assertEqual(client._host, "host_override")
@@ -60,14 +74,16 @@ class TestConfig(unittest.TestCase):
         self.assertEqual(client._token, "")
         self.assertEqual(client._token_secret, "")
 
-    def test_missing_config_files(self):
+    def test_missing_config_files_raise_exceptions(self):
+        """ Ensure that missing config files raise exceptions """
         with self.assertRaises(IOError):
             openphoto.OpenPhoto()
         with self.assertRaises(IOError):
             openphoto.OpenPhoto(config_file="custom")
 
     def test_host_and_config_file_raises_exception(self):
-        self.create_config("custom", "Test Custon Host")
+        """ It's not valid to specify both a host and a config_file """
+        self.create_config("custom", "Test Custom Host")
         with self.assertRaises(ValueError):
             openphoto.OpenPhoto(config_file="custom", host="host_override")
 
