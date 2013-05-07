@@ -15,10 +15,11 @@ from openphoto import OpenPhoto
 #################################################################
 
 def main(args=sys.argv[1:]):
-    parser = OptionParser()
+    usage = "%prog --help"
+    parser = OptionParser(usage, add_help_option=False)
     parser.add_option('-c', '--config', action='store', type='string', dest='config_file',
                       help="Configuration file to use")
-    parser.add_option('-H', '--host', action='store', type='string', dest='host',
+    parser.add_option('-h', '-H', '--host', action='store', type='string', dest='host',
                       help="Hostname of the OpenPhoto server (overrides config_file)")
     parser.add_option('-X', action='store', type='choice', dest='method', choices=('GET', 'POST'),
                       help="Method to use (GET or POST)", default="GET")
@@ -31,8 +32,16 @@ def main(args=sys.argv[1:]):
                       help="Pretty print the json")
     parser.add_option('-v', action="store_true", dest="verbose", default=False,
                       help="Verbose output")
+    parser.add_option('--help', action="store_true", help='show this help message')
 
     options, args = parser.parse_args(args)
+
+    if options.help:
+        parser.print_help()
+        return
+
+    if args:
+        parser.error("Unknown argument: %s" % args)
 
     params = {}
     if options.fields:
