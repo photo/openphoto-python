@@ -1,6 +1,9 @@
 import sys
 import os
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import logging
 import openphoto
 
