@@ -8,11 +8,29 @@ Open Photo API / Python Library
     python setup.py install
 
 ----------------------------------------
+<a name="credentials"></a>
+### Credentials
 
+For full access to your photos, you need to create the following config file in ``~/.config/openphoto/default``
+
+    # ~/.config/openphoto/default
+    host = your.host.com
+    consumerKey = your_consumer_key
+    consumerSecret = your_consumer_secret
+    token = your_access_token
+    tokenSecret = your_access_token_secret
+
+The ``config_file`` switch lets you specify a different config file.
+
+To get your credentials:
+ * Log into your Trovebox site
+ * Click the arrow on the top-right and select 'Settings'
+ * Click the 'Create a new app' button
+ * Click the 'View' link beside the newly created app
+
+----------------------------------------
 <a name="python"></a>
 ### How to use the library
-
-To use the library you need to first ``import openphoto`` then instantiate an instance of the class and start making calls.
 
 You can use the library in one of two ways:
 
@@ -20,26 +38,26 @@ You can use the library in one of two ways:
  * Access via Python classes/methods
 
 <a name="get_post"></a>
-### Direct GET/POST:
+#### Direct GET/POST:
 
     from openphoto import OpenPhoto
-    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
+    client = OpenPhoto()
     resp = client.get("/photos/list.json")
     resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
 
 <a name="python_classes"></a>
-### Python classes/methods
+#### Python classes/methods
 
     from openphoto import OpenPhoto
-    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret)
+    client = OpenPhoto()
     photos = client.photos.list()
     photos[0].update(tags=["tag1", "tag2"])
     print photos[0].tags
 
 The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
 
-* client.photos.list() -> /photos/list.json
-* photos[0].update() -> /photo/&lt;id&gt;/update.json
+* ``client.photos.list() -> /photos/list.json``
+* ``photos[0].update()   -> /photo/<id>/update.json``
 
 <a name="api_versioning"></a>
 ### API Versioning
@@ -50,38 +68,28 @@ This ensures that future API updates won't cause unexpected breakages.
 To do this, add the optional ```api_version``` parameter when creating the client object:
 
     from openphoto import OpenPhoto
-    client = OpenPhoto(host, consumerKey, consumerSecret, token, tokenSecret, api_version=2)
+    client = OpenPhoto(api_version=2)
 
 ----------------------------------------
 
 <a name="cli"></a>
 ### Using from the command line
 
-When using the command line tool, you'll want to export your authentication credentials to the environment. 
-The command line tool will look for the following config file in ~/.config/openphoto/default
-(the -c switch lets you specify a different config file):
-
-    # ~/.config/openphoto/default
-    host = your.host.com
-    consumerKey = your_consumer_key
-    consumerSecret = your_consumer_secret
-    token = your_access_token
-    tokenSecret = your_access_token_secret
-
-<a href="#credentials">Click here for instructions on getting credentials</a>.
+You can run commands to the OpenPhoto API from your shell!
 
 These are the options you can pass to the shell program:
 
     -h             # Display help text
     -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
-    -H hostname    # Overrides config_file for unauthenticated API calls [default=localhost]
+    -H hostname    # Overrides config_file for unauthenticated API calls
     -e endpoint    # [default=/photos/list.json]
     -X method      # [default=GET]
     -F params      # e.g. -F 'title=my title' -F 'tags=mytag1,mytag2'
     -p             # Pretty print the json
     -v             # Verbose output
 
-You can run commands to the OpenPhoto API from your shell!
+<a name="cli-examples"></a>
+#### Command line examples
 
     # Upload a public photo to the host specified in ~/.config/openphoto/default
     openphoto -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
@@ -120,9 +128,3 @@ You can run commands to the OpenPhoto API from your shell!
             ...
         }
     }    
-
-<a name="credentials"></a>
-#### Getting your credentials
-
-You can get your credentals by clicking on the arrow next to your email address once you're logged into your site and then clicking on settings.
-If you don't have any credentials then you can create one for yourself using the "Create a new app" button.
