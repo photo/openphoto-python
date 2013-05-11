@@ -1,0 +1,25 @@
+#!/bin/bash
+#
+# Simple script to run all tests with multiple test servers.
+#
+
+unset OPENPHOTO_TEST_DEBUG
+
+# Default test server running latest self-hosted site
+echo "Testing latest self-hosted site"
+export OPENPHOTO_TEST_CONFIG=test
+unset OPENPHOTO_TEST_SERVER_API
+python -m unittest discover -c
+
+# Test server running APIv1 OpenPhoto instance
+echo "Testing APIv1 self-hosted site"
+export OPENPHOTO_TEST_CONFIG=test-apiv1
+export OPENPHOTO_TEST_SERVER_API=1
+python -m unittest discover -c
+
+# Test account on hosted trovebox.com site
+echo "Testing latest hosted site"
+export OPENPHOTO_TEST_CONFIG=test-hosted
+unset OPENPHOTO_TEST_SERVER_API
+python -m unittest discover -c
+

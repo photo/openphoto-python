@@ -81,3 +81,19 @@ For example, to restrict testing to APIv1 and APIv2:
 
     export OPENPHOTO_TEST_SERVER_API=2
 
+
+<a name="full_regression"></a>
+### Full Regression Test
+
+If you want to run a full regression test across all supported API revisions,
+you must set up multiple OpenPhoto instances and create the following config
+files containing your credentials:
+
+    test        : Latest self-hosted site
+    test-apiv1  : APIv1 self-hosted site
+    test-hosted : Credentials for test account on trovebox.com
+
+Once these are set up, the following command tests them all in one go:
+
+    ./run_tests
+
