@@ -42,6 +42,10 @@ The easiest way to run a subset of the tests is with nose:
 
 All HTTP requests and responses are recorded in the file "tests.log".
 
+You can enable more verbose output to stdout with the following environment variable:
+
+    export OPENPHOTO_TEST_DEBUG=1
+
 ---------------------------------------
 <a name="test_details"></a>
 ### Test Details
