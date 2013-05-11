@@ -1,21 +1,7 @@
-import unittest
 import os
+import unittest
 import logging
 import openphoto
-
-try:
-    import tokens
-except ImportError:
-    print ("********************************************************************\n"
-           "You need to create a 'tokens.py' file containing the following:\n\n"
-           "   host = \"<hostname>\"\n"
-           "   consumer_key = \"<test_consumer_key>\"\n"
-           "   consumer_secret = \"<test_consumer_secret>\"\n"
-           "   token = \"<test_token>\"\n"
-           "   token_secret = \"<test_token_secret>\"\n"
-           "WARNING: Don't use a production OpenPhoto instance for this!\n"
-           "********************************************************************\n")
-    raise
 
 def get_test_server_api():
     return int(os.getenv("OPENPHOTO_TEST_SERVER_API", openphoto.LATEST_API_VERSION))
@@ -27,6 +13,7 @@ class TestBase(unittest.TestCase):
     MAXIMUM_TEST_PHOTOS = 4 # Never have more the 4 photos on the test server
     testcase_name = "(unknown testcase)"
     api_version = None
+    config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
 
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
@@ -45,25 +32,23 @@ class TestBase(unittest.TestCase):
         else:
             print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
 
-        cls.client = openphoto.OpenPhoto(tokens.host,
-                                         tokens.consumer_key, tokens.consumer_secret,
-                                         tokens.token, tokens.token_secret,
-                                         cls.api_version)
+        cls.client = openphoto.OpenPhoto(config_file=cls.config_file,
+                                         api_version=cls.api_version)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
         if cls.client.tags.list() != []:
             raise ValueError("The test server (%s) contains tags. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
         if cls.client.albums.list() != []:
             raise ValueError("The test server (%s) contains albums. "
                              "Please delete them before running the tests"
-                             % tokens.host)
+                             % cls.client._host)
 
     @classmethod
     def tearDownClass(cls):
