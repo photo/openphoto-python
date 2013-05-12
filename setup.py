@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-requires = ['oauth2', 'httplib2']
+requires = ['requests', 'requests-oauthlib']
 try:
     import json
 except ImportError:
