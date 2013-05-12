@@ -81,8 +81,7 @@ class ApiPhoto:
 
     def upload(self, photo_file, **kwds):
         result = self._client.post("/photo/upload.json",
-                                   files={'photo': (photo_file,
-                                                    open(photo_file, 'rb'))},
+                                   files={'photo': open(photo_file, 'rb')},
                                    **kwds)["result"]
         return Photo(self._client, result)
 
