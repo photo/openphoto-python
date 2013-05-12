@@ -1,18 +1,36 @@
+from __future__ import unicode_literals
+import sys
 import os
-import urlparse
-import urllib
+try:
+    from urllib.parse import urlunparse # Python3
+except ImportError:
+    from urlparse import urlunparse # Python2
 import requests
 import requests_oauthlib
 import logging
-import StringIO
-import ConfigParser
 try:
-    import json
+    import io # Python3
 except ImportError:
-    import simplejson as json
+    import StringIO as io # Python2
+try:
+    from configparser import ConfigParser # Python3
+except ImportError:
+    from ConfigParser import SafeConfigParser as ConfigParser # Python2
 
-from objects import OpenPhotoObject
-from errors import *
+if sys.version < '3':
+    text_type = unicode # Python2
+else:
+    text_type = str # Python3
+
+from .objects import OpenPhotoObject
+from .errors import *
+
+if sys.version < '3':
+	# requests_oauth needs to decode to ascii for Python2
+    _oauth_decoding = "utf-8"
+else:
+	# requests_oauth needs to use (unicode) strings for Python3
+    _oauth_decoding = None # Python3
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -75,15 +93,17 @@ class OpenPhotoHttp:
             endpoint = "/" + endpoint
         if self._api_version is not None:
             endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
+        url = urlunparse(('http', self._host, endpoint, '', '', ''))
 
         if self._consumer_key:
             auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
-                                             self._token, self._token_secret)
+                                            self._token, self._token_secret,
+                                            decoding=_oauth_decoding)
         else:
             auth = None
 
-        response = requests.get(url, params=params, auth=auth)
+        with requests.Session() as s:
+            response = s.get(url, params=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
@@ -115,20 +135,22 @@ class OpenPhotoHttp:
             endpoint = "/" + endpoint
         if self._api_version is not None:
             endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
+        url = urlunparse(('http', self._host, endpoint, '', '', ''))
 
         if not self._consumer_key:
             raise OpenPhotoError("Cannot issue POST without OAuth tokens")
 
         auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
-                                        self._token, self._token_secret)
-        if files:
-            # Need to pass parameters as URL query, so they get OAuth signed
-            response = requests.post(url, params=params, files=files, auth=auth)
-        else:
-            # Passing parameters as URL query doesn't work if there are no files to send.
-            # Send them as form data instead.
-            response = requests.post(url, data=params, auth=auth)
+                                        self._token, self._token_secret,
+                                        decoding=_oauth_decoding)
+        with requests.Session() as s:
+            if files:
+                # Need to pass parameters as URL query, so they get OAuth signed
+                response = s.post(url, params=params, files=files, auth=auth)
+            else:
+                # Passing parameters as URL query doesn't work if there are no files to send.
+                # Send them as form data instead.
+                response = s.post(url, data=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
@@ -156,9 +178,9 @@ class OpenPhotoHttp:
             if isinstance(value, OpenPhotoObject):
                 value = value.id
 
-            # Use UTF-8 encoding
-            if isinstance(value, unicode):
-                value = value.encode('utf-8')
+            # Ensure value is UTF-8 encoded
+            if isinstance(value, text_type):
+                value = value.encode("utf-8")
 
             # Handle lists
             if isinstance(value, list):
@@ -168,8 +190,8 @@ class OpenPhotoHttp:
                 for i, item in enumerate(new_list):
                     if isinstance(item, OpenPhotoObject):
                         new_list[i] = item.id
-                # Convert list to unicode string
-                value = u','.join([unicode(item) for item in new_list])
+                # Convert list to string
+                value = ','.join([str(item) for item in new_list])
 
             # Handle booleans
             if isinstance(value, bool):
@@ -188,7 +210,7 @@ class OpenPhotoHttp:
             json_response = response.json()
             code = json_response["code"]
             message = json_response["message"]
-        except ValueError, KeyError:
+        except (ValueError, KeyError):
             # Response wasn't OpenPhoto JSON - check the HTTP status code
             if 200 <= response.status_code < 300:
                 # Status code was valid, so just reraise the exception
@@ -236,14 +258,18 @@ class OpenPhotoHttp:
                     'token': '', 'tokenSecret':'',
                     }
         # Insert an section header at the start of the config file, so ConfigParser can understand it
-        buf = StringIO.StringIO()
+        buf = io.StringIO()
         buf.write('[%s]\n' % section)
-        buf.write(open(config_file).read())
+        with io.open(config_file, "r") as f:
+            buf.write(f.read())
 
         buf.seek(0, os.SEEK_SET)
-        parser = ConfigParser.SafeConfigParser()
+        parser = ConfigParser()
         parser.optionxform = str # Case-sensitive options
-        parser.readfp(buf)
+        try:
+            parser.read_file(buf) # Python3
+        except AttributeError:
+            parser.readfp(buf) # Python2
 
         # Trim quotes
         config = parser.items(section)

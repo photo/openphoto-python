@@ -1,5 +1,5 @@
-from errors import *
-from objects import Tag
+from .errors import *
+from .objects import Tag
 
 class ApiTags:
     def __init__(self, client):

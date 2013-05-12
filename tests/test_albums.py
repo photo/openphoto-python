@@ -3,7 +3,7 @@ try:
 except ImportError:
     import unittest
 import openphoto
-import test_base
+from . import test_base
 
 class TestAlbums(test_base.TestBase):
     testcase_name = "album API"

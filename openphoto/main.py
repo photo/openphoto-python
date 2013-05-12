@@ -2,7 +2,6 @@
 import os
 import sys
 import string
-import urllib
 from optparse import OptionParser
 
 try:
@@ -56,22 +55,22 @@ def main(args=sys.argv[1:]):
         try:
             client = OpenPhoto(config_file=options.config_file)
         except IOError as error:
-            print error
-            print
-            print "You must create a configuration file with the following contents:"
-            print "    host = your.host.com"
-            print "    consumerKey = your_consumer_key"
-            print "    consumerSecret = your_consumer_secret"
-            print "    token = your_access_token"
-            print "    tokenSecret = your_access_token_secret"
-            print
-            print "To get your credentials:"
-            print " * Log into your Trovebox site"
-            print " * Click the arrow on the top-right and select 'Settings'."
-            print " * Click the 'Create a new app' button."
-            print " * Click the 'View' link beside the newly created app."
-            print
-            print error
+            print(error)
+            print()
+            print("You must create a configuration file with the following contents:")
+            print("    host = your.host.com")
+            print("    consumerKey = your_consumer_key")
+            print("    consumerSecret = your_consumer_secret")
+            print("    token = your_access_token")
+            print("    tokenSecret = your_access_token_secret")
+            print()
+            print("To get your credentials:")
+            print(" * Log into your Trovebox site")
+            print(" * Click the arrow on the top-right and select 'Settings'.")
+            print(" * Click the 'Create a new app' button.")
+            print(" * Click the 'View' link beside the newly created app.")
+            print()
+            print(error)
             sys.exit(1)
 
     if options.method == "GET":
@@ -81,17 +80,17 @@ def main(args=sys.argv[1:]):
         result = client.post(options.endpoint, process_response=False, files=files, **params)
 
     if options.verbose:
-        print "==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, config['host'], options.endpoint)
+        print("==========\nMethod: %s\nHost: %s\nEndpoint: %s" % (options.method, config['host'], options.endpoint))
         if len( params ) > 0:
-            print "Fields:"
-            for kv in params.iteritems():
-                print "  %s=%s" % kv
-        print "==========\n"
+            print("Fields:")
+            for kv in params.items():
+                print("  %s=%s" % kv)
+        print("==========\n")
 
     if options.pretty:
-        print json.dumps(json.loads(result), sort_keys=True, indent=4, separators=(',',':'))
+        print(json.dumps(json.loads(result), sort_keys=True, indent=4, separators=(',',':')))
     else:
-        print result
+        print(result)
 
 def extract_files(params):
     """

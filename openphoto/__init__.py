@@ -1,8 +1,8 @@
-from openphoto_http import OpenPhotoHttp
-from errors import *
-import api_photo
-import api_tag
-import api_album
+from .openphoto_http import OpenPhotoHttp
+from .errors import *
+from . import api_photo
+from . import api_tag
+from . import api_album
 
 LATEST_API_VERSION = 2
 

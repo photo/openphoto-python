@@ -3,7 +3,7 @@ try:
 except ImportError:
     import unittest
 import openphoto
-import test_base
+from . import test_base
 
 @unittest.skipIf(test_base.get_test_server_api() == 1,
                  "The tag API didn't work at v1 - see frontend issue #927")

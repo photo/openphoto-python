@@ -27,13 +27,13 @@ class TestConfig(unittest.TestCase):
         shutil.rmtree(CONFIG_HOME_PATH, ignore_errors=True)
 
     def create_config(self, config_file, host):
-        f = open(os.path.join(CONFIG_PATH, config_file), "w")
-        f.write("host = %s\n" % host)
-        f.write("# Comment\n\n")
-        f.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
-        f.write("\"consumerSecret\" = %s_consumer_secret\n" % config_file)
-        f.write("'token'=%s_token\n" % config_file)
-        f.write("tokenSecret = '%s_token_secret'\n" % config_file)
+        with open(os.path.join(CONFIG_PATH, config_file), "w") as f:
+            f.write("host = %s\n" % host)
+            f.write("# Comment\n\n")
+            f.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
+            f.write("\"consumerSecret\" = %s_consumer_secret\n" % config_file)
+            f.write("'token'=%s_token\n" % config_file)
+            f.write("tokenSecret = '%s_token_secret'\n" % config_file)
 
     def test_default_config(self):
         """ Ensure the default config is loaded """

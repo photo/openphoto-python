@@ -1,9 +1,10 @@
+from __future__ import unicode_literals
 try:
     import unittest2 as unittest
 except ImportError:
     import unittest
 import openphoto
-import test_base
+from . import test_base
 
 class TestPhotos(test_base.TestBase):
     testcase_name = "photo API"
@@ -72,7 +73,7 @@ class TestPhotos(test_base.TestBase):
 
     def test_update(self):
         """ Update a photo by editing the title """
-        title = u"\xfcmlaut" # umlauted umlaut
+        title = "\xfcmlaut" # umlauted umlaut
         # Get a photo and check that it doesn't have the magic title
         photo = self.photos[0]
         self.assertNotEqual(photo.title, title)

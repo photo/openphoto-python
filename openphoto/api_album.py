@@ -1,5 +1,5 @@
-from errors import *
-from objects import Album
+from .errors import *
+from .objects import Album
 
 class ApiAlbums:
     def __init__(self, client):

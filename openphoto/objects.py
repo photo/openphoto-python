@@ -1,5 +1,8 @@
-import urllib
-from errors import *
+try:
+	from urllib.parse import quote # Python3
+except ImportError:
+	from urllib import quote # Python2
+from .errors import *
 
 class OpenPhotoObject:
     """ Base object supporting the storage of custom fields as attributes """
@@ -128,13 +131,13 @@ class Tag(OpenPhotoObject):
         Returns True if successful.
         Raises an OpenPhotoError if not.
         """
-        result = self._openphoto.post("/tag/%s/delete.json" % urllib.quote(self.id), **kwds)["result"]
+        result = self._openphoto.post("/tag/%s/delete.json" % quote(self.id), **kwds)["result"]
         self._replace_fields({})
         return result
 
     def update(self, **kwds):
         """ Update this tag with the specified parameters """
-        new_dict = self._openphoto.post("/tag/%s/update.json" % urllib.quote(self.id), 
+        new_dict = self._openphoto.post("/tag/%s/update.json" % quote(self.id), 
                                         **kwds)["result"]
         self._replace_fields(new_dict)
 

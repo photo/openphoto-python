@@ -4,7 +4,7 @@ except ImportError:
     import unittest
 import logging
 import openphoto
-import test_base
+from . import test_base
 
 class TestFramework(test_base.TestBase):
     testcase_name = "framework"

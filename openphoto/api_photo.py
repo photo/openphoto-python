@@ -1,7 +1,7 @@
 import base64
 
-from errors import *
-from objects import Photo
+from .errors import *
+from .objects import Photo
 
 class ApiPhotos:
     def __init__(self, client):
@@ -80,14 +80,16 @@ class ApiPhoto:
         return photo
 
     def upload(self, photo_file, **kwds):
-        result = self._client.post("/photo/upload.json",
-                                   files={'photo': open(photo_file, 'rb')},
-                                   **kwds)["result"]
+        with open(photo_file, 'rb') as f:
+            result = self._client.post("/photo/upload.json",
+                                       files={'photo': f},
+                                       **kwds)["result"]
         return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
-        encoded_photo = base64.b64encode(open(photo_file, "rb").read())
+        with open(photo_file, "rb") as f:
+            encoded_photo = base64.b64encode(f.read())
         result = self._client.post("/photo/upload.json", photo=encoded_photo, 
                                    **kwds)["result"]
         return Photo(self._client, result)
