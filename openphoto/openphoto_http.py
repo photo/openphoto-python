@@ -75,8 +75,7 @@ class OpenPhotoHttp:
             endpoint = "/" + endpoint
         if self._api_version is not None:
             endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlparse.urlunparse(('http', self._host, endpoint, '',
-                                   urllib.urlencode(params), ''))
+        url = urlparse.urlunparse(('http', self._host, endpoint, '', '', ''))
 
         if self._consumer_key:
             auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
@@ -84,7 +83,7 @@ class OpenPhotoHttp:
         else:
             auth = None
 
-        response = requests.get(url, auth=auth)
+        response = requests.get(url, params=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
@@ -121,18 +120,15 @@ class OpenPhotoHttp:
         if not self._consumer_key:
             raise OpenPhotoError("Cannot issue POST without OAuth tokens")
 
+        auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
+                                        self._token, self._token_secret)
         if files:
-            # Parameters must be signed before being encoded into the multipart body
-            # Can't use the standard requests methods to do this, since
-            #     we need to keep the multipart data from being signed.
-            headers = self._sign_params(url, params)
-            auth = None
+            # Need to pass parameters as URL query, so they get OAuth signed
+            response = requests.post(url, params=params, files=files, auth=auth)
         else:
-            headers = None
-            auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
-                                            self._token, self._token_secret)
-
-        response = requests.post(url, data=params, headers=headers, files=files, auth=auth)
+            # Passing parameters as URL query doesn't work if there are no files to send.
+            # Send them as form data instead.
+            response = requests.post(url, data=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
@@ -150,15 +146,6 @@ class OpenPhotoHttp:
             return self._process_response(response)
         else:
             return response.text
-
-    def _sign_params(self, url, params):
-        """Use OAuth to sign a dictionary of params, returning the authorization header"""
-        oauth = requests_oauthlib.core.Client(self._consumer_key, self._consumer_secret,
-                                              self._token, self._token_secret)
-        url, headers, data = oauth.sign(url, http_method="POST", body=params,
-                                        headers={'Content-Type': requests_oauthlib.core.CONTENT_TYPE_FORM_URLENCODED})
-        del(headers['Content-Type'])
-        return headers
 
     @staticmethod
     def _process_params(params):
