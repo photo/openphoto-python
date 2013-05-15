@@ -3,7 +3,6 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
 import tests.test_base
 
 @unittest.skipIf(tests.test_base.get_test_server_api() == 1,
@@ -47,9 +46,10 @@ class TestTags(tests.test_base.TestBase):
         # Also remove the tag from the photo
         self.photos[0].update(tagsRemove=tag_id)
 
-    # TODO: Un-skip and update this tests once there are tag fields that can be updated.
-    # The owner field cannot be updated.
-    @unittest.skip("Can't test the tag.update endpoint, since there are no fields that can be updated")
+    # TODO: Un-skip and update this tests once there are tag fields
+    #       that can be updated (the owner field cannot be updated).
+    @unittest.skip("Can't test the tag.update endpoint, "
+                   "since there are no fields that can be updated")
     def test_update(self):
         """ Test that a tag can be updated """
         # Update the tag using the OpenPhoto class, passing in the tag object

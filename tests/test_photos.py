@@ -1,8 +1,4 @@
 from __future__ import unicode_literals
-try:
-    import unittest2 as unittest # Python2.6
-except ImportError:
-    import unittest
 
 import openphoto
 import tests.test_base

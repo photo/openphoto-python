@@ -1,6 +1,7 @@
 import base64
 
-from openphoto.errors import *
+from openphoto.errors import OpenPhotoError
+import openphoto.openphoto_http
 from openphoto.objects import Photo
 
 class ApiPhotos:
@@ -10,7 +11,7 @@ class ApiPhotos:
     def list(self, **kwds):
         """ Returns a list of Photo objects """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
-        photos = self._client._result_to_list(photos)
+        photos = openphoto.openphoto_http.result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
     def update(self, photos, **kwds):
@@ -19,7 +20,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/update.json", ids=photos, **kwds)["result"]:
+        if not self._client.post("/photos/update.json", ids=photos,
+                                 **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
         return True
 
@@ -29,7 +31,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/delete.json", ids=photos, **kwds)["result"]:
+        if not self._client.post("/photos/delete.json", ids=photos,
+                                 **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
         return True
 
@@ -80,16 +83,17 @@ class ApiPhoto:
         return photo
 
     def upload(self, photo_file, **kwds):
-        with open(photo_file, 'rb') as f:
+        """ Uploads the specified file to the server """
+        with open(photo_file, 'rb') as in_file:
             result = self._client.post("/photo/upload.json",
-                                       files={'photo': f},
+                                       files={'photo': in_file},
                                        **kwds)["result"]
         return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
-        with open(photo_file, "rb") as f:
-            encoded_photo = base64.b64encode(f.read())
+        with open(photo_file, "rb") as in_file:
+            encoded_photo = base64.b64encode(in_file.read())
         result = self._client.post("/photo/upload.json", photo=encoded_photo,
                                    **kwds)["result"]
         return Photo(self._client, result)

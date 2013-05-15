@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 import sys
-import os
 import requests
 import requests_oauthlib
 import logging
@@ -11,16 +10,16 @@ except ImportError:
 
 from openphoto.objects import OpenPhotoObject
 from openphoto.errors import *
-import openphoto.config_files
+from openphoto.config import Config
 
 if sys.version < '3':
-    text_type = unicode
+    TEXT_TYPE = unicode
     # requests_oauth needs to decode to ascii for Python2
-    _oauth_decoding = "utf-8"
+    OAUTH_DECODING = "utf-8"
 else:
-    text_type = str
+    TEXT_TYPE = str
     # requests_oauth needs to use (unicode) strings for Python3
-    _oauth_decoding = None
+    OAUTH_DECODING = None
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -44,23 +43,11 @@ class OpenPhotoHttp:
 
         self._logger = logging.getLogger("openphoto")
 
-        if host is None:
-            self._config_path = openphoto.config_files.get_config_path(config_file)
-            config = openphoto.config_files.read_config(self._config_path)
-            self._host = config['host']
-            self._consumer_key = config['consumerKey']
-            self._consumer_secret = config['consumerSecret']
-            self._token = config['token']
-            self._token_secret = config['tokenSecret']
-        else:
-            self._host = host
-            self._consumer_key = consumer_key
-            self._consumer_secret = consumer_secret
-            self._token = token
-            self._token_secret = token_secret
+        self.config = Config(config_file, host,
+                             consumer_key, consumer_secret,
+                             token, token_secret)
 
-        if host is not None and config_file is not None:
-            raise ValueError("Cannot specify both host and config_file")
+        self.host = self.config.host
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -83,17 +70,19 @@ class OpenPhotoHttp:
             endpoint = "/" + endpoint
         if self._api_version is not None:
             endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self._host, endpoint, '', '', ''))
+        url = urlunparse(('http', self.host, endpoint, '', '', ''))
 
-        if self._consumer_key:
-            auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
-                                            self._token, self._token_secret,
-                                            decoding=_oauth_decoding)
+        if self.config.consumer_key:
+            auth = requests_oauthlib.OAuth1(self.config.consumer_key,
+                                            self.config.consumer_secret,
+                                            self.config.token,
+                                            self.config.token_secret,
+                                            decoding=OAUTH_DECODING)
         else:
             auth = None
 
-        with requests.Session() as s:
-            response = s.get(url, params=params, auth=auth)
+        with requests.Session() as session:
+            response = session.get(url, params=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
@@ -109,7 +98,7 @@ class OpenPhotoHttp:
         else:
             return response.text
 
-    def post(self, endpoint, process_response=True, files = {}, **params):
+    def post(self, endpoint, process_response=True, files=None, **params):
         """
         Performs an HTTP POST to the specified endpoint (API path),
             passing parameters if given.
@@ -125,22 +114,26 @@ class OpenPhotoHttp:
             endpoint = "/" + endpoint
         if self._api_version is not None:
             endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self._host, endpoint, '', '', ''))
+        url = urlunparse(('http', self.host, endpoint, '', '', ''))
 
-        if not self._consumer_key:
+        if not self.config.consumer_key:
             raise OpenPhotoError("Cannot issue POST without OAuth tokens")
 
-        auth = requests_oauthlib.OAuth1(self._consumer_key, self._consumer_secret,
-                                        self._token, self._token_secret,
-                                        decoding=_oauth_decoding)
-        with requests.Session() as s:
+        auth = requests_oauthlib.OAuth1(self.config.consumer_key,
+                                        self.config.consumer_secret,
+                                        self.config.token,
+                                        self.config.token_secret,
+                                        decoding=OAUTH_DECODING)
+        with requests.Session() as session:
             if files:
                 # Need to pass parameters as URL query, so they get OAuth signed
-                response = s.post(url, params=params, files=files, auth=auth)
+                response = session.post(url, params=params,
+                                        files=files, auth=auth)
             else:
-                # Passing parameters as URL query doesn't work if there are no files to send.
+                # Passing parameters as URL query doesn't work
+                # if there are no files to send.
                 # Send them as form data instead.
-                response = s.post(url, data=params, auth=auth)
+                response = session.post(url, data=params, auth=auth)
 
         self._logger.info("============================")
         self._logger.info("POST %s" % url)
@@ -169,7 +162,7 @@ class OpenPhotoHttp:
                 value = value.id
 
             # Ensure value is UTF-8 encoded
-            if isinstance(value, text_type):
+            if isinstance(value, TEXT_TYPE):
                 value = value.encode("utf-8")
 
             # Handle lists
@@ -206,9 +199,11 @@ class OpenPhotoHttp:
                 # Status code was valid, so just reraise the exception
                 raise
             elif response.status_code == 404:
-                raise OpenPhoto404Error("HTTP Error %d: %s" % (response.status_code, response.reason))
+                raise OpenPhoto404Error("HTTP Error %d: %s" %
+                                        (response.status_code, response.reason))
             else:
-                raise OpenPhotoError("HTTP Error %d: %s" % (response.status_code, response.reason))
+                raise OpenPhotoError("HTTP Error %d: %s" %
+                                     (response.status_code, response.reason))
 
         if 200 <= code < 300:
             return json_response
@@ -218,12 +213,11 @@ class OpenPhotoHttp:
         else:
             raise OpenPhotoError("Code %d: %s" % (code, message))
 
-    @staticmethod
-    def _result_to_list(result):
-        """ Handle the case where the result contains no items """
-        if not result:
-            return []
-        if result[0]["totalRows"] == 0:
-            return []
-        else:
-            return result
+def result_to_list(result):
+    """ Handle the case where the result contains no items """
+    if not result:
+        return []
+    if result[0]["totalRows"] == 0:
+        return []
+    else:
+        return result

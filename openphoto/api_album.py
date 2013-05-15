@@ -1,4 +1,3 @@
-from openphoto.errors import *
 from openphoto.objects import Album
 
 class ApiAlbums:
@@ -16,7 +15,8 @@ class ApiAlbum:
 
     def create(self, name, **kwds):
         """ Create a new album and return it"""
-        result = self._client.post("/album/create.json", name=name, **kwds)["result"]
+        result = self._client.post("/album/create.json",
+                                   name=name, **kwds)["result"]
         return Album(self._client, result)
 
     def delete(self, album, **kwds):

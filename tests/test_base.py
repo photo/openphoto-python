@@ -10,7 +10,8 @@ except ImportError:
 import openphoto
 
 def get_test_server_api():
-    return int(os.getenv("OPENPHOTO_TEST_SERVER_API", openphoto.LATEST_API_VERSION))
+    return int(os.getenv("OPENPHOTO_TEST_SERVER_API",
+                         openphoto.LATEST_API_VERSION))
 
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
@@ -24,7 +25,7 @@ class TestBase(unittest.TestCase):
     debug = (os.getenv("OPENPHOTO_TEST_DEBUG", "0") == "1")
 
     def __init__(self, *args, **kwds):
-        unittest.TestCase.__init__(self, *args, **kwds)
+        super(TestBase, self).__init__(*args, **kwds)
         self.photos = []
 
         logging.basicConfig(filename="tests.log",
@@ -47,17 +48,17 @@ class TestBase(unittest.TestCase):
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
         if cls.client.tags.list() != []:
             raise ValueError("The test server (%s) contains tags. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
         if cls.client.albums.list() != []:
             raise ValueError("The test server (%s) contains albums. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
     @classmethod
     def tearDownClass(cls):
@@ -117,10 +118,10 @@ class TestBase(unittest.TestCase):
             print("Albums: %s" % self.albums)
             raise Exception("Album creation failed")
 
-        logging.info("\nRunning %s..." % self.id())
+        logging.info("\nRunning %s...", self.id())
 
     def tearDown(self):
-        logging.info("Finished %s\n" % self.id())
+        logging.info("Finished %s\n", self.id())
 
     @classmethod
     def _create_test_photos(cls):
@@ -143,9 +144,11 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def _delete_all(cls):
+        """ Remove all photos, tags and albums """
         photos = cls.client.photos.list()
         if len(photos) > cls.MAXIMUM_TEST_PHOTOS:
-            raise ValueError("There too many photos on the test server - must always be less than %d."
+            raise ValueError("There too many photos on the test server "
+                             "- must always be less than %d."
                              % cls.MAXIMUM_TEST_PHOTOS)
         for photo in photos:
             photo.delete()

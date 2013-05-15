@@ -1,4 +1,3 @@
-from openphoto.errors import *
 from openphoto.objects import Tag
 
 class ApiTags:
@@ -15,7 +14,10 @@ class ApiTag:
         self._client = client
 
     def create(self, tag, **kwds):
-        """ Create a new tag. The API returns true if the tag was sucessfully created """
+        """
+        Create a new tag.
+        The API returns true if the tag was sucessfully created
+        """
         return self._client.post("/tag/create.json", tag=tag, **kwds)["result"]
 
     def delete(self, tag, **kwds):
