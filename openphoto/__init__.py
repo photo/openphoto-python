@@ -1,8 +1,8 @@
-from .openphoto_http import OpenPhotoHttp
-from .errors import *
-from . import api_photo
-from . import api_tag
-from . import api_album
+from openphoto.openphoto_http import OpenPhotoHttp
+from openphoto.errors import *
+import openphoto.api_photo
+import openphoto.api_tag
+import openphoto.api_album
 
 LATEST_API_VERSION = 2
 
@@ -26,9 +26,9 @@ class OpenPhoto(OpenPhotoHttp):
                                consumer_key, consumer_secret,
                                token, token_secret, api_version)
 
-        self.photos = api_photo.ApiPhotos(self)
-        self.photo = api_photo.ApiPhoto(self)
-        self.tags = api_tag.ApiTags(self)
-        self.tag = api_tag.ApiTag(self)
-        self.albums = api_album.ApiAlbums(self)
-        self.album = api_album.ApiAlbum(self)
+        self.photos = openphoto.api_photo.ApiPhotos(self)
+        self.photo = openphoto.api_photo.ApiPhoto(self)
+        self.tags = openphoto.api_tag.ApiTags(self)
+        self.tag = openphoto.api_tag.ApiTag(self)
+        self.albums = openphoto.api_album.ApiAlbums(self)
+        self.album = openphoto.api_album.ApiAlbum(self)

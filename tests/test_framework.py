@@ -1,12 +1,13 @@
+import logging
 try:
-    import unittest2 as unittest
+    import unittest2 as unittest # python2.6
 except ImportError:
     import unittest
-import logging
-import openphoto
-from . import test_base
 
-class TestFramework(test_base.TestBase):
+import openphoto
+import tests.test_base
+
+class TestFramework(tests.test_base.TestBase):
     testcase_name = "framework"
 
     def setUp(self):
@@ -23,7 +24,7 @@ class TestFramework(test_base.TestBase):
 
     def test_specified_api_version(self):
         # For all API versions >0, we get a generic hello world message
-        for api_version in range(1, test_base.get_test_server_api() + 1):
+        for api_version in range(1, tests.test_base.get_test_server_api() + 1):
             client = openphoto.OpenPhoto(config_file=self.config_file,
                                          api_version=api_version)
             result = client.get("hello.json")

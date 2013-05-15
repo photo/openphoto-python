@@ -1,5 +1,5 @@
-from .errors import *
-from .objects import Tag
+from openphoto.errors import *
+from openphoto.objects import Tag
 
 class ApiTags:
     def __init__(self, client):

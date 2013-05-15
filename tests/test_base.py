@@ -1,11 +1,12 @@
 from __future__ import print_function
 import sys
 import os
+import logging
 try:
-    import unittest2 as unittest
+    import unittest2 as unittest # Python2.6
 except ImportError:
     import unittest
-import logging
+
 import openphoto
 
 def get_test_server_api():

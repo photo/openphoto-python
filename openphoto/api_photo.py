@@ -1,7 +1,7 @@
 import base64
 
-from .errors import *
-from .objects import Photo
+from openphoto.errors import *
+from openphoto.objects import Photo
 
 class ApiPhotos:
     def __init__(self, client):

@@ -2,12 +2,8 @@
 import os
 import sys
 import string
+import json
 from optparse import OptionParser
-
-try:
-    import json
-except ImportError:
-    import simplejson as json
 
 from openphoto import OpenPhoto
 

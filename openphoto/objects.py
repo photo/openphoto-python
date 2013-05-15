@@ -1,7 +1,7 @@
 try:
-	from urllib.parse import quote # Python3
+    from urllib.parse import quote # Python3
 except ImportError:
-	from urllib import quote # Python2
+    from urllib import quote # Python2
 from .errors import *
 
 class OpenPhotoObject:

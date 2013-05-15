@@ -1,9 +1,10 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 import os
 import shutil
+try:
+    import unittest2 as unittest # Python2.6
+except ImportError:
+    import unittest
+
 import openphoto
 
 CONFIG_HOME_PATH = os.path.join("tests", "config")

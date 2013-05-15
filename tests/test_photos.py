@@ -1,12 +1,13 @@
 from __future__ import unicode_literals
 try:
-    import unittest2 as unittest
+    import unittest2 as unittest # Python2.6
 except ImportError:
     import unittest
-import openphoto
-from . import test_base
 
-class TestPhotos(test_base.TestBase):
+import openphoto
+import tests.test_base
+
+class TestPhotos(tests.test_base.TestBase):
     testcase_name = "photo API"
 
     def test_delete_upload(self):

@@ -1,36 +1,26 @@
 from __future__ import unicode_literals
 import sys
 import os
-try:
-    from urllib.parse import urlunparse # Python3
-except ImportError:
-    from urlparse import urlunparse # Python2
 import requests
 import requests_oauthlib
 import logging
 try:
-    import io # Python3
+    from urllib.parse import urlunparse # Python3
 except ImportError:
-    import StringIO as io # Python2
-try:
-    from configparser import ConfigParser # Python3
-except ImportError:
-    from ConfigParser import SafeConfigParser as ConfigParser # Python2
+    from urlparse import urlunparse # Python2
+
+from openphoto.objects import OpenPhotoObject
+from openphoto.errors import *
+import openphoto.config_files
 
 if sys.version < '3':
-    text_type = unicode # Python2
-else:
-    text_type = str # Python3
-
-from .objects import OpenPhotoObject
-from .errors import *
-
-if sys.version < '3':
-	# requests_oauth needs to decode to ascii for Python2
+    text_type = unicode
+    # requests_oauth needs to decode to ascii for Python2
     _oauth_decoding = "utf-8"
 else:
-	# requests_oauth needs to use (unicode) strings for Python3
-    _oauth_decoding = None # Python3
+    text_type = str
+    # requests_oauth needs to use (unicode) strings for Python3
+    _oauth_decoding = None
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -55,8 +45,8 @@ class OpenPhotoHttp:
         self._logger = logging.getLogger("openphoto")
 
         if host is None:
-            self.config_path = self._get_config_path(config_file)
-            config = self._read_config(self.config_path)
+            self._config_path = openphoto.config_files.get_config_path(config_file)
+            config = openphoto.config_files.read_config(self._config_path)
             self._host = config['host']
             self._consumer_key = config['consumerKey']
             self._consumer_secret = config['consumerSecret']
@@ -237,49 +227,3 @@ class OpenPhotoHttp:
             return []
         else:
             return result
-
-    @staticmethod
-    def _get_config_path(config_file):
-        config_path = os.getenv('XDG_CONFIG_HOME')
-        if not config_path:
-            config_path = os.path.join(os.getenv('HOME'), ".config")
-        if not config_file:
-            config_file = "default"
-        return os.path.join(config_path, "openphoto", config_file)
-
-    def _read_config(self, config_file):
-        """
-        Loads config data from the specified file.
-        If config_file doesn't exist, returns an empty authentication config for localhost.
-        """
-        section = "DUMMY"
-        defaults = {'host': 'localhost',
-                    'consumerKey': '', 'consumerSecret': '',
-                    'token': '', 'tokenSecret':'',
-                    }
-        # Insert an section header at the start of the config file, so ConfigParser can understand it
-        buf = io.StringIO()
-        buf.write('[%s]\n' % section)
-        with io.open(config_file, "r") as f:
-            buf.write(f.read())
-
-        buf.seek(0, os.SEEK_SET)
-        parser = ConfigParser()
-        parser.optionxform = str # Case-sensitive options
-        try:
-            parser.read_file(buf) # Python3
-        except AttributeError:
-            parser.readfp(buf) # Python2
-
-        # Trim quotes
-        config = parser.items(section)
-        config = [(item[0].replace('"', ''), item[1].replace('"', '')) for item in config]
-        config = [(item[0].replace("'", ""), item[1].replace("'", "")) for item in config]
-        config = dict(config)
-
-        # Apply defaults
-        for key in defaults:
-            if key not in config:
-                config[key] = defaults[key]
-
-        return config
