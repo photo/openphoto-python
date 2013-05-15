@@ -1,10 +1,6 @@
 #!/usr/bin/env python
 
 requires = ['requests', 'requests-oauthlib']
-try:
-    import json
-except ImportError:
-    requires.append('simplejson')
 
 try:
     from setuptools import setup
