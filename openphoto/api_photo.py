@@ -60,7 +60,7 @@ class ApiPhoto:
         raise NotImplementedError()
 
     def update(self, photo, **kwds):
-        """ 
+        """
         Update a photo with the specified parameters.
         Returns the updated photo object
         """
@@ -70,8 +70,8 @@ class ApiPhoto:
         return photo
 
     def view(self, photo, **kwds):
-        """ 
-        Used to view the photo at a particular size. 
+        """
+        Used to view the photo at a particular size.
         Returns the requested photo object
         """
         if not isinstance(photo, Photo):
@@ -90,7 +90,7 @@ class ApiPhoto:
         """ Base64-encodes and uploads the specified file """
         with open(photo_file, "rb") as f:
             encoded_photo = base64.b64encode(f.read())
-        result = self._client.post("/photo/upload.json", photo=encoded_photo, 
+        result = self._client.post("/photo/upload.json", photo=encoded_photo,
                                    **kwds)["result"]
         return Photo(self._client, result)
 
@@ -98,9 +98,9 @@ class ApiPhoto:
         raise NotImplementedError()
 
     def next_previous(self, photo, **kwds):
-        """ 
+        """
         Returns a dict containing the next and previous photo lists
-        (there may be more than one next/previous photo returned). 
+        (there may be more than one next/previous photo returned).
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
@@ -108,7 +108,7 @@ class ApiPhoto:
 
     def transform(self, photo, **kwds):
         """
-        Performs transformation specified in **kwds 
+        Performs transformation specified in **kwds
         Example: transform(photo, rotate=90)
         """
         if not isinstance(photo, Photo):

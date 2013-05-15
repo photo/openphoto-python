@@ -46,7 +46,7 @@ class ApiAlbum:
         return album
 
     def view(self, album, **kwds):
-        """ 
+        """
         View an album's contents.
         Returns the requested album object.
         """
