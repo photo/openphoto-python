@@ -68,15 +68,15 @@ class TestAlbums(tests.test_base.TestBase):
 
     def test_form(self):
         """ If album.form gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.form(None)
 
     def test_add_photos(self):
         """ If album.add_photos gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.add_photos(None, None)
 
     def test_remove_photos(self):
         """ If album.remove_photos gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos(None, None)
