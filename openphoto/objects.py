@@ -114,6 +114,11 @@ class Photo(OpenPhotoObject):
         """
         new_dict = self._openphoto.post("/photo/%s/transform.json" % self.id,
                                         **kwds)["result"]
+
+        # APIv1 doesn't return the transformed photo (frontend issue #955)
+        if isinstance(new_dict, bool):
+            new_dict = self._openphoto.get("/photo/%s/view.json" % self.id)["result"]
+
         self._replace_fields(new_dict)
 
 class Tag(OpenPhotoObject):
@@ -173,6 +178,11 @@ class Album(OpenPhotoObject):
         """ Update this album with the specified parameters """
         new_dict = self._openphoto.post("/album/%s/update.json" % self.id, 
                                         **kwds)["result"]
+
+        # APIv1 doesn't return the updated album (frontend issue #937)
+        if isinstance(new_dict, bool):
+            new_dict = self._openphoto.get("/album/%s/view.json" % self.id)["result"]
+
         self._replace_fields(new_dict)
         self._update_fields_with_objects()
         

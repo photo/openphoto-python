@@ -3,6 +3,9 @@ import unittest
 import logging
 import openphoto
 
+def get_test_server_api():
+    return int(os.getenv("OPENPHOTO_TEST_SERVER_API", openphoto.LATEST_API_VERSION))
+
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
     TEST_TAG = "test_tag"
