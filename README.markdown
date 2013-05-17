@@ -79,9 +79,9 @@ You can run commands to the OpenPhoto API from your shell!
 
 These are the options you can pass to the shell program:
 
-    -h             # Display help text
+    --help         # Display help text
     -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
-    -H hostname    # Overrides config_file for unauthenticated API calls
+    -h hostname    # Overrides config_file for unauthenticated API calls
     -e endpoint    # [default=/photos/list.json]
     -X method      # [default=GET]
     -F params      # e.g. -F 'title=my title' -F 'tags=mytag1,mytag2'
@@ -105,7 +105,7 @@ These are the options you can pass to the shell program:
     }
     
     # Get a thumbnail URL from current.openphoto.me (unauthenticated access)
-    openphoto -H current.openphoto.me -p -e /photo/62/view.json -F 'returnSizes=20x20'
+    openphoto -h current.openphoto.me -p -e /photo/62/view.json -F 'returnSizes=20x20'
     {
         "code":200,
         "message":"Photo 62",
