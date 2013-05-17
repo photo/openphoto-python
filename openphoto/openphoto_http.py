@@ -253,11 +253,7 @@ class OpenPhotoHttp:
                     'token': '', 'tokenSecret':'',
                     }
         # Insert an section header at the start of the config file, so ConfigParser can understand it
-        # Also prepend a [DEFAULT] section, since it's the only way to specify case-sensitive defaults
         buf = StringIO.StringIO()
-        buf.write("[DEFAULT]\n")
-        for key in defaults:
-            buf.write("%s=%s\n" % (key, defaults[key]))
         buf.write('[%s]\n' % section)
         buf.write(open(config_file).read())
 
@@ -270,4 +266,11 @@ class OpenPhotoHttp:
         config = parser.items(section)
         config = [(item[0].replace('"', ''), item[1].replace('"', '')) for item in config]
         config = [(item[0].replace("'", ""), item[1].replace("'", "")) for item in config]
-        return dict(config)
+        config = dict(config)
+
+        # Apply defaults
+        for key in defaults:
+            if key not in config:
+                config[key] = defaults[key]
+
+        return config
