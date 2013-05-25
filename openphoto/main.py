@@ -84,8 +84,8 @@ def main(args=sys.argv[1:]):
 
     if options.verbose:
         print("==========\nMethod: %s\nHost: %s\nEndpoint: %s" %
-              (options.method, config['host'], options.endpoint))
-        if len( params ) > 0:
+              (options.method, client.host, options.endpoint))
+        if params:
             print("Fields:")
             for key, value in params.items():
                 print("  %s=%s" % (key, value))
