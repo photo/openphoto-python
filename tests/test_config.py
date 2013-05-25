@@ -1,9 +1,12 @@
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import os
 import shutil
 import openphoto
 
-CONFIG_HOME_PATH = os.path.join("test", "config")
+CONFIG_HOME_PATH = os.path.join("tests", "config")
 CONFIG_PATH = os.path.join(CONFIG_HOME_PATH, "openphoto")
 
 class TestConfig(unittest.TestCase):

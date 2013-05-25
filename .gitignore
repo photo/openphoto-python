@@ -5,3 +5,4 @@ dist
 *.egg-info
 tests/tokens.py
 tests.log
+.tox

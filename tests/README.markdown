@@ -5,7 +5,7 @@ Tests for the Open Photo API / Python Library
 ----------------------------------------
 <a name="requirements"></a>
 ### Requirements
-A computer, Python 2.7 and an empty OpenPhoto test host.
+A computer, Python and an empty OpenPhoto test host.
 
 ---------------------------------------
 <a name="setup"></a>
@@ -30,23 +30,32 @@ You can specify an alternate test config file with the following environment var
 <a name="running"></a>
 ### Running the tests
 
+The following instructions are for Python 2.7. You can adapt them for earlier
+Python versions using the ``unittest2`` package.
+
     cd /path/to/openphoto-python
     python -m unittest discover -c
 
 The "-c" lets you stop the tests gracefully with \[CTRL\]-c.
 
-The easiest way to run a subset of the tests is with nose:
+The easiest way to run a subset of the tests is with the ``nose`` package:
 
     cd /path/to/openphoto-python
     nosetests -v -s --nologcapture tests/test_albums.py:TestAlbums.test_view
 
-All HTTP requests and responses are recorded in the file "tests.log".
+All HTTP requests and responses are recorded in the file ``tests.log``.
+
+You can enable more verbose output to stdout with the following environment variable:
+
+    export OPENPHOTO_TEST_DEBUG=1
 
 ---------------------------------------
 <a name="test_details"></a>
 ### Test Details
 
-These tests are intended to verify the Python library. They don't provide comprehensive testing of the OpenPhoto API, there are PHP unit tests for that.
+These tests are intended to verify the openphoto-python library.
+They don't provide comprehensive testing of the OpenPhoto API,
+there are PHP unit tests for that.
 
 Each test class is run as follows:
 
@@ -77,3 +86,16 @@ For example, to restrict testing to APIv1 and APIv2:
 
     export OPENPHOTO_TEST_SERVER_API=2
 
+<a name="full_regression"></a>
+### Full Regression Test
+
+The ``run_tests`` script uses the ``tox`` package to run a full regression across:
+ * Multiple Python versions
+ * All supported API versions
+
+To use it, you must set up multiple OpenPhoto instances and create the following
+config files containing your credentials:
+
+    test        : Latest self-hosted site
+    test-apiv1  : APIv1 self-hosted site
+    test-hosted : Credentials for test account on trovebox.com

@@ -1,5 +1,9 @@
+import sys
 import os
-import unittest
+try:
+    import unittest2 as unittest
+except ImportError:
+    import unittest
 import logging
 import openphoto
 
@@ -13,7 +17,9 @@ class TestBase(unittest.TestCase):
     MAXIMUM_TEST_PHOTOS = 4 # Never have more the 4 photos on the test server
     testcase_name = "(unknown testcase)"
     api_version = None
+
     config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
+    debug = (os.getenv("OPENPHOTO_TEST_DEBUG", "0") == "1")
 
     def __init__(self, *args, **kwds):
         unittest.TestCase.__init__(self, *args, **kwds)
@@ -27,10 +33,11 @@ class TestBase(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """ Ensure there is nothing on the server before running any tests """
-        if cls.api_version is None:
-            print "\nTesting Latest %s" % cls.testcase_name
-        else:
-            print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
+        if cls.debug:
+            if cls.api_version is None:
+                print "\nTesting Latest %s" % cls.testcase_name
+            else:
+                print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
 
         cls.client = openphoto.OpenPhoto(config_file=cls.config_file,
                                          api_version=cls.api_version)
@@ -63,8 +70,11 @@ class TestBase(unittest.TestCase):
         """
         self.photos = self.client.photos.list()
         if len(self.photos) != 3:
-#            print self.photos
-            print "[Regenerating Photos]"
+            if self.debug:
+                print "[Regenerating Photos]"
+            else:
+                print " ",
+                sys.stdout.flush()
             if len(self.photos) > 0:
                 self._delete_all()
             self._create_test_photos()
@@ -74,7 +84,11 @@ class TestBase(unittest.TestCase):
         if (len(self.tags) != 1 or
                 self.tags[0].id != self.TEST_TAG or
                 str(self.tags[0].count) != "3"):
-            print "[Regenerating Tags]"
+            if self.debug:
+                print "[Regenerating Tags]"
+            else:
+                print " ",
+                sys.stdout.flush()
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()
@@ -87,7 +101,11 @@ class TestBase(unittest.TestCase):
         if (len(self.albums) != 1 or
                 self.albums[0].name != self.TEST_ALBUM or
                 self.albums[0].count != "3"):
-            print "[Regenerating Albums]"
+            if self.debug:
+                print "[Regenerating Albums]"
+            else:
+                print " ",
+                sys.stdout.flush()
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()
