@@ -1,6 +1,7 @@
 Open Photo API / Python Library
 =======================
 #### OpenPhoto, a photo service for the masses
+[![Build Status](https://api.travis-ci.org/photo/openphoto-python.png)](https://travis-ci.org/photo/openphoto-python)
 
 ----------------------------------------
 <a name="install"></a>
