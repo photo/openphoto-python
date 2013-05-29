@@ -4,10 +4,10 @@ install: pip install tox --use-mirrors
 
 env:
   global:
-    - secure: "YdVpLPA0Lt+keVlmVsEMlDStPFU822fj+9LIzQtDgDXWHrFU/CgAOItohsUk\nFwUPRM2k836KQYokYjItaSxWyrxhuViHs6z0w6XI1iQlyQmWOW7K4iuSYAtm\npVIDgUjFWJ9IAg8cEPvpuzj9vrCAbH+1Chv3ZjxkOp7FRUQG68I="
-    - secure: "Ss5y5nDeWtA8GKJL5rnX87ZjIFbNhFvY/CfRtFUvv6Fi2+iaoNKExYqIusnb\nb6J1XZlROCb4WTRRghYq0KgYLfLdACcRSuPFK5om/ohh459Od9llHpicx2nK\n8sPnKGZWlIgp5GtbtLfw3q9/GfAmLbg8BPbtcOOR2JEGsOvnxDY="
-    - secure: "MZMII9A2aSOMyeKqvf5FDI7BPS7jeeGKRfzxu5fWMv+oGwlu2P6ny9wa8/JG\nTSpmZUDUPiKNK2G/TcZM5q15WJ+vnRDs9bP8CKy77i3P8LtdL7qXCDr1e76m\n2xSB9HRXHnU924U/f5JlihfAP+j4SLMSfXmCBxWhmh4PysGDzdk="
-    - secure: "eU2AexG2YXfo/b5qVzFj70uFbEU+8K6mUIGNdE1gWTU7ZNmp3XpW9uL9p3Vj\nIybnKjyWbcNjOFUvEXnfLkABH/JjM7gsP7wNyzLtL+VC9enuVO3GgwGye5l4\ncnFbeZyQe3q9tOzU/iqlu6Tip3hkcjMts0Pbn/yQIEbD32rFbOo="
-    - secure: "ipN5YKOvKh0TNsu780/xNjWpgoYY6b+UrdcGqQrF2X6z6scPmQYZbdgJQ+X1\nzuJuPK/1x+qLvJJXgFfaCBNTG3tbpjIVBZso0PXlMUj8RbfpbfRkSGJguqtC\nk5VT/NBhvhkp3kYmm6ap0r4t4g5XrKhpjgcCeV+Lb7tc7Y320S8="
+    - secure: "CQNSUBhVyedtCbioKkoueZsBFw0H+EnrPPNQIO+v3ieniPhFQbCoaCOA6rZG\n1MH1oIz5GSB1hv48jLCSSDppYOX1nKlLUFAepm9h7HSv2MaBzENKcp3ipBLP\nn8QEhVCkeWVnTkRB+IWrQHiW+8vHZ1iaERjlX9cMav7rBzzvK9g="
+    - secure: "e5xYBGGzn6x06hmofDJ+tuS8iAVPuFNGqizR8cA6+2W4rSQEbh7NcKKeAvB5\n8qlmBonupo0wttkewh2hpnxvaXV7uS4C0Qt/h087Bu4cPkJMENWq++CrDo6G\nwjkAu6x6YDkzuMuxa5BTWU9hAQVX1jq+cjYOmORhw/v5FFukN44="
+    - secure: "aU95NQmiY2ytyGRywEQvblN1YinIHpe/L9jnYlxazhfdHr+WXZd5aXC4Ze/U\nqlsHR+PGjycPHUCykJ/W5KU68tAX9r3PQgaQlfWd1cT89paY4givtoHiTz+f\nGu2I3BexskJ58NcUEDp6MEJqEuIXiQYUpoQ+6rNzvpe427xt6R0="
+    - secure: "ilNFM41mePkXMpvK/6T7s3vsQCN36XoiHnR7Fxrnpur9sXOfwB8A1Kw7CpbM\n5rxc2QNj7SPrT2K49QE8fUKHIl88a2MqCf+ujy9mG7WgKdxYazIxrhyHCNKO\nZ47r38kijW92GnSX4KTDeORfouZgR21BpDTfoCvspiWzWzG/fYE="
+    - secure: "YdUPDO7sTUTG2EwUlrxwOWKhlGXJiIK+RBWDspqvM8UQV4CQjzIsRX8urUIN\nSpSjJOfbIw25S+AsLpEBye8OJMncm/16Xp7PL5tlkNmRC12mPVG8f+wpOkrW\nt8v+2Cv/prYDn0tjoqnV1f5Nv5cEW6kAkG19UQ4QBgQzirtrs9Y="
 
 script: .travis/run_travis
