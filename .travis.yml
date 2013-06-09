@@ -1,6 +1,8 @@
 language: python
 
-install: pip install tox --use-mirrors
+install:
+  - pip install tox --use-mirrors
+  - .travis/install_pylint
 
 env:
   global:

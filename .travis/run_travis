@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Run Pylint
+# (for information only, any errors don't affect the Travis result)
+
+pylint --use-ignore-patch=y openphoto
+pylint --use-ignore-patch=y tests
+
 # Create a config file containing the test host's secrets
 
 CONFIG_DIR=~/.config/openphoto
