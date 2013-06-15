@@ -1,6 +1,8 @@
 language: python
 
-install: pip install tox --use-mirrors
+install:
+  - pip install tox --use-mirrors
+  - .travis/install_pylint
 
 env:
   global:
@@ -11,3 +13,10 @@ env:
     - secure: "YdUPDO7sTUTG2EwUlrxwOWKhlGXJiIK+RBWDspqvM8UQV4CQjzIsRX8urUIN\nSpSjJOfbIw25S+AsLpEBye8OJMncm/16Xp7PL5tlkNmRC12mPVG8f+wpOkrW\nt8v+2Cv/prYDn0tjoqnV1f5Nv5cEW6kAkG19UQ4QBgQzirtrs9Y="
 
 script: .travis/run_travis
+
+after_script:
+  # Run Pylint
+  # (for information only, any errors don't affect the Travis result)
+  - pylint --use-ignore-patch=y openphoto
+  - pylint --use-ignore-patch=y tests
+
