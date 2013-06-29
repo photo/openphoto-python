@@ -57,8 +57,8 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(self._last_request().querystring["spam"], ["eggs"])
         self.assertEqual(response, self.test_data)
         self.assertEqual(self.client.last_url, self.test_uri)
-        self.assertEqual(self.client.last_params, {"foo": "bar",
-                                                   "spam": "eggs"})
+        self.assertEqual(self.client.last_params, {"foo": b"bar",
+                                                   "spam": b"eggs"})
         self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
@@ -67,11 +67,12 @@ class TestHttp(unittest.TestCase):
         self._register_uri(httpretty.POST)
         response = self.client.post(self.test_endpoint,
                                    foo="bar", spam="eggs")
-        self.assertEqual(self._last_request().body, "foo=bar&spam=eggs")
+        self.assertIn(b"spam=eggs", self._last_request().body)
+        self.assertIn(b"foo=bar", self._last_request().body)
         self.assertEqual(response, self.test_data)
         self.assertEqual(self.client.last_url, self.test_uri)
-        self.assertEqual(self.client.last_params, {"foo": "bar",
-                                                   "spam": "eggs"})
+        self.assertEqual(self.client.last_params, {"foo": b"bar",
+                                                   "spam": b"eggs"})
         self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
@@ -123,7 +124,7 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(params["tag"], ["tag_id"])
         self.assertEqual(params["list_"], ["photo_id,album_id,tag_id"])
         self.assertEqual(params["boolean"], ["1"])
-        self.assertEqual(params["unicode_"], ["\xc3\xbcmlaut"])
+        self.assertIn(params["unicode_"], [["\xc3\xbcmlaut"], ["\xfcmlaut"]])
 
     @httpretty.activate
     def test_get_with_api_version(self):
@@ -152,10 +153,10 @@ class TestHttp(unittest.TestCase):
             response = self.client.post(self.test_endpoint,
                                         files={"file": in_file})
         self.assertEqual(response, self.test_data)
-        body = self._last_request().body
+        body = str(self._last_request().body)
         self.assertIn("Content-Disposition: form-data; "+
                       "name=\"file\"; filename=\"test_file.txt\"", body)
-        self.assertIn("Test File", body)
+        self.assertIn("Test File", str(body))
 
 
     @httpretty.activate
