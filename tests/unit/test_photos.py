@@ -345,21 +345,21 @@ class TestPhotoNextPrevious(TestPhotos):
 
 class TestPhotoTransform(TestPhotos):
     @mock.patch.object(openphoto.OpenPhoto, 'post')
-    def test_transform(self, mock):
+    def test_photo_transform(self, mock):
         mock.return_value = self._return_value(self.TEST_PHOTOS_DICT[1])
         result = self.client.photo.transform(self.TEST_PHOTOS[0], rotate="90")
         mock.assert_called_with("/photo/1a/transform.json", rotate="90")
         self.assertEqual(result.get_fields(), self.TEST_PHOTOS_DICT[1])
 
     @mock.patch.object(openphoto.OpenPhoto, 'post')
-    def test_transform_id(self, mock):
+    def test_photo_transform_id(self, mock):
         mock.return_value = self._return_value(self.TEST_PHOTOS_DICT[1])
         result = self.client.photo.transform("1a", rotate="90")
         mock.assert_called_with("/photo/1a/transform.json", rotate="90")
         self.assertEqual(result.get_fields(), self.TEST_PHOTOS_DICT[1])
 
     @mock.patch.object(openphoto.OpenPhoto, 'post')
-    def test_object_transform(self, mock):
+    def test_photo_object_transform(self, mock):
         mock.return_value = self._return_value(self.TEST_PHOTOS_DICT[1])
         photo = self.TEST_PHOTOS[0]
         photo.transform(rotate="90")
