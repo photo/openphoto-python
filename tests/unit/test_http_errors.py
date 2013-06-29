@@ -7,10 +7,23 @@ except ImportError:
     import unittest
 
 import openphoto
-from tests.unit.test_http import TestHttp
 
-class TestHttpErrors(TestHttp):
-    def _register_uri(self, method, uri=TestHttp.TEST_URI,
+class TestHttpErrors(unittest.TestCase):
+    TEST_HOST = "test.example.com"
+    TEST_ENDPOINT = "test.json"
+    TEST_URI = "http://%s/%s" % (TEST_HOST, TEST_ENDPOINT)
+    TEST_DATA = {"message": "Test Message",
+                 "code": 200,
+                 "result": "Test Result"}
+    TEST_OAUTH = {"consumer_key": "dummy",
+                  "consumer_secret": "dummy",
+                  "token": "dummy",
+                  "token_secret": "dummy"}
+
+    def setUp(self):
+        self.client = openphoto.OpenPhoto(host=self.TEST_HOST, **self.TEST_OAUTH)
+
+    def _register_uri(self, method, uri=TEST_URI,
                       data=None, body=None, status=200, **kwds):
         """Convenience wrapper around httpretty.register_uri"""
         if data is None:
