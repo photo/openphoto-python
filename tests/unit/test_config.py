@@ -29,11 +29,12 @@ class TestConfig(unittest.TestCase):
 
     @staticmethod
     def create_config(config_file, host):
+        """Create a dummy config file"""
         with open(os.path.join(CONFIG_PATH, config_file), "w") as conf:
             conf.write("host = %s\n" % host)
             conf.write("# Comment\n\n")
             conf.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
-            conf.write("\"consumerSecret\" = %s_consumer_secret\n" % config_file)
+            conf.write("\"consumerSecret\"= %s_consumer_secret\n" % config_file)
             conf.write("'token'=%s_token\n" % config_file)
             conf.write("tokenSecret = '%s_token_secret'\n" % config_file)
 

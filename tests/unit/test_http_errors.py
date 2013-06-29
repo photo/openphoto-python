@@ -9,25 +9,26 @@ except ImportError:
 import openphoto
 
 class TestHttpErrors(unittest.TestCase):
-    TEST_HOST = "test.example.com"
-    TEST_ENDPOINT = "test.json"
-    TEST_URI = "http://%s/%s" % (TEST_HOST, TEST_ENDPOINT)
-    TEST_DATA = {"message": "Test Message",
+    test_host = "test.example.com"
+    test_endpoint = "test.json"
+    test_uri = "http://%s/%s" % (test_host, test_endpoint)
+    test_data = {"message": "Test Message",
                  "code": 200,
                  "result": "Test Result"}
-    TEST_OAUTH = {"consumer_key": "dummy",
+    test_oauth = {"consumer_key": "dummy",
                   "consumer_secret": "dummy",
                   "token": "dummy",
                   "token_secret": "dummy"}
 
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST, **self.TEST_OAUTH)
+        self.client = openphoto.OpenPhoto(host=self.test_host,
+                                          **self.test_oauth)
 
-    def _register_uri(self, method, uri=TEST_URI,
+    def _register_uri(self, method, uri=test_uri,
                       data=None, body=None, status=200, **kwds):
         """Convenience wrapper around httpretty.register_uri"""
         if data is None:
-            data = self.TEST_DATA
+            data = self.test_data
             # Set the JSON return code to match the HTTP status
             data["code"] = status
         if body is None:
@@ -36,98 +37,154 @@ class TestHttpErrors(unittest.TestCase):
                                **kwds)
 
     @httpretty.activate
-    def test_get_with_error_status_raises_openphoto_exception(self):
+    def test_get_with_error_status(self):
+        """
+        Check that an error status causes the get method
+        to raise an exception
+        """
         self._register_uri(httpretty.GET, status=500)
         with self.assertRaises(openphoto.OpenPhotoError):
-            self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_error_status_raises_openphoto_exception(self):
+    def test_post_with_error_status(self):
+        """
+        Check that an error status causes the post method
+        to raise an exception
+        """
         self._register_uri(httpretty.POST, status=500)
         with self.assertRaises(openphoto.OpenPhotoError):
-            self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     # TODO: 404 status should raise 404 error, even if JSON is valid
     @unittest.expectedFailure
     @httpretty.activate
-    def test_get_with_404_status_raises_404_exception(self):
+    def test_get_with_404_status(self):
+        """
+        Check that a 404 status causes the get method
+        to raise a 404 exception
+        """
         self._register_uri(httpretty.GET, status=404)
         with self.assertRaises(openphoto.OpenPhoto404Error):
-            response = self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     # TODO: 404 status should raise 404 error, even if JSON is valid
     @unittest.expectedFailure
     @httpretty.activate
-    def test_post_with_404_status_raises_404_exception(self):
+    def test_post_with_404_status(self):
+        """
+        Check that a 404 status causes the post method
+        to raise a 404 exception
+        """
         self._register_uri(httpretty.POST, status=404)
         with self.assertRaises(openphoto.OpenPhoto404Error):
-            response = self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     @httpretty.activate
-    def test_get_with_invalid_json_raises_exception(self):
+    def test_get_with_invalid_json(self):
+        """
+        Check that invalid JSON causes the get method to
+        raise an exception
+        """
         self._register_uri(httpretty.GET, body="Invalid JSON")
         with self.assertRaises(ValueError):
-            self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_invalid_json_raises_exception(self):
+    def test_post_with_invalid_json(self):
+        """
+        Check that invalid JSON causes the post method to
+        raise an exception
+        """
         self._register_uri(httpretty.POST, body="Invalid JSON")
         with self.assertRaises(ValueError):
-            self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     @httpretty.activate
-    def test_get_with_error_status_and_invalid_json_raises_openphoto_exception(self):
+    def test_get_with_error_status_and_invalid_json(self):
+        """
+        Check that invalid JSON causes the get method to raise an exception,
+        even with an error status is returned
+        """
         self._register_uri(httpretty.GET, body="Invalid JSON", status=500)
         with self.assertRaises(openphoto.OpenPhotoError):
-            response = self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_error_status_and_invalid_json_raises_openphoto_exception(self):
+    def test_post_with_error_status_and_invalid_json(self):
+        """
+        Check that invalid JSON causes the post method to raise an exception,
+        even with an error status is returned
+        """
         self._register_uri(httpretty.POST, body="Invalid JSON", status=500)
         with self.assertRaises(openphoto.OpenPhotoError):
-            response = self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     @httpretty.activate
-    def test_get_with_404_status_and_invalid_json_raises_404_exception(self):
+    def test_get_with_404_status_and_invalid_json(self):
+        """
+        Check that invalid JSON causes the get method to raise an exception,
+        even with a 404 status is returned
+        """
         self._register_uri(httpretty.GET, body="Invalid JSON", status=404)
         with self.assertRaises(openphoto.OpenPhoto404Error):
-            response = self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_404_status_and_invalid_json_raises_404_exception(self):
+    def test_post_with_404_status_and_invalid_json(self):
+        """
+        Check that invalid JSON causes the post method to raise an exception,
+        even with a 404 status is returned
+        """
         self._register_uri(httpretty.POST, body="Invalid JSON", status=404)
         with self.assertRaises(openphoto.OpenPhoto404Error):
-            response = self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     @httpretty.activate
-    def test_get_with_duplicate_status_raises_duplicate_exception(self):
+    def test_get_with_duplicate_status(self):
+        """
+        Check that a get with a duplicate status
+        raises a duplicate exception
+        """
         data = {"message": "This photo already exists", "code": 409}
         self._register_uri(httpretty.GET, data=data, status=409)
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
-            response = self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_duplicate_status_raises_duplicate_exception(self):
+    def test_post_with_duplicate_status(self):
+        """
+        Check that a post with a duplicate status
+        raises a duplicate exception
+        """
         data = {"message": "This photo already exists", "code": 409}
         self._register_uri(httpretty.POST, data=data, status=409)
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
-            response = self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     # TODO: Status code mismatch should raise an exception
     @unittest.expectedFailure
     @httpretty.activate
-    def test_get_with_status_code_mismatch_raises_openphoto_exception(self):
+    def test_get_with_status_code_mismatch(self):
+        """
+        Check that an exception is raised if a get returns a
+        status code that doesn't match the JSON code
+        """
         data = {"message": "Test Message", "code": 200}
         self._register_uri(httpretty.GET, data=data, status=202)
         with self.assertRaises(openphoto.OpenPhotoError):
-            response = self.client.get(self.TEST_ENDPOINT)
+            self.client.get(self.test_endpoint)
 
     # TODO: Status code mismatch should raise an exception
     @unittest.expectedFailure
     @httpretty.activate
-    def test_post_with_status_code_mismatch_raises_openphoto_exception(self):
+    def test_post_with_status_code_mismatch(self):
+        """
+        Check that an exception is raised if a post returns a
+        status code that doesn't match the JSON code
+        """
         data = {"message": "Test Message", "code": 200}
         self._register_uri(httpretty.POST, data=data, status=202)
         with self.assertRaises(openphoto.OpenPhotoError):
-            response = self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 

@@ -10,25 +10,28 @@ except ImportError:
 import openphoto
 
 class TestHttp(unittest.TestCase):
-    TEST_HOST = "test.example.com"
-    TEST_ENDPOINT = "test.json"
-    TEST_URI = "http://%s/%s" % (TEST_HOST, TEST_ENDPOINT)
-    TEST_DATA = {"message": "Test Message",
+    test_host = "test.example.com"
+    test_endpoint = "test.json"
+    test_uri = "http://%s/%s" % (test_host, test_endpoint)
+    test_data = {"message": "Test Message",
                  "code": 200,
                  "result": "Test Result"}
-    TEST_OAUTH = {"consumer_key": "dummy",
+    test_oauth = {"consumer_key": "dummy",
                   "consumer_secret": "dummy",
                   "token": "dummy",
                   "token_secret": "dummy"}
-    TEST_FILE = os.path.join("tests", "unit", "data", "test_file.txt")
+    test_file = os.path.join("tests", "unit", "data", "test_file.txt")
 
 
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST, **self.TEST_OAUTH)
+        self.client = openphoto.OpenPhoto(host=self.test_host,
+                                          **self.test_oauth)
 
-    def _register_uri(self, method, uri=TEST_URI, data=TEST_DATA, body=None,
+    def _register_uri(self, method, uri=test_uri, data=None, body=None,
                       **kwds):
         """Convenience wrapper around httpretty.register_uri"""
+        if data is None:
+            data = self.test_data
         if body is None:
             body = json.dumps(data)
         httpretty.register_uri(method, uri=uri, body=body, **kwds)
@@ -39,72 +42,82 @@ class TestHttp(unittest.TestCase):
         return httpretty.httpretty.last_request
 
     def test_attributes(self):
-        self.assertEqual(self.client.host, self.TEST_HOST)
-        self.assertEqual(self.client.config.host, self.TEST_HOST)
+        """Check that the host attribute has been set correctly"""
+        self.assertEqual(self.client.host, self.test_host)
+        self.assertEqual(self.client.config.host, self.test_host)
 
     @httpretty.activate
     def test_get_with_parameters(self):
+        """Check that the get method accepts parameters correctly"""
         self._register_uri(httpretty.GET)
-        response = self.client.get(self.TEST_ENDPOINT,
+        response = self.client.get(self.test_endpoint,
                                    foo="bar", spam="eggs")
         self.assertIn("OAuth", self._last_request().headers["authorization"])
         self.assertEqual(self._last_request().querystring["foo"], ["bar"])
         self.assertEqual(self._last_request().querystring["spam"], ["eggs"])
-        self.assertEqual(response, self.TEST_DATA)
-        self.assertEqual(self.client.last_url, self.TEST_URI)
-        self.assertEqual(self.client.last_params, {"foo": "bar", "spam": "eggs"})
-        self.assertEqual(self.client.last_response.json(), self.TEST_DATA)
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url, self.test_uri)
+        self.assertEqual(self.client.last_params, {"foo": "bar",
+                                                   "spam": "eggs"})
+        self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
     def test_post_with_parameters(self):
+        """Check that the post method accepts parameters correctly"""
         self._register_uri(httpretty.POST)
-        response = self.client.post(self.TEST_ENDPOINT,
+        response = self.client.post(self.test_endpoint,
                                    foo="bar", spam="eggs")
         self.assertEqual(self._last_request().body, "foo=bar&spam=eggs")
-        self.assertEqual(response, self.TEST_DATA)
-        self.assertEqual(self.client.last_url, self.TEST_URI)
-        self.assertEqual(self.client.last_params, {"foo": "bar", "spam": "eggs"})
-        self.assertEqual(self.client.last_response.json(), self.TEST_DATA)
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url, self.test_uri)
+        self.assertEqual(self.client.last_params, {"foo": "bar",
+                                                   "spam": "eggs"})
+        self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
     def test_get_without_oauth(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST)
+        """Check that the get method works without OAuth parameters"""
+        self.client = openphoto.OpenPhoto(host=self.test_host)
         self._register_uri(httpretty.GET)
-        response = self.client.get(self.TEST_ENDPOINT)
+        response = self.client.get(self.test_endpoint)
         self.assertNotIn("authorization", self._last_request().headers)
-        self.assertEqual(response, self.TEST_DATA)
+        self.assertEqual(response, self.test_data)
 
     @httpretty.activate
-    def test_post_without_oauth_raises_exception(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST)
+    def test_post_without_oauth(self):
+        """Check that the post method fails without OAuth parameters"""
+        self.client = openphoto.OpenPhoto(host=self.test_host)
         self._register_uri(httpretty.POST)
         with self.assertRaises(openphoto.OpenPhotoError):
-            self.client.post(self.TEST_ENDPOINT)
+            self.client.post(self.test_endpoint)
 
     @httpretty.activate
     def test_get_without_response_processing(self):
+        """Check that the get method works with response processing disabled"""
         self._register_uri(httpretty.GET)
-        response = self.client.get(self.TEST_ENDPOINT, process_response=False)
-        self.assertEqual(response, json.dumps(self.TEST_DATA))
+        response = self.client.get(self.test_endpoint, process_response=False)
+        self.assertEqual(response, json.dumps(self.test_data))
 
     @httpretty.activate
     def test_post_without_response_processing(self):
+        """Check that the post method works with response processing disabled"""
         self._register_uri(httpretty.POST)
-        response = self.client.post(self.TEST_ENDPOINT, process_response=False)
-        self.assertEqual(response, json.dumps(self.TEST_DATA))
+        response = self.client.post(self.test_endpoint, process_response=False)
+        self.assertEqual(response, json.dumps(self.test_data))
 
     @httpretty.activate
     def test_get_parameter_processing(self):
+        """Check that the parameter processing function is working"""
         self._register_uri(httpretty.GET)
         photo = openphoto.objects.Photo(None, {"id": "photo_id"})
         album = openphoto.objects.Album(None, {"id": "album_id"})
         tag = openphoto.objects.Tag(None, {"id": "tag_id"})
-        self.client.get(self.TEST_ENDPOINT,
+        self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
                         list_=[photo, album, tag],
                         boolean=True,
                         unicode_="\xfcmlaut")
-        params=self._last_request().querystring
+        params = self._last_request().querystring
         self.assertEqual(params["photo"], ["photo_id"])
         self.assertEqual(params["album"], ["album_id"])
         self.assertEqual(params["tag"], ["tag_id"])
@@ -114,28 +127,31 @@ class TestHttp(unittest.TestCase):
 
     @httpretty.activate
     def test_get_with_api_version(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST, api_version=1)
+        """Check that an API version can be specified for the get method"""
+        self.client = openphoto.OpenPhoto(host=self.test_host, api_version=1)
         self._register_uri(httpretty.GET,
-                           uri="http://%s/v1/%s" % (self.TEST_HOST,
-                                                    self.TEST_ENDPOINT))
-        self.client.get(self.TEST_ENDPOINT)
+                           uri="http://%s/v1/%s" % (self.test_host,
+                                                    self.test_endpoint))
+        self.client.get(self.test_endpoint)
 
     @httpretty.activate
     def test_post_with_api_version(self):
-        self.client = openphoto.OpenPhoto(host=self.TEST_HOST, api_version=1,
-                                          **self.TEST_OAUTH)
+        """Check that an API version can be specified for the post method"""
+        self.client = openphoto.OpenPhoto(host=self.test_host, api_version=1,
+                                          **self.test_oauth)
         self._register_uri(httpretty.POST,
-                           uri="http://%s/v1/%s" % (self.TEST_HOST,
-                                                    self.TEST_ENDPOINT))
-        self.client.post(self.TEST_ENDPOINT)
+                           uri="http://%s/v1/%s" % (self.test_host,
+                                                    self.test_endpoint))
+        self.client.post(self.test_endpoint)
 
     @httpretty.activate
     def test_post_file(self):
+        """Check that a file can be posted"""
         self._register_uri(httpretty.POST)
-        with open(self.TEST_FILE, 'rb') as in_file:
-            response = self.client.post(self.TEST_ENDPOINT,
+        with open(self.test_file, 'rb') as in_file:
+            response = self.client.post(self.test_endpoint,
                                         files={"file": in_file})
-        self.assertEqual(response, self.TEST_DATA)
+        self.assertEqual(response, self.test_data)
         body = self._last_request().body
         self.assertIn("Content-Disposition: form-data; "+
                       "name=\"file\"; filename=\"test_file.txt\"", body)
@@ -144,9 +160,13 @@ class TestHttp(unittest.TestCase):
 
     @httpretty.activate
     def test_post_file_parameters_are_sent_as_querystring(self):
+        """
+        Check that parameters are send as a query string
+        when a file is posted
+        """
         self._register_uri(httpretty.POST)
-        with open(self.TEST_FILE, 'rb') as in_file:
-            response = self.client.post(self.TEST_ENDPOINT, foo="bar",
+        with open(self.test_file, 'rb') as in_file:
+            response = self.client.post(self.test_endpoint, foo="bar",
                                         files={"file": in_file})
-        self.assertEqual(response, self.TEST_DATA)
+        self.assertEqual(response, self.test_data)
         self.assertEqual(self._last_request().querystring["foo"], ["bar"])
