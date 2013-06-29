@@ -4,7 +4,7 @@ install:
   - pip install tox --use-mirrors
   - .travis/install_pylint
 
-script: tox -e py27
+script: tox
 
 after_script:
   # Run Pylint
