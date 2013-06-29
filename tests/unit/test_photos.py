@@ -109,12 +109,16 @@ class TestPhotoDelete(TestPhotos):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.photo.delete(self.TEST_PHOTOS[0])
 
+    # TODO: after deleting object fields, name and id should be set to None
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_delete(self, mock):
         mock.return_value = self._return_value(True)
-        result = self.TEST_PHOTOS[0].delete()
+        photo = self.TEST_PHOTOS[0]
+        result = photo.delete()
         mock.assert_called_with("/photo/1a/delete.json")
         self.assertEqual(result, True)
+        self.assertEqual(photo.get_fields(), {})
+        # self.assertEqual(photo.id, None)
 
     # TODO: photo.delete should raise exception on failure
     @unittest.expectedFailure
