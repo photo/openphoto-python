@@ -1,11 +1,6 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-import openphoto
-import test_base
+import tests.test_base
 
-class TestAlbums(test_base.TestBase):
+class TestAlbums(tests.test_base.TestBase):
     testcase_name = "album API"
 
     def test_create_delete(self):
@@ -16,22 +11,26 @@ class TestAlbums(test_base.TestBase):
         # Check the return value
         self.assertEqual(album.name, album_name)
         # Check that the album now exists
-        self.assertIn(album_name, [a.name for a in self.client.albums.list()])
+        self.assertIn(album_name,
+                      [a.name for a in self.client.albums.list()])
 
         # Delete the album
         self.assertTrue(self.client.album.delete(album.id))
         # Check that the album is now gone
-        self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
+        self.assertNotIn(album_name,
+                         [a.name for a in self.client.albums.list()])
 
         # Create it again, and delete it using the Album object
         album = self.client.album.create(album_name)
         self.assertTrue(album.delete())
         # Check that the album is now gone
-        self.assertNotIn(album_name, [a.name for a in self.client.albums.list()])
+        self.assertNotIn(album_name,
+                         [a.name for a in self.client.albums.list()])
 
     def test_update(self):
         """ Test that an album can be updated """
-        # Update the album using the OpenPhoto class, passing in the album object
+        # Update the album using the OpenPhoto class,
+        # passing in the album object
         new_name = "New Name"
         self.client.album.update(self.albums[0], name=new_name)
 
@@ -57,7 +56,6 @@ class TestAlbums(test_base.TestBase):
     def test_view(self):
         """ Test the album view """
         album = self.albums[0]
-        self.assertFalse(hasattr(album, "photos"))
 
         # Get the photos in the album using the Album object directly
         album.view(includeElements=True)
@@ -67,15 +65,15 @@ class TestAlbums(test_base.TestBase):
 
     def test_form(self):
         """ If album.form gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.form(None)
 
     def test_add_photos(self):
         """ If album.add_photos gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.add_photos(None, None)
 
     def test_remove_photos(self):
         """ If album.remove_photos gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos(None, None)

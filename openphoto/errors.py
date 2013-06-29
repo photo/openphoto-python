@@ -7,10 +7,8 @@ class OpenPhotoDuplicateError(OpenPhotoError):
     pass
 
 class OpenPhoto404Error(Exception):
-    """ Indicates that an Http 404 error code was received (resource not found) """
+    """
+    Indicates that an Http 404 error code was received
+    (resource not found)
+    """
     pass
-
-class NotImplementedError(OpenPhotoError):
-    """ Indicates that the API function has not yet been coded - please help! """
-    pass
-

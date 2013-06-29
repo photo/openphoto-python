@@ -1,14 +1,17 @@
+from __future__ import print_function
 import sys
 import os
+import logging
 try:
-    import unittest2 as unittest
+    import unittest2 as unittest # Python2.6
 except ImportError:
     import unittest
-import logging
+
 import openphoto
 
 def get_test_server_api():
-    return int(os.getenv("OPENPHOTO_TEST_SERVER_API", openphoto.LATEST_API_VERSION))
+    return int(os.getenv("OPENPHOTO_TEST_SERVER_API",
+                         openphoto.LATEST_API_VERSION))
 
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
@@ -22,7 +25,7 @@ class TestBase(unittest.TestCase):
     debug = (os.getenv("OPENPHOTO_TEST_DEBUG", "0") == "1")
 
     def __init__(self, *args, **kwds):
-        unittest.TestCase.__init__(self, *args, **kwds)
+        super(TestBase, self).__init__(*args, **kwds)
         self.photos = []
 
         logging.basicConfig(filename="tests.log",
@@ -35,9 +38,9 @@ class TestBase(unittest.TestCase):
         """ Ensure there is nothing on the server before running any tests """
         if cls.debug:
             if cls.api_version is None:
-                print "\nTesting Latest %s" % cls.testcase_name
+                print("\nTesting Latest %s" % cls.testcase_name)
             else:
-                print "\nTesting %s v%d" % (cls.testcase_name, cls.api_version)
+                print("\nTesting %s v%d" % (cls.testcase_name, cls.api_version))
 
         cls.client = openphoto.OpenPhoto(config_file=cls.config_file,
                                          api_version=cls.api_version)
@@ -45,17 +48,17 @@ class TestBase(unittest.TestCase):
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
         if cls.client.tags.list() != []:
             raise ValueError("The test server (%s) contains tags. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
         if cls.client.albums.list() != []:
             raise ValueError("The test server (%s) contains albums. "
                              "Please delete them before running the tests"
-                             % cls.client._host)
+                             % cls.client.host)
 
     @classmethod
     def tearDownClass(cls):
@@ -71,9 +74,9 @@ class TestBase(unittest.TestCase):
         self.photos = self.client.photos.list()
         if len(self.photos) != 3:
             if self.debug:
-                print "[Regenerating Photos]"
+                print("[Regenerating Photos]")
             else:
-                print " ",
+                print(" ", end='')
                 sys.stdout.flush()
             if len(self.photos) > 0:
                 self._delete_all()
@@ -85,16 +88,16 @@ class TestBase(unittest.TestCase):
                 self.tags[0].id != self.TEST_TAG or
                 str(self.tags[0].count) != "3"):
             if self.debug:
-                print "[Regenerating Tags]"
+                print("[Regenerating Tags]")
             else:
-                print " ",
+                print(" ", end='')
                 sys.stdout.flush()
             self._delete_all()
             self._create_test_photos()
             self.photos = self.client.photos.list()
             self.tags = self.client.tags.list()
         if len(self.tags) != 1:
-            print "Tags: %s" % self.tags
+            print("Tags: %s" % self.tags)
             raise Exception("Tag creation failed")
 
         self.albums = self.client.albums.list()
@@ -102,9 +105,9 @@ class TestBase(unittest.TestCase):
                 self.albums[0].name != self.TEST_ALBUM or
                 self.albums[0].count != "3"):
             if self.debug:
-                print "[Regenerating Albums]"
+                print("[Regenerating Albums]")
             else:
-                print " ",
+                print(" ", end='')
                 sys.stdout.flush()
             self._delete_all()
             self._create_test_photos()
@@ -112,13 +115,13 @@ class TestBase(unittest.TestCase):
             self.tags = self.client.tags.list()
             self.albums = self.client.albums.list()
         if len(self.albums) != 1:
-            print "Albums: %s" % self.albums
+            print("Albums: %s" % self.albums)
             raise Exception("Album creation failed")
 
-        logging.info("\nRunning %s..." % self.id())
+        logging.info("\nRunning %s...", self.id())
 
     def tearDown(self):
-        logging.info("Finished %s\n" % self.id())
+        logging.info("Finished %s\n", self.id())
 
     @classmethod
     def _create_test_photos(cls):
@@ -141,9 +144,11 @@ class TestBase(unittest.TestCase):
 
     @classmethod
     def _delete_all(cls):
+        """ Remove all photos, tags and albums """
         photos = cls.client.photos.list()
         if len(photos) > cls.MAXIMUM_TEST_PHOTOS:
-            raise ValueError("There too many photos on the test server - must always be less than %d."
+            raise ValueError("There too many photos on the test server "
+                             "- must always be less than %d."
                              % cls.MAXIMUM_TEST_PHOTOS)
         for photo in photos:
             photo.delete()

@@ -1,10 +1,11 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 import os
 import shutil
-import openphoto
+try:
+    import unittest2 as unittest # Python2.6
+except ImportError:
+    import unittest
+
+from openphoto import OpenPhoto
 
 CONFIG_HOME_PATH = os.path.join("tests", "config")
 CONFIG_PATH = os.path.join(CONFIG_HOME_PATH, "openphoto")
@@ -26,68 +27,73 @@ class TestConfig(unittest.TestCase):
             os.environ["XDG_CONFIG_HOME"] = self.original_xdg_config_home
         shutil.rmtree(CONFIG_HOME_PATH, ignore_errors=True)
 
-    def create_config(self, config_file, host):
-        f = open(os.path.join(CONFIG_PATH, config_file), "w")
-        f.write("host = %s\n" % host)
-        f.write("# Comment\n\n")
-        f.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
-        f.write("\"consumerSecret\" = %s_consumer_secret\n" % config_file)
-        f.write("'token'=%s_token\n" % config_file)
-        f.write("tokenSecret = '%s_token_secret'\n" % config_file)
+    @staticmethod
+    def create_config(config_file, host):
+        with open(os.path.join(CONFIG_PATH, config_file), "w") as conf:
+            conf.write("host = %s\n" % host)
+            conf.write("# Comment\n\n")
+            conf.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
+            conf.write("\"consumerSecret\" = %s_consumer_secret\n" % config_file)
+            conf.write("'token'=%s_token\n" % config_file)
+            conf.write("tokenSecret = '%s_token_secret'\n" % config_file)
 
     def test_default_config(self):
         """ Ensure the default config is loaded """
         self.create_config("default", "Test Default Host")
-        client = openphoto.OpenPhoto()
-        self.assertEqual(client._host, "Test Default Host")
-        self.assertEqual(client._consumer_key, "default_consumer_key")
-        self.assertEqual(client._consumer_secret, "default_consumer_secret")
-        self.assertEqual(client._token, "default_token")
-        self.assertEqual(client._token_secret, "default_token_secret")
+        client = OpenPhoto()
+        config = client.config
+        self.assertEqual(client.host, "Test Default Host")
+        self.assertEqual(config.consumer_key, "default_consumer_key")
+        self.assertEqual(config.consumer_secret, "default_consumer_secret")
+        self.assertEqual(config.token, "default_token")
+        self.assertEqual(config.token_secret, "default_token_secret")
 
     def test_custom_config(self):
         """ Ensure a custom config can be loaded """
         self.create_config("default", "Test Default Host")
         self.create_config("custom", "Test Custom Host")
-        client = openphoto.OpenPhoto(config_file="custom")
-        self.assertEqual(client._host, "Test Custom Host")
-        self.assertEqual(client._consumer_key, "custom_consumer_key")
-        self.assertEqual(client._consumer_secret, "custom_consumer_secret")
-        self.assertEqual(client._token, "custom_token")
-        self.assertEqual(client._token_secret, "custom_token_secret")
+        client = OpenPhoto(config_file="custom")
+        config = client.config
+        self.assertEqual(client.host, "Test Custom Host")
+        self.assertEqual(config.consumer_key, "custom_consumer_key")
+        self.assertEqual(config.consumer_secret, "custom_consumer_secret")
+        self.assertEqual(config.token, "custom_token")
+        self.assertEqual(config.token_secret, "custom_token_secret")
 
     def test_full_config_path(self):
         """ Ensure a full custom config path can be loaded """
         self.create_config("path", "Test Path Host")
         full_path = os.path.abspath(CONFIG_PATH)
-        client = openphoto.OpenPhoto(config_file=os.path.join(full_path, "path"))
-        self.assertEqual(client._host, "Test Path Host")
-        self.assertEqual(client._consumer_key, "path_consumer_key")
-        self.assertEqual(client._consumer_secret, "path_consumer_secret")
-        self.assertEqual(client._token, "path_token")
-        self.assertEqual(client._token_secret, "path_token_secret")
+        client = OpenPhoto(config_file=os.path.join(full_path, "path"))
+        config = client.config
+        self.assertEqual(client.host, "Test Path Host")
+        self.assertEqual(config.consumer_key, "path_consumer_key")
+        self.assertEqual(config.consumer_secret, "path_consumer_secret")
+        self.assertEqual(config.token, "path_token")
+        self.assertEqual(config.token_secret, "path_token_secret")
 
     def test_host_override(self):
         """ Ensure that specifying a host overrides the default config """
         self.create_config("default", "Test Default Host")
-        client = openphoto.OpenPhoto(host="host_override")
-        self.assertEqual(client._host, "host_override")
-        self.assertEqual(client._consumer_key, "")
-        self.assertEqual(client._consumer_secret, "")
-        self.assertEqual(client._token, "")
-        self.assertEqual(client._token_secret, "")
+        client = OpenPhoto(host="host_override")
+        config = client.config
+        self.assertEqual(config.host, "host_override")
+        self.assertEqual(config.consumer_key, "")
+        self.assertEqual(config.consumer_secret, "")
+        self.assertEqual(config.token, "")
+        self.assertEqual(config.token_secret, "")
 
-    def test_missing_config_files_raise_exceptions(self):
+    def test_missing_config_files(self):
         """ Ensure that missing config files raise exceptions """
         with self.assertRaises(IOError):
-            openphoto.OpenPhoto()
+            OpenPhoto()
         with self.assertRaises(IOError):
-            openphoto.OpenPhoto(config_file="custom")
+            OpenPhoto(config_file="custom")
 
-    def test_host_and_config_file_raises_exception(self):
+    def test_host_and_config_file(self):
         """ It's not valid to specify both a host and a config_file """
         self.create_config("custom", "Test Custom Host")
         with self.assertRaises(ValueError):
-            openphoto.OpenPhoto(config_file="custom", host="host_override")
+            OpenPhoto(config_file="custom", host="host_override")
 
 

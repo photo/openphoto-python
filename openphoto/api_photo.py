@@ -1,7 +1,8 @@
 import base64
 
-from errors import *
-from objects import Photo
+from openphoto.errors import OpenPhotoError
+import openphoto.openphoto_http
+from openphoto.objects import Photo
 
 class ApiPhotos:
     def __init__(self, client):
@@ -10,7 +11,7 @@ class ApiPhotos:
     def list(self, **kwds):
         """ Returns a list of Photo objects """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
-        photos = self._client._result_to_list(photos)
+        photos = openphoto.openphoto_http.result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
     def update(self, photos, **kwds):
@@ -19,7 +20,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/update.json", ids=photos, **kwds)["result"]:
+        if not self._client.post("/photos/update.json", ids=photos,
+                                 **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
         return True
 
@@ -29,7 +31,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/delete.json", ids=photos, **kwds)["result"]:
+        if not self._client.post("/photos/delete.json", ids=photos,
+                                 **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
         return True
 
@@ -60,7 +63,7 @@ class ApiPhoto:
         raise NotImplementedError()
 
     def update(self, photo, **kwds):
-        """ 
+        """
         Update a photo with the specified parameters.
         Returns the updated photo object
         """
@@ -70,8 +73,8 @@ class ApiPhoto:
         return photo
 
     def view(self, photo, **kwds):
-        """ 
-        Used to view the photo at a particular size. 
+        """
+        Used to view the photo at a particular size.
         Returns the requested photo object
         """
         if not isinstance(photo, Photo):
@@ -80,14 +83,18 @@ class ApiPhoto:
         return photo
 
     def upload(self, photo_file, **kwds):
-        result = self._client.post("/photo/upload.json", files={'photo': photo_file}, 
-                                   **kwds)["result"]
+        """ Uploads the specified file to the server """
+        with open(photo_file, 'rb') as in_file:
+            result = self._client.post("/photo/upload.json",
+                                       files={'photo': in_file},
+                                       **kwds)["result"]
         return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
         """ Base64-encodes and uploads the specified file """
-        encoded_photo = base64.b64encode(open(photo_file, "rb").read())
-        result = self._client.post("/photo/upload.json", photo=encoded_photo, 
+        with open(photo_file, "rb") as in_file:
+            encoded_photo = base64.b64encode(in_file.read())
+        result = self._client.post("/photo/upload.json", photo=encoded_photo,
                                    **kwds)["result"]
         return Photo(self._client, result)
 
@@ -95,9 +102,9 @@ class ApiPhoto:
         raise NotImplementedError()
 
     def next_previous(self, photo, **kwds):
-        """ 
+        """
         Returns a dict containing the next and previous photo lists
-        (there may be more than one next/previous photo returned). 
+        (there may be more than one next/previous photo returned).
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
@@ -105,7 +112,7 @@ class ApiPhoto:
 
     def transform(self, photo, **kwds):
         """
-        Performs transformation specified in **kwds 
+        Performs transformation specified in **kwds
         Example: transform(photo, rotate=90)
         """
         if not isinstance(photo, Photo):

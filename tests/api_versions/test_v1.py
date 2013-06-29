@@ -1,7 +1,3 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
 from tests import test_albums, test_photos, test_tags
 
 class TestAlbumsV1(test_albums.TestAlbums):

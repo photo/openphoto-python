@@ -1,11 +1,9 @@
-try:
-    import unittest2 as unittest
-except ImportError:
-    import unittest
-import openphoto
-import test_base
+from __future__ import unicode_literals
 
-class TestPhotos(test_base.TestBase):
+import openphoto
+import tests.test_base
+
+class TestPhotos(tests.test_base.TestBase):
     testcase_name = "photo API"
 
     def test_delete_upload(self):
@@ -72,7 +70,7 @@ class TestPhotos(test_base.TestBase):
 
     def test_update(self):
         """ Update a photo by editing the title """
-        title = u"\xfcmlaut" # umlauted umlaut
+        title = "\xfcmlaut" # umlauted umlaut
         # Get a photo and check that it doesn't have the magic title
         photo = self.photos[0]
         self.assertNotEqual(photo.title, title)
@@ -140,17 +138,17 @@ class TestPhotos(test_base.TestBase):
 
     def test_replace(self):
         """ If photo.replace gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.photo.replace(None, None)
 
     def test_replace_encoded(self):
         """ If photo.replace_encoded gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.photo.replace_encoded(None, None)
 
     def test_dynamic_url(self):
         """ If photo.dynamic_url gets implemented, write a test! """
-        with self.assertRaises(openphoto.NotImplementedError):
+        with self.assertRaises(NotImplementedError):
             self.client.photo.dynamic_url(None)
 
     def test_transform(self):
