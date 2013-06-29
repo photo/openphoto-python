@@ -81,6 +81,8 @@ def main(args=sys.argv[1:]):
         params, files = extract_files(params)
         result = client.post(options.endpoint, process_response=False,
                              files=files, **params)
+        for f in files:
+            files[f].close()
 
     if options.verbose:
         print("==========\nMethod: %s\nHost: %s\nEndpoint: %s" %
