@@ -1,6 +1,7 @@
 Open Photo API / Python Library
 =======================
 #### OpenPhoto, a photo service for the masses
+[![Build Status](https://api.travis-ci.org/photo/openphoto-python.png)](https://travis-ci.org/photo/openphoto-python)
 
 ----------------------------------------
 <a name="install"></a>
@@ -52,7 +53,7 @@ You can use the library in one of two ways:
     client = OpenPhoto()
     photos = client.photos.list()
     photos[0].update(tags=["tag1", "tag2"])
-    print photos[0].tags
+    print(photos[0].tags)
 
 The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
 
