@@ -2,7 +2,7 @@ try:
     import unittest2 as unittest
 except ImportError:
     import unittest
-from tests import test_base, test_albums, test_photos, test_tags
+from tests.functional import test_base, test_albums, test_photos, test_tags
 
 @unittest.skipIf(test_base.get_test_server_api() < 2,
                  "Don't test future API versions")

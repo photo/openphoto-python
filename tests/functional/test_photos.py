@@ -1,9 +1,9 @@
 from __future__ import unicode_literals
 
 import openphoto
-import tests.test_base
+from tests.functional import test_base
 
-class TestPhotos(tests.test_base.TestBase):
+class TestPhotos(test_base.TestBase):
     testcase_name = "photo API"
 
     def test_delete_upload(self):
@@ -19,11 +19,11 @@ class TestPhotos(tests.test_base.TestBase):
         self.assertEqual(self.client.photos.list(), [])
 
         # Re-upload the photos, one of them using Bas64 encoding
-        ret_val = self.client.photo.upload("tests/test_photo1.jpg",
+        ret_val = self.client.photo.upload("tests/data/test_photo1.jpg",
                                            title=self.TEST_TITLE)
-        self.client.photo.upload("tests/test_photo2.jpg",
+        self.client.photo.upload("tests/data/test_photo2.jpg",
                                  title=self.TEST_TITLE)
-        self.client.photo.upload_encoded("tests/test_photo3.jpg",
+        self.client.photo.upload_encoded("tests/data/test_photo3.jpg",
                                          title=self.TEST_TITLE)
 
         # Check there are now three photos with the correct titles
@@ -61,7 +61,7 @@ class TestPhotos(tests.test_base.TestBase):
         """ Ensure that duplicate photos are rejected """
         # Attempt to upload a duplicate
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
-            self.client.photo.upload("tests/test_photo1.jpg",
+            self.client.photo.upload("tests/data/test_photo1.jpg",
                                      title=self.TEST_TITLE)
 
         # Check there are still three photos

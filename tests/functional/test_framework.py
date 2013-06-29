@@ -1,9 +1,9 @@
 import logging
 
 import openphoto
-import tests.test_base
+from tests.functional import test_base
 
-class TestFramework(tests.test_base.TestBase):
+class TestFramework(test_base.TestBase):
     testcase_name = "framework"
 
     def setUp(self):
@@ -27,7 +27,7 @@ class TestFramework(tests.test_base.TestBase):
         """
         For all API versions >0, we get a generic hello world message
         """
-        for api_version in range(1, tests.test_base.get_test_server_api() + 1):
+        for api_version in range(1, test_base.get_test_server_api() + 1):
             client = openphoto.OpenPhoto(config_file=self.config_file,
                                          api_version=api_version)
             result = client.get("hello.json")

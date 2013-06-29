@@ -3,11 +3,11 @@ try:
 except ImportError:
     import unittest
 
-import tests.test_base
+from tests.functional import test_base
 
-@unittest.skipIf(tests.test_base.get_test_server_api() == 1,
+@unittest.skipIf(test_base.get_test_server_api() == 1,
                  "The tag API didn't work at v1 - see frontend issue #927")
-class TestTags(tests.test_base.TestBase):
+class TestTags(test_base.TestBase):
     testcase_name = "tag API"
 
     def test_create_delete(self, tag_id="create_tag"):
