@@ -1,4 +1,4 @@
-Functional Tests for the OpenPhoto/Trovebox Python Library
+Functional Testing
 =======================
 
 These functional tests check that the openphoto-python library interoperates
@@ -93,7 +93,7 @@ For example, to restrict testing to APIv1 and APIv2:
 <a name="full_regression"></a>
 ### Full Regression Test
 
-The ``run_functional_tests`` script runs a full regression across
+The ``run_functional_tests`` script runs all functional tests against
 all supported API versions.
 
 To use it, you must set up multiple OpenPhoto instances and create the following
