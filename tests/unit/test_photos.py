@@ -299,11 +299,12 @@ class TestPhotoUpload(TestPhotos):
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_upload_encoded(self, mock_post):
         """Check that a photo can be uploaded using Base64 encoding"""
-        encoded_file = base64.b64encode(open(self.test_file, "rb").read())
         mock_post.return_value = self._return_value(self.test_photos_dict[0])
         result = self.client.photo.upload_encoded(self.test_file, title="Test")
-        mock_post.assert_called_with("/photo/upload.json",
-                                     photo=encoded_file, title="Test")
+        with open(self.test_file, "rb") as in_file:
+            encoded_file = base64.b64encode(in_file.read())
+            mock_post.assert_called_with("/photo/upload.json",
+                                         photo=encoded_file, title="Test")
         self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
 class TestPhotoDynamicUrl(TestPhotos):
