@@ -39,7 +39,6 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].id, "2")
         self.assertEqual(result[1].name, "Album 2")
 
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
         """Check that the album list returns cover photo objects"""
@@ -52,7 +51,7 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[0].cover.id, "1a")
         self.assertEqual(result[0].cover.tags, ["tag1", "tag2"])
         self.assertEqual(result[1].id, "2")
-        self.assertEqual(result[0].name, "Album 2")
+        self.assertEqual(result[1].name, "Album 2")
         self.assertEqual(result[1].cover.id, "2b")
         self.assertEqual(result[1].cover.tags, ["tag3", "tag4"])
 
