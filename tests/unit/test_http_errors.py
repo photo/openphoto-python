@@ -163,8 +163,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
             self.client.post(self.test_endpoint)
 
-    # TODO: Status code mismatch should raise an exception
-    @unittest.expectedFailure
     @httpretty.activate
     def test_get_with_status_code_mismatch(self):
         """
@@ -176,8 +174,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.get(self.test_endpoint)
 
-    # TODO: Status code mismatch should raise an exception
-    @unittest.expectedFailure
     @httpretty.activate
     def test_post_with_status_code_mismatch(self):
         """
