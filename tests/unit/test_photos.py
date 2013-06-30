@@ -203,9 +203,6 @@ class TestPhotoReplace(TestPhotos):
         with self.assertRaises(NotImplementedError):
             self.client.photo.replace_encoded("1a", self.test_file)
 
-    # TODO: replace_encoded parameter should be called photo_file,
-    #       not encoded_photo
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_replace_encoded(self, _):
         """ If photo.replace_encoded gets implemented, write a test! """

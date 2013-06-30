@@ -77,7 +77,7 @@ class Photo(OpenPhotoObject):
     def replace(self, photo_file, **kwds):
         raise NotImplementedError()
 
-    def replace_encoded(self, encoded_photo, **kwds):
+    def replace_encoded(self, photo_file, **kwds):
         raise NotImplementedError()
 
     def update(self, **kwds):
