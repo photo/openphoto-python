@@ -95,7 +95,6 @@ class TestAlbumDelete(TestAlbums):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.album.delete(self.test_albums[0])
 
-    # TODO: after deleting object fields, name and id should be set to None
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_delete(self, mock_post):
         """Check that an album can be deleted using the album object directly"""
@@ -105,8 +104,8 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
         self.assertEqual(album.get_fields(), {})
-        # self.assertEqual(album.id, None)
-        # self.assertEqual(album.name, None)
+        self.assertEqual(album.id, None)
+        self.assertEqual(album.name, None)
 
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_delete_failure(self, mock_post):
