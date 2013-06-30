@@ -64,8 +64,6 @@ class TestTagDelete(TestTags):
         mock_post.assert_called_with("/tag/tag1/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: tag.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_delete_failure(self, mock_post):
         """Check that an exception is raised if a tag cannot be deleted"""
@@ -85,8 +83,6 @@ class TestTagDelete(TestTags):
         self.assertEqual(tag.get_fields(), {})
         # self.assertEqual(tag.id, None)
 
-    # TODO: tag.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_object_delete_failure(self, mock_post):
         """

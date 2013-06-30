@@ -112,8 +112,6 @@ class TestPhotoDelete(TestPhotos):
         mock_post.assert_called_with("/photo/1a/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: photo.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_delete_failure(self, mock_post):
         """Check that an exception is raised if a photo cannot be deleted"""
@@ -136,8 +134,6 @@ class TestPhotoDelete(TestPhotos):
         self.assertEqual(photo.get_fields(), {})
         # self.assertEqual(photo.id, None)
 
-    # TODO: photo.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_delete_failure(self, mock_post):
         """

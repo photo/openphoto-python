@@ -3,6 +3,8 @@ try:
 except ImportError:
     from urllib import quote # Python2
 
+from openphoto.errors import OpenPhotoError
+
 class OpenPhotoObject:
     """ Base object supporting the storage of custom fields as attributes """
     def __init__(self, openphoto, json_dict):
@@ -51,6 +53,8 @@ class Photo(OpenPhotoObject):
         """
         result = self._openphoto.post("/photo/%s/delete.json" %
                                       self.id, **kwds)["result"]
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
         self._replace_fields({})
         return result
 
@@ -136,6 +140,8 @@ class Tag(OpenPhotoObject):
         """
         result = self._openphoto.post("/tag/%s/delete.json" %
                                       quote(self.id), **kwds)["result"]
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
         self._replace_fields({})
         return result
 
@@ -172,6 +178,8 @@ class Album(OpenPhotoObject):
         """
         result = self._openphoto.post("/album/%s/delete.json" %
                                       self.id, **kwds)["result"]
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
         self._replace_fields({})
         return result
 

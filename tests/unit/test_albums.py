@@ -88,8 +88,6 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: album.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_delete_failure(self, mock_post):
         """Check that an exception is raised if an album cannot be deleted"""
@@ -110,8 +108,6 @@ class TestAlbumDelete(TestAlbums):
         # self.assertEqual(album.id, None)
         # self.assertEqual(album.name, None)
 
-    # TODO: album.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_delete_failure(self, mock_post):
         """
