@@ -183,6 +183,9 @@ class OpenPhotoHttp:
         Decodes the JSON response, returning a dict.
         Raises an exception if an invalid response code is received.
         """
+        if response.status_code == 404:
+            raise OpenPhoto404Error("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
         try:
             json_response = response.json()
             code = json_response["code"]
@@ -192,9 +195,6 @@ class OpenPhotoHttp:
             if 200 <= response.status_code < 300:
                 # Status code was valid, so just reraise the exception
                 raise
-            elif response.status_code == 404:
-                raise OpenPhoto404Error("HTTP Error %d: %s" %
-                                        (response.status_code, response.reason))
             else:
                 raise OpenPhotoError("HTTP Error %d: %s" %
                                      (response.status_code, response.reason))

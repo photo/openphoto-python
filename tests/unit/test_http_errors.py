@@ -61,8 +61,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.post(self.test_endpoint)
 
-    # TODO: 404 status should raise 404 error, even if JSON is valid
-    @unittest.expectedFailure
     @httpretty.activate
     def test_get_with_404_status(self):
         """
@@ -73,8 +71,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhoto404Error):
             self.client.get(self.test_endpoint)
 
-    # TODO: 404 status should raise 404 error, even if JSON is valid
-    @unittest.expectedFailure
     @httpretty.activate
     def test_post_with_404_status(self):
         """
