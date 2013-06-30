@@ -39,7 +39,6 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].id, "2")
         self.assertEqual(result[1].name, "Album 2")
 
-    # TODO: cover should be updated to Photo object
     @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
