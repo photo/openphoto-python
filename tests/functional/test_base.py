@@ -128,13 +128,13 @@ class TestBase(unittest.TestCase):
         """ Upload three test photos """
         album = cls.client.album.create(cls.TEST_ALBUM)
         photos = [
-            cls.client.photo.upload("tests/test_photo1.jpg",
+            cls.client.photo.upload("tests/data/test_photo1.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
-            cls.client.photo.upload("tests/test_photo2.jpg",
+            cls.client.photo.upload("tests/data/test_photo2.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
-            cls.client.photo.upload("tests/test_photo3.jpg",
+            cls.client.photo.upload("tests/data/test_photo3.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
             ]

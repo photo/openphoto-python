@@ -14,12 +14,8 @@ from openphoto.config import Config
 
 if sys.version < '3':
     TEXT_TYPE = unicode
-    # requests_oauth needs to decode to ascii for Python2
-    OAUTH_DECODING = "utf-8"
 else:
     TEXT_TYPE = str
-    # requests_oauth needs to use (unicode) strings for Python3
-    OAUTH_DECODING = None
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
@@ -76,8 +72,7 @@ class OpenPhotoHttp:
             auth = requests_oauthlib.OAuth1(self.config.consumer_key,
                                             self.config.consumer_secret,
                                             self.config.token,
-                                            self.config.token_secret,
-                                            decoding=OAUTH_DECODING)
+                                            self.config.token_secret)
         else:
             auth = None
 
@@ -122,8 +117,7 @@ class OpenPhotoHttp:
         auth = requests_oauthlib.OAuth1(self.config.consumer_key,
                                         self.config.consumer_secret,
                                         self.config.token,
-                                        self.config.token_secret,
-                                        decoding=OAUTH_DECODING)
+                                        self.config.token_secret)
         with requests.Session() as session:
             if files:
                 # Need to pass parameters as URL query, so they get OAuth signed
