@@ -40,8 +40,6 @@ class TestPhotosList(TestPhotos):
         self.assertEqual(result[1].tags, ["tag3", "tag4"])
 
 class TestPhotosUpdate(TestPhotos):
-    # TODO: photos.update should accept a list of Photo objects
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photos_update(self, mock_post):
         """Check that multiple photos can be updated"""
@@ -71,8 +69,6 @@ class TestPhotosUpdate(TestPhotos):
             self.client.photos.update(self.test_photos, title="Test")
 
 class TestPhotosDelete(TestPhotos):
-    # TODO: photos.delete should accept a list of Photo objects
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photos_delete(self, mock_post):
         """Check that multiple photos can be deleted"""
