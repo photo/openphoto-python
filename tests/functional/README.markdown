@@ -38,14 +38,14 @@ The following instructions are for Python 2.7. You can adapt them for earlier
 Python versions using the ``unittest2`` package.
 
     cd /path/to/openphoto-python
-    python -m unittest discover -c
+    python -m unittest discover -c tests/functional
 
 The "-c" lets you stop the tests gracefully with \[CTRL\]-c.
 
 The easiest way to run a subset of the tests is with the ``nose`` package:
 
     cd /path/to/openphoto-python
-    nosetests -v -s --nologcapture tests/test_albums.py:TestAlbums.test_view
+    nosetests -v -s --nologcapture tests/functional/test_albums.py:TestAlbums.test_view
 
 All HTTP requests and responses are recorded in the file ``tests.log``.
 
