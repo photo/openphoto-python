@@ -199,10 +199,6 @@ class OpenPhotoHttp:
                 raise OpenPhotoError("HTTP Error %d: %s" %
                                      (response.status_code, response.reason))
 
-        if code != response.status_code:
-            raise OpenPhotoError(("Response status code %d does not match " +
-                                  "JSON status code %d") % (response.status_code,
-                                                            code))
         if 200 <= code < 300:
             return json_response
         elif (code == DUPLICATE_RESPONSE["code"] and
