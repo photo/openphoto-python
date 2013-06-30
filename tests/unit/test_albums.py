@@ -58,7 +58,6 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].cover.tags, ["tag3", "tag4"])
 
 class TestAlbumCreate(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_create(self, mock_post):
         """Check that an album can be created"""
@@ -68,8 +67,8 @@ class TestAlbumCreate(TestAlbums):
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.name, "Album 1")
-        # self.assertEqual(result.cover.id, "1a")
-        # self.assertEqual(result.cover.tags, ["tag1", "tag2"])
+        self.assertEqual(result.cover.id, "1a")
+        self.assertEqual(result.cover.tags, ["tag1", "tag2"])
 
 class TestAlbumDelete(TestAlbums):
     @mock.patch.object(openphoto.OpenPhoto, 'post')
@@ -180,7 +179,6 @@ class TestAlbumRemovePhotos(TestAlbums):
             self.test_albums[0].remove_photos(["Photo Objects"])
 
 class TestAlbumUpdate(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_update(self, mock_post):
         """Check that an album can be updated"""
@@ -189,10 +187,9 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_update_id(self, mock_post):
         """Check that an album can be updated using its ID"""
@@ -201,10 +198,9 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_update(self, mock_post):
         """Check that an album can be updated using the album object directly"""
@@ -214,11 +210,10 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(album.id, "2")
         self.assertEqual(album.name, "Album 2")
-        # self.assertEqual(album.cover.id, "2b")
-        # self.assertEqual(album.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(album.cover.id, "2b")
+        self.assertEqual(album.cover.tags, ["tag3", "tag4"])
 
 class TestAlbumView(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_view(self, mock_get):
         """Check that an album can be viewed"""
@@ -227,10 +222,9 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_view_id(self, mock_get):
         """Check that an album can be viewed using its ID"""
@@ -239,10 +233,9 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_object_view(self, mock_get):
         """Check that an album can be viewed using the album object directly"""
@@ -252,6 +245,6 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(album.id, "2")
         self.assertEqual(album.name, "Album 2")
-        # self.assertEqual(album.cover.id, "2b")
-        # self.assertEqual(album.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(album.cover.id, "2b")
+        self.assertEqual(album.cover.tags, ["tag3", "tag4"])
 

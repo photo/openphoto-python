@@ -164,9 +164,9 @@ class Tag(OpenPhotoObject):
 
 class Album(OpenPhotoObject):
     def __init__(self, openphoto, json_dict):
-        OpenPhotoObject.__init__(self, openphoto, json_dict)
         self.photos = None
         self.cover = None
+        OpenPhotoObject.__init__(self, openphoto, json_dict)
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):
