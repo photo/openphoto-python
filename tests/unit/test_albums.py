@@ -147,8 +147,6 @@ class TestAlbumAddPhotos(TestAlbums):
         with self.assertRaises(NotImplementedError):
             self.client.album.add_photos("1", ["Photo Objects"])
 
-    # TODO: object.add_photos should accept photos list as first parameter
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_add_photos(self, _):
         """ If album.add_photos gets implemented, write a test! """
@@ -169,8 +167,6 @@ class TestAlbumRemovePhotos(TestAlbums):
         with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos("1", ["Photo Objects"])
 
-    # TODO: object.remove_photos should accept photos list as first parameter
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_remove_photos(self, _):
         """ If album.remove_photos gets implemented, write a test! """

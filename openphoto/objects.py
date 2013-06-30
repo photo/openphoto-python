@@ -196,10 +196,10 @@ class Album(OpenPhotoObject):
     def form(self, **kwds):
         raise NotImplementedError()
 
-    def add_photos(self, **kwds):
+    def add_photos(self, photos, **kwds):
         raise NotImplementedError()
 
-    def remove_photos(self, **kwds):
+    def remove_photos(self, photos, **kwds):
         raise NotImplementedError()
 
     def update(self, **kwds):
