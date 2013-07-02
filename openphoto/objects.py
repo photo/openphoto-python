@@ -3,6 +3,8 @@ try:
 except ImportError:
     from urllib import quote # Python2
 
+from openphoto.errors import OpenPhotoError
+
 class OpenPhotoObject:
     """ Base object supporting the storage of custom fields as attributes """
     def __init__(self, openphoto, json_dict):
@@ -29,6 +31,16 @@ class OpenPhotoObject:
         self._json_dict = json_dict
         self._set_fields(json_dict)
 
+    def _delete_fields(self):
+        """
+        Delete this object's attributes, including name and id
+        """
+        for key in self._json_dict.keys():
+            delattr(self, key)
+        self._json_dict = {}
+        self.id = None
+        self.name = None
+
     def __repr__(self):
         if self.name is not None:
             return "<%s name='%s'>" % (self.__class__, self.name)
@@ -51,7 +63,9 @@ class Photo(OpenPhotoObject):
         """
         result = self._openphoto.post("/photo/%s/delete.json" %
                                       self.id, **kwds)["result"]
-        self._replace_fields({})
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
+        self._delete_fields()
         return result
 
     def edit(self, **kwds):
@@ -63,7 +77,7 @@ class Photo(OpenPhotoObject):
     def replace(self, photo_file, **kwds):
         raise NotImplementedError()
 
-    def replace_encoded(self, encoded_photo, **kwds):
+    def replace_encoded(self, photo_file, **kwds):
         raise NotImplementedError()
 
     def update(self, **kwds):
@@ -136,7 +150,9 @@ class Tag(OpenPhotoObject):
         """
         result = self._openphoto.post("/tag/%s/delete.json" %
                                       quote(self.id), **kwds)["result"]
-        self._replace_fields({})
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
+        self._delete_fields()
         return result
 
     def update(self, **kwds):
@@ -148,9 +164,9 @@ class Tag(OpenPhotoObject):
 
 class Album(OpenPhotoObject):
     def __init__(self, openphoto, json_dict):
-        OpenPhotoObject.__init__(self, openphoto, json_dict)
         self.photos = None
         self.cover = None
+        OpenPhotoObject.__init__(self, openphoto, json_dict)
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):
@@ -172,16 +188,18 @@ class Album(OpenPhotoObject):
         """
         result = self._openphoto.post("/album/%s/delete.json" %
                                       self.id, **kwds)["result"]
-        self._replace_fields({})
+        if not result:
+            raise OpenPhotoError("Delete response returned False")
+        self._delete_fields()
         return result
 
     def form(self, **kwds):
         raise NotImplementedError()
 
-    def add_photos(self, **kwds):
+    def add_photos(self, photos, **kwds):
         raise NotImplementedError()
 
-    def remove_photos(self, **kwds):
+    def remove_photos(self, photos, **kwds):
         raise NotImplementedError()
 
     def update(self, **kwds):

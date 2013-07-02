@@ -40,8 +40,6 @@ class TestPhotosList(TestPhotos):
         self.assertEqual(result[1].tags, ["tag3", "tag4"])
 
 class TestPhotosUpdate(TestPhotos):
-    # TODO: photos.update should accept a list of Photo objects
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photos_update(self, mock_post):
         """Check that multiple photos can be updated"""
@@ -71,8 +69,6 @@ class TestPhotosUpdate(TestPhotos):
             self.client.photos.update(self.test_photos, title="Test")
 
 class TestPhotosDelete(TestPhotos):
-    # TODO: photos.delete should accept a list of Photo objects
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photos_delete(self, mock_post):
         """Check that multiple photos can be deleted"""
@@ -116,8 +112,6 @@ class TestPhotoDelete(TestPhotos):
         mock_post.assert_called_with("/photo/1a/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: photo.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_delete_failure(self, mock_post):
         """Check that an exception is raised if a photo cannot be deleted"""
@@ -125,7 +119,6 @@ class TestPhotoDelete(TestPhotos):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.photo.delete(self.test_photos[0])
 
-    # TODO: after deleting object fields, name and id should be set to None
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_delete(self, mock_post):
         """
@@ -138,10 +131,8 @@ class TestPhotoDelete(TestPhotos):
         mock_post.assert_called_with("/photo/1a/delete.json")
         self.assertEqual(result, True)
         self.assertEqual(photo.get_fields(), {})
-        # self.assertEqual(photo.id, None)
+        self.assertEqual(photo.id, None)
 
-    # TODO: photo.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_delete_failure(self, mock_post):
         """
@@ -212,9 +203,6 @@ class TestPhotoReplace(TestPhotos):
         with self.assertRaises(NotImplementedError):
             self.client.photo.replace_encoded("1a", self.test_file)
 
-    # TODO: replace_encoded parameter should be called photo_file,
-    #       not encoded_photo
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_photo_object_replace_encoded(self, _):
         """ If photo.replace_encoded gets implemented, write a test! """

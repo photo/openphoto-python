@@ -39,8 +39,6 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].id, "2")
         self.assertEqual(result[1].name, "Album 2")
 
-    # TODO: cover should be updated to Photo object
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
         """Check that the album list returns cover photo objects"""
@@ -53,12 +51,11 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[0].cover.id, "1a")
         self.assertEqual(result[0].cover.tags, ["tag1", "tag2"])
         self.assertEqual(result[1].id, "2")
-        self.assertEqual(result[0].name, "Album 2")
+        self.assertEqual(result[1].name, "Album 2")
         self.assertEqual(result[1].cover.id, "2b")
         self.assertEqual(result[1].cover.tags, ["tag3", "tag4"])
 
 class TestAlbumCreate(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_create(self, mock_post):
         """Check that an album can be created"""
@@ -68,8 +65,8 @@ class TestAlbumCreate(TestAlbums):
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.name, "Album 1")
-        # self.assertEqual(result.cover.id, "1a")
-        # self.assertEqual(result.cover.tags, ["tag1", "tag2"])
+        self.assertEqual(result.cover.id, "1a")
+        self.assertEqual(result.cover.tags, ["tag1", "tag2"])
 
 class TestAlbumDelete(TestAlbums):
     @mock.patch.object(openphoto.OpenPhoto, 'post')
@@ -88,8 +85,6 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: album.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_delete_failure(self, mock_post):
         """Check that an exception is raised if an album cannot be deleted"""
@@ -97,7 +92,6 @@ class TestAlbumDelete(TestAlbums):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.album.delete(self.test_albums[0])
 
-    # TODO: after deleting object fields, name and id should be set to None
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_delete(self, mock_post):
         """Check that an album can be deleted using the album object directly"""
@@ -107,11 +101,9 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
         self.assertEqual(album.get_fields(), {})
-        # self.assertEqual(album.id, None)
-        # self.assertEqual(album.name, None)
+        self.assertEqual(album.id, None)
+        self.assertEqual(album.name, None)
 
-    # TODO: album.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_delete_failure(self, mock_post):
         """
@@ -154,8 +146,6 @@ class TestAlbumAddPhotos(TestAlbums):
         with self.assertRaises(NotImplementedError):
             self.client.album.add_photos("1", ["Photo Objects"])
 
-    # TODO: object.add_photos should accept photos list as first parameter
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_add_photos(self, _):
         """ If album.add_photos gets implemented, write a test! """
@@ -176,8 +166,6 @@ class TestAlbumRemovePhotos(TestAlbums):
         with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos("1", ["Photo Objects"])
 
-    # TODO: object.remove_photos should accept photos list as first parameter
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_remove_photos(self, _):
         """ If album.remove_photos gets implemented, write a test! """
@@ -185,7 +173,6 @@ class TestAlbumRemovePhotos(TestAlbums):
             self.test_albums[0].remove_photos(["Photo Objects"])
 
 class TestAlbumUpdate(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_update(self, mock_post):
         """Check that an album can be updated"""
@@ -194,10 +181,9 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_update_id(self, mock_post):
         """Check that an album can be updated using its ID"""
@@ -206,10 +192,9 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_album_object_update(self, mock_post):
         """Check that an album can be updated using the album object directly"""
@@ -219,11 +204,10 @@ class TestAlbumUpdate(TestAlbums):
         mock_post.assert_called_with("/album/1/update.json", name="Test")
         self.assertEqual(album.id, "2")
         self.assertEqual(album.name, "Album 2")
-        # self.assertEqual(album.cover.id, "2b")
-        # self.assertEqual(album.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(album.cover.id, "2b")
+        self.assertEqual(album.cover.tags, ["tag3", "tag4"])
 
 class TestAlbumView(TestAlbums):
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_view(self, mock_get):
         """Check that an album can be viewed"""
@@ -232,10 +216,9 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_view_id(self, mock_get):
         """Check that an album can be viewed using its ID"""
@@ -244,10 +227,9 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
-        # self.assertEqual(result.cover.id, "2b")
-        # self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    # TODO: cover should be updated to Photo object
     @mock.patch.object(openphoto.OpenPhoto, 'get')
     def test_album_object_view(self, mock_get):
         """Check that an album can be viewed using the album object directly"""
@@ -257,6 +239,6 @@ class TestAlbumView(TestAlbums):
         mock_get.assert_called_with("/album/1/view.json", name="Test")
         self.assertEqual(album.id, "2")
         self.assertEqual(album.name, "Album 2")
-        # self.assertEqual(album.cover.id, "2b")
-        # self.assertEqual(album.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(album.cover.id, "2b")
+        self.assertEqual(album.cover.tags, ["tag3", "tag4"])
 

@@ -4,6 +4,19 @@ from openphoto.errors import OpenPhotoError
 import openphoto.openphoto_http
 from openphoto.objects import Photo
 
+def extract_ids(photos):
+    """
+    Given a list of objects, extract the photo id for each Photo
+    object.
+    """
+    ids = []
+    for photo in photos:
+        if isinstance(photo, Photo):
+            ids.append(photo.id)
+        else:
+            ids.append(photo)
+    return ids
+
 class ApiPhotos:
     def __init__(self, client):
         self._client = client
@@ -20,7 +33,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/update.json", ids=photos,
+        ids = extract_ids(photos)
+        if not self._client.post("/photos/update.json", ids=ids,
                                  **kwds)["result"]:
             raise OpenPhotoError("Update response returned False")
         return True
@@ -31,7 +45,8 @@ class ApiPhotos:
         Returns True if successful.
         Raises OpenPhotoError if not.
         """
-        if not self._client.post("/photos/delete.json", ids=photos,
+        ids = extract_ids(photos)
+        if not self._client.post("/photos/delete.json", ids=ids,
                                  **kwds)["result"]:
             raise OpenPhotoError("Delete response returned False")
         return True

@@ -61,8 +61,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.post(self.test_endpoint)
 
-    # TODO: 404 status should raise 404 error, even if JSON is valid
-    @unittest.expectedFailure
     @httpretty.activate
     def test_get_with_404_status(self):
         """
@@ -73,8 +71,6 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhoto404Error):
             self.client.get(self.test_endpoint)
 
-    # TODO: 404 status should raise 404 error, even if JSON is valid
-    @unittest.expectedFailure
     @httpretty.activate
     def test_post_with_404_status(self):
         """
@@ -167,29 +163,25 @@ class TestHttpErrors(unittest.TestCase):
         with self.assertRaises(openphoto.OpenPhotoDuplicateError):
             self.client.post(self.test_endpoint)
 
-    # TODO: Status code mismatch should raise an exception
-    @unittest.expectedFailure
     @httpretty.activate
     def test_get_with_status_code_mismatch(self):
         """
-        Check that an exception is raised if a get returns a
-        status code that doesn't match the JSON code
+        Check that a mismatched HTTP status code still returns the
+        JSON status code for get requests.
         """
-        data = {"message": "Test Message", "code": 200}
-        self._register_uri(httpretty.GET, data=data, status=202)
-        with self.assertRaises(openphoto.OpenPhotoError):
-            self.client.get(self.test_endpoint)
+        data = {"message": "Test Message", "code": 202}
+        self._register_uri(httpretty.GET, data=data, status=200)
+        response = self.client.get(self.test_endpoint)
+        self.assertEqual(response["code"], 202)
 
-    # TODO: Status code mismatch should raise an exception
-    @unittest.expectedFailure
     @httpretty.activate
     def test_post_with_status_code_mismatch(self):
         """
-        Check that an exception is raised if a post returns a
-        status code that doesn't match the JSON code
+        Check that a mismatched HTTP status code still returns the
+        JSON status code for post requests.
         """
-        data = {"message": "Test Message", "code": 200}
-        self._register_uri(httpretty.POST, data=data, status=202)
-        with self.assertRaises(openphoto.OpenPhotoError):
-            self.client.post(self.test_endpoint)
+        data = {"message": "Test Message", "code": 202}
+        self._register_uri(httpretty.POST, data=data, status=200)
+        response = self.client.post(self.test_endpoint)
+        self.assertEqual(response["code"], 202)
 

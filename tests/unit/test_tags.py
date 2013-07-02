@@ -35,18 +35,6 @@ class TestTagsList(TestTags):
         self.assertEqual(result[1].id, "tag2")
         self.assertEqual(result[1].count, 5)
 
-class TestTagCreate(TestTags):
-    # TODO: should return a tag object, not a result dict
-    @unittest.expectedFailure
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
-    def test_tag_create(self, mock_post):
-        """Check that a tag can be created"""
-        mock_post.return_value = self._return_value(self.test_tags_dict[0])
-        result = self.client.tag.create(tag="Test", foo="bar")
-        mock_post.assert_called_with("/tag/create.json", tag="Test", foo="bar")
-        self.assertEqual(result.id, "tag1")
-        self.assertEqual(result.count,  11)
-
 class TestTagDelete(TestTags):
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_delete(self, mock_post):
@@ -64,8 +52,6 @@ class TestTagDelete(TestTags):
         mock_post.assert_called_with("/tag/tag1/delete.json")
         self.assertEqual(result, True)
 
-    # TODO: tag.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_delete_failure(self, mock_post):
         """Check that an exception is raised if a tag cannot be deleted"""
@@ -73,7 +59,6 @@ class TestTagDelete(TestTags):
         with self.assertRaises(openphoto.OpenPhotoError):
             self.client.tag.delete(self.test_tags[0])
 
-    # TODO: after deleting object fields, id should be set to None
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_object_delete(self, mock_post):
         """Check that a tag can be deleted when using the tag object directly"""
@@ -83,10 +68,8 @@ class TestTagDelete(TestTags):
         mock_post.assert_called_with("/tag/tag1/delete.json")
         self.assertEqual(result, True)
         self.assertEqual(tag.get_fields(), {})
-        # self.assertEqual(tag.id, None)
+        self.assertEqual(tag.id, None)
 
-    # TODO: tag.delete should raise exception on failure
-    @unittest.expectedFailure
     @mock.patch.object(openphoto.OpenPhoto, 'post')
     def test_tag_object_delete_failure(self, mock_post):
         """
