@@ -16,9 +16,8 @@ except ImportError:
 
 setup(name='openphoto',
       version='0.3',
-      description='Client library for the openphoto project',
-      author='James Walker',
-      author_email='walkah@walkah.net',
+      description='Python client library for Trovebox/Openphoto',
+      author='Pete Burgers, James Walker',
       url='https://github.com/openphoto/openphoto-python',
       packages=['openphoto'],
       **kw
