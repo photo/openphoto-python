@@ -4,6 +4,8 @@ import openphoto.api_photo
 import openphoto.api_tag
 import openphoto.api_album
 
+__version__ = "0.3"
+
 LATEST_API_VERSION = 2
 
 class OpenPhoto(OpenPhotoHttp):

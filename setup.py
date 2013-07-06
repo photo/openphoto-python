@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import openphoto
 
 requires = ['requests', 'requests_oauthlib']
 
@@ -15,7 +16,7 @@ except ImportError:
           'requires': requires}
 
 setup(name='openphoto',
-      version='0.3',
+      version=openphoto.__version__,
       description='Python client library for Trovebox/Openphoto',
       author='Pete Burgers, James Walker',
       url='https://github.com/openphoto/openphoto-python',
