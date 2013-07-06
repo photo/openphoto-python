@@ -26,13 +26,11 @@ except ImportError:
 setup(name='openphoto',
       version=openphoto.__version__,
       description='The official Python client library for Trovebox/OpenPhoto',
-      long_description=('This library works with any OpenPhoto server '
-                        '(including the trovebox.com hosted service).\n'
-                        'It provides full access to your photos and metadata, '
-                        'via a simple Pythonic API.'),
+      long_description=open("README.markdown").read(),
       author='Pete Burgers, James Walker',
       url='https://github.com/openphoto/openphoto-python',
       packages=['openphoto'],
+      keywords=['openphoto', 'pyopenphoto', 'openphoto-python', 'trovebox'],
       classifiers=['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: Apache Software License',
@@ -41,7 +39,7 @@ setup(name='openphoto',
                    'Topic :: Multimedia :: Graphics',
                    'Topic :: Software Development :: Libraries :: Python Modules',
                    ],
-      license='LICENSE',
+      license='Apache 2.0',
       test_suite='tests.unit',
       **kw
       )
