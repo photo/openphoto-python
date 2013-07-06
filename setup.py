@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-requires = ['requests', 'requests-oauthlib']
+requires = ['requests', 'requests_oauthlib']
 
 try:
     from setuptools import setup
