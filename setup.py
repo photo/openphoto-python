@@ -1,13 +1,21 @@
 #!/usr/bin/env python
+import sys
 import openphoto
 
 requires = ['requests', 'requests_oauthlib']
 
+console_script = """[console_scripts]
+openphoto = openphoto.main:main
+"""
+# Check the Python version
+(major, minor) = sys.version_info[:2]
+if (major, minor) < (2, 6):
+    raise SystemExit("Sorry, Python 2.6 or newer required")
+
 try:
     from setuptools import setup
-    kw = {'entry_points':
-          """[console_scripts]\nopenphoto = openphoto.main:main\n""",
-          'zip_safe': False,
+    kw = {'entry_points': console_script,
+          'zip_safe': True,
           'install_requires': requires
           }
 except ImportError:
@@ -17,9 +25,23 @@ except ImportError:
 
 setup(name='openphoto',
       version=openphoto.__version__,
-      description='Python client library for Trovebox/Openphoto',
+      description='The official Python client library for Trovebox/OpenPhoto',
+      long_description=('This library works with any OpenPhoto server '
+                        '(including the trovebox.com hosted service).\n'
+                        'It provides full access to your photos and metadata, '
+                        'via a simple Pythonic API.'),
       author='Pete Burgers, James Walker',
       url='https://github.com/openphoto/openphoto-python',
       packages=['openphoto'],
+      classifiers=['Development Status :: 4 - Beta',
+                   'Intended Audience :: Developers',
+                   'License :: OSI Approved :: Apache Software License',
+                   'Operating System :: OS Independent',
+                   'Programming Language :: Python',
+                   'Topic :: Multimedia :: Graphics',
+                   'Topic :: Software Development :: Libraries :: Python Modules',
+                   ],
+      license='LICENSE',
+      test_suite='tests.unit',
       **kw
       )
