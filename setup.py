@@ -11,7 +11,7 @@ try:
           }
 except ImportError:
     from distutils.core import setup
-    kw = {'scripts': ['scripts/openphoto'],
+    kw = {'scripts': ['bin/openphoto'],
           'requires': requires}
 
 setup(name='openphoto',
