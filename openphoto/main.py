@@ -4,7 +4,7 @@ import sys
 import json
 from optparse import OptionParser
 
-from openphoto import OpenPhoto
+import openphoto
 
 CONFIG_ERROR = """
 You must create a configuration file with the following contents:
@@ -44,6 +44,8 @@ def main(args=sys.argv[1:]):
                       action="store_true", dest="pretty", default=False)
     parser.add_option('-v', help="Verbose output",
                       action="store_true", dest="verbose", default=False)
+    parser.add_option('--version', help="Display the current version information",
+                      action="store_true")
     parser.add_option('--help', help='show this help message',
                       action="store_true")
 
@@ -51,6 +53,10 @@ def main(args=sys.argv[1:]):
 
     if options.help:
         parser.print_help()
+        return
+
+    if options.version:
+        print(openphoto.__version__)
         return
 
     if args:
@@ -64,10 +70,10 @@ def main(args=sys.argv[1:]):
 
     # Host option overrides config file settings
     if options.host:
-        client = OpenPhoto(host=options.host)
+        client = openphoto.OpenPhoto(host=options.host)
     else:
         try:
-            client = OpenPhoto(config_file=options.config_file)
+            client = openphoto.OpenPhoto(config_file=options.config_file)
         except IOError as error:
             print(error)
             print(CONFIG_ERROR)
