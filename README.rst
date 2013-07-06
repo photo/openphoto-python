@@ -1,18 +1,30 @@
-Open Photo API / Python Library
-=======================
-#### OpenPhoto, a photo service for the masses
-[![Build Status](https://api.travis-ci.org/photo/openphoto-python.png)](https://travis-ci.org/photo/openphoto-python)
+=================================
+OpenPhoto/Trovebox Python Library
+=================================
+.. image:: https://api.travis-ci.org/photo/openphoto-python.png
+   :alt: Build Status
+   :target: https://travis-ci.org/photo/openphoto-python
 
-----------------------------------------
-<a name="install"></a>
-### Installation
-    python setup.py install
+This library works with any `OpenPhoto <https://github.com/photo>`__ server
+(including the `Trovebox <http://trovebox.com>`__ hosted service).
+It provides full access to your photos and metadata, via a simple
+Pythonic API.
 
-----------------------------------------
-<a name="credentials"></a>
-### Credentials
+Installation
+============
+::
 
-For full access to your photos, you need to create the following config file in ``~/.config/openphoto/default``
+    pip install openphoto
+
+Documentation
+=============
+See the `OpenPhoto/Trovebox API Documentation <https://trovebox.com/documentation>`__
+for full API documentation, including Python examples.
+
+Credentials
+===========
+For full access to your photos, you need to create the following config
+file in ``~/.config/openphoto/default``::
 
     # ~/.config/openphoto/default
     host = your.host.com
@@ -24,30 +36,15 @@ For full access to your photos, you need to create the following config file in 
 The ``config_file`` switch lets you specify a different config file.
 
 To get your credentials:
- * Log into your Trovebox site
- * Click the arrow on the top-right and select 'Settings'
- * Click the 'Create a new app' button
- * Click the 'View' link beside the newly created app
 
-----------------------------------------
-<a name="python"></a>
-### How to use the library
+* Log into your Trovebox site
+* Click the arrow on the top-right and select 'Settings'
+* Click the 'Create a new app' button
+* Click the 'View' link beside the newly created app
 
-You can use the library in one of two ways:
-
- * Direct GET/POST calls to the server
- * Access via Python classes/methods
-
-<a name="get_post"></a>
-#### Direct GET/POST:
-
-    from openphoto import OpenPhoto
-    client = OpenPhoto()
-    resp = client.get("/photos/list.json")
-    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
-
-<a name="python_classes"></a>
-#### Python classes/methods
+Using the library
+=================
+::
 
     from openphoto import OpenPhoto
     client = OpenPhoto()
@@ -55,30 +52,33 @@ You can use the library in one of two ways:
     photos[0].update(tags=["tag1", "tag2"])
     print(photos[0].tags)
 
-The OpenPhoto Python class hierarchy mirrors the [OpenPhoto API](http://theopenphotoproject.org/documentation) endpoint layout. For example, the calls in the example above use the following API endpoints:
+The OpenPhoto Python class hierarchy mirrors the
+`OpenPhoto/Trovebox API <https://trovebox.com/documentation>`__ endpoint layout.
+For example, the calls in the example above use the following API endpoints:
 
 * ``client.photos.list() -> /photos/list.json``
 * ``photos[0].update()   -> /photo/<id>/update.json``
 
-<a name="api_versioning"></a>
-### API Versioning
+You can also access the API at a lower level using GET/POST methods::
 
+    resp = client.get("/photos/list.json")
+    resp = client.post("/photo/62/update.json", tags=["tag1", "tag2"])
+
+API Versioning
+==============
 It may be useful to lock your application to a particular version of the OpenPhoto API.
 This ensures that future API updates won't cause unexpected breakages.
 
-To do this, add the optional ```api_version``` parameter when creating the client object:
+To do this, add the optional ```api_version``` parameter when creating the client object::
 
     from openphoto import OpenPhoto
     client = OpenPhoto(api_version=2)
 
-----------------------------------------
-
-<a name="cli"></a>
-### Using from the command line
-
+Commandline Tool
+================
 You can run commands to the OpenPhoto API from your shell!
 
-These are the options you can pass to the shell program:
+These are the options you can pass to the shell program::
 
     --help         # Display help text
     -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
@@ -88,11 +88,12 @@ These are the options you can pass to the shell program:
     -F params      # e.g. -F 'title=my title' -F 'tags=mytag1,mytag2'
     -p             # Pretty print the json
     -v             # Verbose output
+    --version      # Display the current version information
 
-<a name="cli-examples"></a>
-#### Command line examples
+Commandline Examples
+--------------------
+Upload a public photo to the host specified in ```~/.config/openphoto/default```::
 
-    # Upload a public photo to the host specified in ~/.config/openphoto/default
     openphoto -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
     {
         "code":201,
@@ -104,8 +105,9 @@ These are the options you can pass to the shell program:
             ...
         }
     }
-    
-    # Get a thumbnail URL from current.openphoto.me (unauthenticated access)
+
+Get a thumbnail URL from current.openphoto.me (unauthenticated access)::
+
     openphoto -h current.openphoto.me -p -e /photo/62/view.json -F 'returnSizes=20x20'
     {
         "code":200,
@@ -128,4 +130,4 @@ These are the options you can pass to the shell program:
             ...
             ...
         }
-    }    
+    }
