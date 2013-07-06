@@ -26,7 +26,7 @@ except ImportError:
 setup(name='openphoto',
       version=openphoto.__version__,
       description='The official Python client library for Trovebox/OpenPhoto',
-      long_description=open("README.markdown").read(),
+      long_description=open("README.rst").read(),
       author='Pete Burgers, James Walker',
       url='https://github.com/openphoto/openphoto-python',
       packages=['openphoto'],
