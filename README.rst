@@ -5,6 +5,10 @@ OpenPhoto/Trovebox Python Library
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
 
+.. image:: https://pypip.in/v/openphoto/badge.png
+   :alt: Python Package Index (PyPI)
+   :target: https://pypi.python.org/pypi/openphoto
+
 This library works with any `OpenPhoto <https://github.com/photo>`__ server
 (including the `Trovebox <http://trovebox.com>`__ hosted service).
 It provides full access to your photos and metadata, via a simple
@@ -20,6 +24,8 @@ Documentation
 =============
 See the `OpenPhoto/Trovebox API Documentation <https://trovebox.com/documentation>`__
 for full API documentation, including Python examples.
+
+All development takes place at the `openphoto-python GitHub site <https://github.com/photo/openphoto-python>`__.
 
 Credentials
 ===========
