@@ -1,12 +1,15 @@
 #!/usr/bin/env python
 import sys
-import openphoto
 
 requires = ['requests', 'requests_oauthlib']
 
 console_script = """[console_scripts]
 openphoto = openphoto.main:main
 """
+
+# from openphoto._version import __version__
+exec(open("openphoto/_version.py").read())
+
 # Check the Python version
 (major, minor) = sys.version_info[:2]
 if (major, minor) < (2, 6):
@@ -24,7 +27,7 @@ except ImportError:
           'requires': requires}
 
 setup(name='openphoto',
-      version=openphoto.__version__,
+      version=__version__,
       description='The official Python client library for Trovebox/OpenPhoto',
       long_description=open("README.rst").read(),
       author='Pete Burgers, James Walker',

@@ -1,10 +1,9 @@
 from openphoto.openphoto_http import OpenPhotoHttp
 from openphoto.errors import *
+from openphoto._version import __version__
 import openphoto.api_photo
 import openphoto.api_tag
 import openphoto.api_album
-
-__version__ = "0.3"
 
 LATEST_API_VERSION = 2
 
