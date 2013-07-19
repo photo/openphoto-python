@@ -1,12 +1,12 @@
-class OpenPhotoError(Exception):
-    """ Indicates that an OpenPhoto operation failed """
+class TroveboxError(Exception):
+    """ Indicates that an Trovebox operation failed """
     pass
 
-class OpenPhotoDuplicateError(OpenPhotoError):
+class TroveboxDuplicateError(TroveboxError):
     """ Indicates that an upload operation failed due to a duplicate photo """
     pass
 
-class OpenPhoto404Error(Exception):
+class Trovebox404Error(Exception):
     """
     Indicates that an Http 404 error code was received
     (resource not found)

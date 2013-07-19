@@ -5,10 +5,10 @@ try:
 except ImportError:
     import unittest
 
-from openphoto import OpenPhoto
+from trovebox import Trovebox
 
 CONFIG_HOME_PATH = os.path.join("tests", "config")
-CONFIG_PATH = os.path.join(CONFIG_HOME_PATH, "openphoto")
+CONFIG_PATH = os.path.join(CONFIG_HOME_PATH, "trovebox")
 
 class TestConfig(unittest.TestCase):
     def setUp(self):
@@ -41,7 +41,7 @@ class TestConfig(unittest.TestCase):
     def test_default_config(self):
         """ Ensure the default config is loaded """
         self.create_config("default", "Test Default Host")
-        client = OpenPhoto()
+        client = Trovebox()
         config = client.config
         self.assertEqual(client.host, "Test Default Host")
         self.assertEqual(config.consumer_key, "default_consumer_key")
@@ -53,7 +53,7 @@ class TestConfig(unittest.TestCase):
         """ Ensure a custom config can be loaded """
         self.create_config("default", "Test Default Host")
         self.create_config("custom", "Test Custom Host")
-        client = OpenPhoto(config_file="custom")
+        client = Trovebox(config_file="custom")
         config = client.config
         self.assertEqual(client.host, "Test Custom Host")
         self.assertEqual(config.consumer_key, "custom_consumer_key")
@@ -65,7 +65,7 @@ class TestConfig(unittest.TestCase):
         """ Ensure a full custom config path can be loaded """
         self.create_config("path", "Test Path Host")
         full_path = os.path.abspath(CONFIG_PATH)
-        client = OpenPhoto(config_file=os.path.join(full_path, "path"))
+        client = Trovebox(config_file=os.path.join(full_path, "path"))
         config = client.config
         self.assertEqual(client.host, "Test Path Host")
         self.assertEqual(config.consumer_key, "path_consumer_key")
@@ -76,7 +76,7 @@ class TestConfig(unittest.TestCase):
     def test_host_override(self):
         """ Ensure that specifying a host overrides the default config """
         self.create_config("default", "Test Default Host")
-        client = OpenPhoto(host="host_override")
+        client = Trovebox(host="host_override")
         config = client.config
         self.assertEqual(config.host, "host_override")
         self.assertEqual(config.consumer_key, "")
@@ -87,14 +87,14 @@ class TestConfig(unittest.TestCase):
     def test_missing_config_files(self):
         """ Ensure that missing config files raise exceptions """
         with self.assertRaises(IOError):
-            OpenPhoto()
+            Trovebox()
         with self.assertRaises(IOError):
-            OpenPhoto(config_file="custom")
+            Trovebox(config_file="custom")
 
     def test_host_and_config_file(self):
         """ It's not valid to specify both a host and a config_file """
         self.create_config("custom", "Test Custom Host")
         with self.assertRaises(ValueError):
-            OpenPhoto(config_file="custom", host="host_override")
+            Trovebox(config_file="custom", host="host_override")
 
 

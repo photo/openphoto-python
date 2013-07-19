@@ -11,7 +11,7 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
+import trovebox
 
 class TestHttpErrors(unittest.TestCase):
     test_host = "test.example.com"
@@ -26,8 +26,8 @@ class TestHttpErrors(unittest.TestCase):
                   "token_secret": "dummy"}
 
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.test_host,
-                                          **self.test_oauth)
+        self.client = trovebox.Trovebox(host=self.test_host,
+                                        **self.test_oauth)
 
     def _register_uri(self, method, uri=test_uri,
                       data=None, body=None, status=200, **kwds):
@@ -48,7 +48,7 @@ class TestHttpErrors(unittest.TestCase):
         to raise an exception
         """
         self._register_uri(httpretty.GET, status=500)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.get(self.test_endpoint)
 
     @httpretty.activate
@@ -58,7 +58,7 @@ class TestHttpErrors(unittest.TestCase):
         to raise an exception
         """
         self._register_uri(httpretty.POST, status=500)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
@@ -68,7 +68,7 @@ class TestHttpErrors(unittest.TestCase):
         to raise a 404 exception
         """
         self._register_uri(httpretty.GET, status=404)
-        with self.assertRaises(openphoto.OpenPhoto404Error):
+        with self.assertRaises(trovebox.Trovebox404Error):
             self.client.get(self.test_endpoint)
 
     @httpretty.activate
@@ -78,7 +78,7 @@ class TestHttpErrors(unittest.TestCase):
         to raise a 404 exception
         """
         self._register_uri(httpretty.POST, status=404)
-        with self.assertRaises(openphoto.OpenPhoto404Error):
+        with self.assertRaises(trovebox.Trovebox404Error):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
@@ -108,7 +108,7 @@ class TestHttpErrors(unittest.TestCase):
         even with an error status is returned
         """
         self._register_uri(httpretty.GET, body="Invalid JSON", status=500)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.get(self.test_endpoint)
 
     @httpretty.activate
@@ -118,7 +118,7 @@ class TestHttpErrors(unittest.TestCase):
         even with an error status is returned
         """
         self._register_uri(httpretty.POST, body="Invalid JSON", status=500)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
@@ -128,7 +128,7 @@ class TestHttpErrors(unittest.TestCase):
         even with a 404 status is returned
         """
         self._register_uri(httpretty.GET, body="Invalid JSON", status=404)
-        with self.assertRaises(openphoto.OpenPhoto404Error):
+        with self.assertRaises(trovebox.Trovebox404Error):
             self.client.get(self.test_endpoint)
 
     @httpretty.activate
@@ -138,7 +138,7 @@ class TestHttpErrors(unittest.TestCase):
         even with a 404 status is returned
         """
         self._register_uri(httpretty.POST, body="Invalid JSON", status=404)
-        with self.assertRaises(openphoto.OpenPhoto404Error):
+        with self.assertRaises(trovebox.Trovebox404Error):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
@@ -149,7 +149,7 @@ class TestHttpErrors(unittest.TestCase):
         """
         data = {"message": "This photo already exists", "code": 409}
         self._register_uri(httpretty.GET, data=data, status=409)
-        with self.assertRaises(openphoto.OpenPhotoDuplicateError):
+        with self.assertRaises(trovebox.TroveboxDuplicateError):
             self.client.get(self.test_endpoint)
 
     @httpretty.activate
@@ -160,7 +160,7 @@ class TestHttpErrors(unittest.TestCase):
         """
         data = {"message": "This photo already exists", "code": 409}
         self._register_uri(httpretty.POST, data=data, status=409)
-        with self.assertRaises(openphoto.OpenPhotoDuplicateError):
+        with self.assertRaises(trovebox.TroveboxDuplicateError):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate

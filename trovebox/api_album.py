@@ -1,4 +1,4 @@
-from openphoto.objects import Album
+from .objects import Album
 
 class ApiAlbums:
     def __init__(self, client):
@@ -23,7 +23,7 @@ class ApiAlbum:
         """
         Delete an album.
         Returns True if successful.
-        Raises an OpenPhotoError if not.
+        Raises an TroveboxError if not.
         """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})

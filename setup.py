@@ -4,11 +4,11 @@ import sys
 requires = ['requests', 'requests_oauthlib']
 
 console_script = """[console_scripts]
-openphoto = openphoto.main:main
+trovebox = trovebox.main:main
 """
 
-# from openphoto._version import __version__
-exec(open("openphoto/_version.py").read())
+# from trovebox._version import __version__
+exec(open("trovebox/_version.py").read())
 
 # Check the Python version
 (major, minor) = sys.version_info[:2]
@@ -23,18 +23,19 @@ try:
           }
 except ImportError:
     from distutils.core import setup
-    kw = {'scripts': ['bin/openphoto'],
+    kw = {'scripts': ['bin/trovebox'],
           'requires': requires}
 
-setup(name='openphoto',
+setup(name='trovebox',
       version=__version__,
-      description='The official Python client library for Trovebox/OpenPhoto',
+      description='The official Python client library for the Trovebox photo service',
       long_description=open("README.rst").read(),
       author='Pete Burgers, James Walker',
       url='https://github.com/photo/openphoto-python',
-      packages=['openphoto'],
+      packages=['trovebox'],
       data_files=['README.rst'],
-      keywords=['openphoto', 'pyopenphoto', 'openphoto-python', 'trovebox'],
+      keywords=['openphoto', 'pyopenphoto', 'openphoto-python',
+                'trovebox', 'pytrovebox', 'openphoto-trovebox'],
       classifiers=['Development Status :: 4 - Beta',
                    'Intended Audience :: Developers',
                    'License :: OSI Approved :: Apache Software License',
