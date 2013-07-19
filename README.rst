@@ -75,7 +75,7 @@ API Versioning
 It may be useful to lock your application to a particular version of the OpenPhoto API.
 This ensures that future API updates won't cause unexpected breakages.
 
-To do this, add the optional ```api_version``` parameter when creating the client object::
+To do this, add the optional ``api_version`` parameter when creating the client object::
 
     from openphoto import OpenPhoto
     client = OpenPhoto(api_version=2)
