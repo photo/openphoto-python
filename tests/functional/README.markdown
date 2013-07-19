@@ -99,6 +99,7 @@ all supported API versions.
 To use it, you must set up multiple OpenPhoto instances and create the following
 config files containing your credentials:
 
-    test        : Latest self-hosted site
-    test-apiv1  : APIv1 self-hosted site
+    test        : Latest self-hosted site (from photo/frontend master branch)
+    test-apiv1  : APIv1 self-hosted site (from photo/frontend commit 660b2ab)
+    test-3.0.8  : v3.0.8 self-hosted site (from photo/frontend commit e9d81de57b)
     test-hosted : Credentials for test account on trovebox.com
