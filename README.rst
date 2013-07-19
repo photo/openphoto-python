@@ -1,6 +1,6 @@
-=================================
-OpenPhoto/Trovebox Python Library
-=================================
+=======================
+Trovebox Python Library
+=======================
 .. image:: https://api.travis-ci.org/photo/openphoto-python.png
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
@@ -115,7 +115,7 @@ Upload a public photo to the host specified in ```~/.config/trovebox/default```:
 
 Get a thumbnail URL from current.trovebox.com (unauthenticated access)::
 
-    openphoto -h current.trovebox.com -p -e /photo/62/view.json -F 'returnSizes=20x20'
+    trovebox -h current.trovebox.com -p -e /photo/62/view.json -F 'returnSizes=20x20'
     {
         "code":200,
         "message":"Photo 62",
