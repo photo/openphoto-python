@@ -1,6 +1,8 @@
 =======================
 Trovebox Python Library
 =======================
+(Previously known as openphoto-python)
+
 .. image:: https://api.travis-ci.org/photo/openphoto-python.png
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
@@ -11,7 +13,7 @@ Trovebox Python Library
 
 This library works with any Trovebox server, either
 `Self-hosted <https://github.com/photo>`__, or using the
-`Trovebox hosted service<http://trovebox.com>`__).
+`Trovebox hosted service <http://trovebox.com>`__).
 It provides full access to your photos and metadata, via a simple
 Pythonic API.
 
