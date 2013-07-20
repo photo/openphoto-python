@@ -1,6 +1,6 @@
-import tests.test_base
+from tests.functional import test_base
 
-class TestAlbums(tests.test_base.TestBase):
+class TestAlbums(test_base.TestBase):
     testcase_name = "album API"
 
     def test_create_delete(self):
@@ -29,7 +29,7 @@ class TestAlbums(tests.test_base.TestBase):
 
     def test_update(self):
         """ Test that an album can be updated """
-        # Update the album using the OpenPhoto class,
+        # Update the album using the Trovebox class,
         # passing in the album object
         new_name = "New Name"
         self.client.album.update(self.albums[0], name=new_name)
@@ -38,7 +38,7 @@ class TestAlbums(tests.test_base.TestBase):
         self.albums = self.client.albums.list()
         self.assertEqual(self.albums[0].name, new_name)
 
-        # Update the album using the OpenPhoto class, passing in the album id
+        # Update the album using the Trovebox class, passing in the album id
         new_name = "Another New Name"
         self.client.album.update(self.albums[0].id, name=new_name)
 

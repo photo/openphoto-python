@@ -4,7 +4,7 @@ import sys
 import json
 from optparse import OptionParser
 
-from openphoto import OpenPhoto
+import trovebox
 
 CONFIG_ERROR = """
 You must create a configuration file with the following contents:
@@ -29,7 +29,7 @@ def main(args=sys.argv[1:]):
     parser.add_option('-c', '--config', help="Configuration file to use",
                       action='store', type='string', dest='config_file')
     parser.add_option('-h', '-H', '--host',
-                      help=("Hostname of the OpenPhoto server "
+                      help=("Hostname of the Trovebox server "
                             "(overrides config_file)"),
                       action='store', type='string', dest='host')
     parser.add_option('-X', help="Method to use (GET or POST)",
@@ -44,6 +44,8 @@ def main(args=sys.argv[1:]):
                       action="store_true", dest="pretty", default=False)
     parser.add_option('-v', help="Verbose output",
                       action="store_true", dest="verbose", default=False)
+    parser.add_option('--version', help="Display the current version information",
+                      action="store_true")
     parser.add_option('--help', help='show this help message',
                       action="store_true")
 
@@ -51,6 +53,10 @@ def main(args=sys.argv[1:]):
 
     if options.help:
         parser.print_help()
+        return
+
+    if options.version:
+        print(trovebox.__version__)
         return
 
     if args:
@@ -64,10 +70,10 @@ def main(args=sys.argv[1:]):
 
     # Host option overrides config file settings
     if options.host:
-        client = OpenPhoto(host=options.host)
+        client = trovebox.Trovebox(host=options.host)
     else:
         try:
-            client = OpenPhoto(config_file=options.config_file)
+            client = trovebox.Trovebox(config_file=options.config_file)
         except IOError as error:
             print(error)
             print(CONFIG_ERROR)
@@ -81,6 +87,8 @@ def main(args=sys.argv[1:]):
         params, files = extract_files(params)
         result = client.post(options.endpoint, process_response=False,
                              files=files, **params)
+        for f in files:
+            files[f].close()
 
     if options.verbose:
         print("==========\nMethod: %s\nHost: %s\nEndpoint: %s" %
@@ -100,7 +108,7 @@ def main(args=sys.argv[1:]):
 def extract_files(params):
     """
     Extract filenames from the "photo" parameter, so they can be uploaded, returning (updated_params, files).
-    Uses the same technique as openphoto-php:
+    Uses the same technique as the Trovebox PHP commandline tool:
       * Filename can only be in the "photo" parameter
       * Filename must be prefixed with "@"
       * Filename must exist

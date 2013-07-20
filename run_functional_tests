@@ -1,0 +1,44 @@
+#!/bin/bash
+#
+# Simple script to run all functional tests with multiple test servers
+#
+
+# Test server running latest self-hosted site
+# Install from latest photo/frontend master commit
+tput setaf 3
+echo
+echo "Testing latest self-hosted site..."
+tput sgr0
+export TROVEBOX_TEST_CONFIG=test
+unset TROVEBOX_TEST_SERVER_API
+python -m unittest discover --catch tests/functional
+
+# Test server running APIv1 Trovebox instance
+# Install from photo/frontend commit 660b2ab
+tput setaf 3
+echo
+echo "Testing APIv1 self-hosted site..."
+tput sgr0
+export TROVEBOX_TEST_CONFIG=test-apiv1
+export TROVEBOX_TEST_SERVER_API=1
+python -m unittest discover --catch tests/functional
+
+# Test server running v3.0.8 Trovebox instance
+# Install from photo/frontend commit e9d81de57b
+tput setaf 3
+echo
+echo "Testing v3.0.8 self-hosted site..."
+tput sgr0
+export TROVEBOX_TEST_CONFIG=test-3.0.8
+unset TROVEBOX_TEST_SERVER_API
+python -m unittest discover --catch tests/functional
+
+# Test account on hosted trovebox.com site
+tput setaf 3
+echo
+echo "Testing latest hosted site..."
+tput sgr0
+export TROVEBOX_TEST_CONFIG=test-hosted
+unset TROVEBOX_TEST_SERVER_API
+python -m unittest discover --catch tests/functional
+

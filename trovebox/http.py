@@ -8,40 +8,36 @@ try:
 except ImportError:
     from urlparse import urlunparse # Python2
 
-from openphoto.objects import OpenPhotoObject
-from openphoto.errors import *
-from openphoto.config import Config
+from .objects import TroveboxObject
+from .errors import *
+from .config import Config
 
 if sys.version < '3':
     TEXT_TYPE = unicode
-    # requests_oauth needs to decode to ascii for Python2
-    OAUTH_DECODING = "utf-8"
 else:
     TEXT_TYPE = str
-    # requests_oauth needs to use (unicode) strings for Python3
-    OAUTH_DECODING = None
 
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
 
-class OpenPhotoHttp:
+class Http:
     """
-    Base class to handle HTTP requests to an OpenPhoto server.
+    Base class to handle HTTP requests to an Trovebox server.
     If no parameters are specified, config is loaded from the default
-        location (~/.config/openphoto/default).
+        location (~/.config/trovebox/default).
     The config_file parameter is used to specify an alternate config file.
     If the host parameter is specified, no config file is loaded and
         OAuth tokens (consumer*, token*) can optionally be specified.
     All requests will include the api_version path, if specified.
     This should be used to ensure that your application will continue to work
-        even if the OpenPhoto API is updated to a new revision.
+        even if the Trovebox API is updated to a new revision.
     """
     def __init__(self, config_file=None, host=None,
                  consumer_key='', consumer_secret='',
                  token='', token_secret='', api_version=None):
         self._api_version = api_version
 
-        self._logger = logging.getLogger("openphoto")
+        self._logger = logging.getLogger("trovebox")
 
         self.config = Config(config_file, host,
                              consumer_key, consumer_secret,
@@ -59,7 +55,7 @@ class OpenPhotoHttp:
         Performs an HTTP GET from the specified endpoint (API path),
             passing parameters if given.
         The api_version is prepended to the endpoint,
-            if it was specified when the OpenPhoto object was created.
+            if it was specified when the Trovebox object was created.
 
         Returns the decoded JSON dictionary, and raises exceptions if an
             error code is received.
@@ -76,8 +72,7 @@ class OpenPhotoHttp:
             auth = requests_oauthlib.OAuth1(self.config.consumer_key,
                                             self.config.consumer_secret,
                                             self.config.token,
-                                            self.config.token_secret,
-                                            decoding=OAUTH_DECODING)
+                                            self.config.token_secret)
         else:
             auth = None
 
@@ -103,7 +98,7 @@ class OpenPhotoHttp:
         Performs an HTTP POST to the specified endpoint (API path),
             passing parameters if given.
         The api_version is prepended to the endpoint,
-            if it was specified when the OpenPhoto object was created.
+            if it was specified when the Trovebox object was created.
 
         Returns the decoded JSON dictionary, and raises exceptions if an
             error code is received.
@@ -117,13 +112,12 @@ class OpenPhotoHttp:
         url = urlunparse(('http', self.host, endpoint, '', '', ''))
 
         if not self.config.consumer_key:
-            raise OpenPhotoError("Cannot issue POST without OAuth tokens")
+            raise TroveboxError("Cannot issue POST without OAuth tokens")
 
         auth = requests_oauthlib.OAuth1(self.config.consumer_key,
                                         self.config.consumer_secret,
                                         self.config.token,
-                                        self.config.token_secret,
-                                        decoding=OAUTH_DECODING)
+                                        self.config.token_secret)
         with requests.Session() as session:
             if files:
                 # Need to pass parameters as URL query, so they get OAuth signed
@@ -158,7 +152,7 @@ class OpenPhotoHttp:
         processed_params = {}
         for key, value in params.items():
             # Extract IDs from objects
-            if isinstance(value, OpenPhotoObject):
+            if isinstance(value, TroveboxObject):
                 value = value.id
 
             # Ensure value is UTF-8 encoded
@@ -171,7 +165,7 @@ class OpenPhotoHttp:
                 new_list = list(value)
                 # Extract IDs from objects in the list
                 for i, item in enumerate(new_list):
-                    if isinstance(item, OpenPhotoObject):
+                    if isinstance(item, TroveboxObject):
                         new_list[i] = item.id
                 # Convert list to string
                 value = ','.join([str(item) for item in new_list])
@@ -189,29 +183,29 @@ class OpenPhotoHttp:
         Decodes the JSON response, returning a dict.
         Raises an exception if an invalid response code is received.
         """
+        if response.status_code == 404:
+            raise Trovebox404Error("HTTP Error %d: %s" %
+                                   (response.status_code, response.reason))
         try:
             json_response = response.json()
             code = json_response["code"]
             message = json_response["message"]
         except (ValueError, KeyError):
-            # Response wasn't OpenPhoto JSON - check the HTTP status code
+            # Response wasn't Trovebox JSON - check the HTTP status code
             if 200 <= response.status_code < 300:
                 # Status code was valid, so just reraise the exception
                 raise
-            elif response.status_code == 404:
-                raise OpenPhoto404Error("HTTP Error %d: %s" %
-                                        (response.status_code, response.reason))
             else:
-                raise OpenPhotoError("HTTP Error %d: %s" %
-                                     (response.status_code, response.reason))
+                raise TroveboxError("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
 
         if 200 <= code < 300:
             return json_response
         elif (code == DUPLICATE_RESPONSE["code"] and
                DUPLICATE_RESPONSE["message"] in message):
-            raise OpenPhotoDuplicateError("Code %d: %s" % (code, message))
+            raise TroveboxDuplicateError("Code %d: %s" % (code, message))
         else:
-            raise OpenPhotoError("Code %d: %s" % (code, message))
+            raise TroveboxError("Code %d: %s" % (code, message))
 
 def result_to_list(result):
     """ Handle the case where the result contains no items """

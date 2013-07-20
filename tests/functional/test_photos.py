@@ -1,16 +1,16 @@
 from __future__ import unicode_literals
 
-import openphoto
-import tests.test_base
+import trovebox
+from tests.functional import test_base
 
-class TestPhotos(tests.test_base.TestBase):
+class TestPhotos(test_base.TestBase):
     testcase_name = "photo API"
 
     def test_delete_upload(self):
         """ Test photo deletion and upload """
-        # Delete one photo using the OpenPhoto class, passing in the id
+        # Delete one photo using the Trovebox class, passing in the id
         self.assertTrue(self.client.photo.delete(self.photos[0].id))
-        # Delete one photo using the OpenPhoto class, passing in the object
+        # Delete one photo using the Trovebox class, passing in the object
         self.assertTrue(self.client.photo.delete(self.photos[1]))
         # And another using the Photo object directly
         self.assertTrue(self.photos[2].delete())
@@ -19,11 +19,11 @@ class TestPhotos(tests.test_base.TestBase):
         self.assertEqual(self.client.photos.list(), [])
 
         # Re-upload the photos, one of them using Bas64 encoding
-        ret_val = self.client.photo.upload("tests/test_photo1.jpg",
+        ret_val = self.client.photo.upload("tests/data/test_photo1.jpg",
                                            title=self.TEST_TITLE)
-        self.client.photo.upload("tests/test_photo2.jpg",
+        self.client.photo.upload("tests/data/test_photo2.jpg",
                                  title=self.TEST_TITLE)
-        self.client.photo.upload_encoded("tests/test_photo3.jpg",
+        self.client.photo.upload_encoded("tests/data/test_photo3.jpg",
                                          title=self.TEST_TITLE)
 
         # Check there are now three photos with the correct titles
@@ -49,7 +49,7 @@ class TestPhotos(tests.test_base.TestBase):
 
     def test_edit(self):
         """ Check that the edit request returns an HTML form """
-        # Test using the OpenPhoto class
+        # Test using the Trovebox class
         html = self.client.photo.edit(self.photos[0])
         self.assertIn("<form", html.lower())
 
@@ -60,8 +60,8 @@ class TestPhotos(tests.test_base.TestBase):
     def test_upload_duplicate(self):
         """ Ensure that duplicate photos are rejected """
         # Attempt to upload a duplicate
-        with self.assertRaises(openphoto.OpenPhotoDuplicateError):
-            self.client.photo.upload("tests/test_photo1.jpg",
+        with self.assertRaises(trovebox.TroveboxDuplicateError):
+            self.client.photo.upload("tests/data/test_photo1.jpg",
                                      title=self.TEST_TITLE)
 
         # Check there are still three photos
@@ -75,7 +75,7 @@ class TestPhotos(tests.test_base.TestBase):
         photo = self.photos[0]
         self.assertNotEqual(photo.title, title)
 
-        # Add the title to a photo using the OpenPhoto class
+        # Add the title to a photo using the Trovebox class
         ret_val = self.client.photo.update(photo, title=title)
 
         # Check that it's there
@@ -117,7 +117,7 @@ class TestPhotos(tests.test_base.TestBase):
         self.assertFalse(hasattr(photo, "path9x9"))
         self.assertFalse(hasattr(photo, "path19x19"))
 
-        # View at a particular size using the OpenPhoto class
+        # View at a particular size using the Trovebox class
         photo = self.client.photo.view(photo, returnSizes="9x9")
         self.assertTrue(hasattr(photo, "path9x9"))
 

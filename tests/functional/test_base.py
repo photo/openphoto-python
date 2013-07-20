@@ -7,11 +7,11 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
+import trovebox
 
 def get_test_server_api():
-    return int(os.getenv("OPENPHOTO_TEST_SERVER_API",
-                         openphoto.LATEST_API_VERSION))
+    return int(os.getenv("TROVEBOX_TEST_SERVER_API",
+                         trovebox.LATEST_API_VERSION))
 
 class TestBase(unittest.TestCase):
     TEST_TITLE = "Test Image - delete me!"
@@ -21,8 +21,8 @@ class TestBase(unittest.TestCase):
     testcase_name = "(unknown testcase)"
     api_version = None
 
-    config_file = os.getenv("OPENPHOTO_TEST_CONFIG", "test")
-    debug = (os.getenv("OPENPHOTO_TEST_DEBUG", "0") == "1")
+    config_file = os.getenv("TROVEBOX_TEST_CONFIG", "test")
+    debug = (os.getenv("TROVEBOX_TEST_DEBUG", "0") == "1")
 
     def __init__(self, *args, **kwds):
         super(TestBase, self).__init__(*args, **kwds)
@@ -42,7 +42,7 @@ class TestBase(unittest.TestCase):
             else:
                 print("\nTesting %s v%d" % (cls.testcase_name, cls.api_version))
 
-        cls.client = openphoto.OpenPhoto(config_file=cls.config_file,
+        cls.client = trovebox.Trovebox(config_file=cls.config_file,
                                          api_version=cls.api_version)
 
         if cls.client.photos.list() != []:
@@ -128,13 +128,13 @@ class TestBase(unittest.TestCase):
         """ Upload three test photos """
         album = cls.client.album.create(cls.TEST_ALBUM)
         photos = [
-            cls.client.photo.upload("tests/test_photo1.jpg",
+            cls.client.photo.upload("tests/data/test_photo1.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
-            cls.client.photo.upload("tests/test_photo2.jpg",
+            cls.client.photo.upload("tests/data/test_photo2.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
-            cls.client.photo.upload("tests/test_photo3.jpg",
+            cls.client.photo.upload("tests/data/test_photo3.jpg",
                                     title=cls.TEST_TITLE,
                                     albums=album.id),
             ]

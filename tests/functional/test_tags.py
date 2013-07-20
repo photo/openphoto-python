@@ -3,11 +3,11 @@ try:
 except ImportError:
     import unittest
 
-import tests.test_base
+from tests.functional import test_base
 
-@unittest.skipIf(tests.test_base.get_test_server_api() == 1,
+@unittest.skipIf(test_base.get_test_server_api() == 1,
                  "The tag API didn't work at v1 - see frontend issue #927")
-class TestTags(tests.test_base.TestBase):
+class TestTags(test_base.TestBase):
     testcase_name = "tag API"
 
     def test_create_delete(self, tag_id="create_tag"):
@@ -52,8 +52,8 @@ class TestTags(tests.test_base.TestBase):
                    "since there are no fields that can be updated")
     def test_update(self):
         """ Test that a tag can be updated """
-        # Update the tag using the OpenPhoto class, passing in the tag object
-        owner = "test1@openphoto.me"
+        # Update the tag using the Trovebox class, passing in the tag object
+        owner = "test1@trovebox.com"
         ret_val = self.client.tag.update(self.tags[0], owner=owner)
 
         # Check that the tag is updated
@@ -61,8 +61,8 @@ class TestTags(tests.test_base.TestBase):
         self.assertEqual(self.tags[0].owner, owner)
         self.assertEqual(ret_val.owner, owner)
 
-        # Update the tag using the OpenPhoto class, passing in the tag id
-        owner = "test2@openphoto.me"
+        # Update the tag using the Trovebox class, passing in the tag id
+        owner = "test2@trovebox.com"
         ret_val = self.client.tag.update(self.TEST_TAG, owner=owner)
 
         # Check that the tag is updated
@@ -71,7 +71,7 @@ class TestTags(tests.test_base.TestBase):
         self.assertEqual(ret_val.owner, owner)
 
         # Update the tag using the Tag object directly
-        owner = "test3@openphoto.me"
+        owner = "test3@trovebox.com"
         ret_val = self.tags[0].update(owner=owner)
 
         # Check that the tag is updated
