@@ -12,8 +12,8 @@ Trovebox Python Library
    :target: https://pypi.python.org/pypi/trovebox
 
 This library works with any Trovebox server, either
-`Self-hosted <https://github.com/photo>`__, or using the
-`Trovebox hosted service <http://trovebox.com>`__).
+`self-hosted <https://github.com/photo>`__, or using the hosted service at
+`trovebox.com <http://trovebox.com>`__.
 It provides full access to your photos and metadata, via a simple
 Pythonic API.
 
