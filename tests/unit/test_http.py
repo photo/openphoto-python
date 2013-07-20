@@ -7,7 +7,7 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
+import trovebox
 
 class TestHttp(unittest.TestCase):
     test_host = "test.example.com"
@@ -24,8 +24,8 @@ class TestHttp(unittest.TestCase):
 
 
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.test_host,
-                                          **self.test_oauth)
+        self.client = trovebox.Trovebox(host=self.test_host,
+                                        **self.test_oauth)
 
     def _register_uri(self, method, uri=test_uri, data=None, body=None,
                       **kwds):
@@ -78,7 +78,7 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_get_without_oauth(self):
         """Check that the get method works without OAuth parameters"""
-        self.client = openphoto.OpenPhoto(host=self.test_host)
+        self.client = trovebox.Trovebox(host=self.test_host)
         self._register_uri(httpretty.GET)
         response = self.client.get(self.test_endpoint)
         self.assertNotIn("authorization", self._last_request().headers)
@@ -87,9 +87,9 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_post_without_oauth(self):
         """Check that the post method fails without OAuth parameters"""
-        self.client = openphoto.OpenPhoto(host=self.test_host)
+        self.client = trovebox.Trovebox(host=self.test_host)
         self._register_uri(httpretty.POST)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
@@ -110,9 +110,9 @@ class TestHttp(unittest.TestCase):
     def test_get_parameter_processing(self):
         """Check that the parameter processing function is working"""
         self._register_uri(httpretty.GET)
-        photo = openphoto.objects.Photo(None, {"id": "photo_id"})
-        album = openphoto.objects.Album(None, {"id": "album_id"})
-        tag = openphoto.objects.Tag(None, {"id": "tag_id"})
+        photo = trovebox.objects.Photo(None, {"id": "photo_id"})
+        album = trovebox.objects.Album(None, {"id": "album_id"})
+        tag = trovebox.objects.Tag(None, {"id": "tag_id"})
         self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
                         list_=[photo, album, tag],
@@ -129,7 +129,7 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_get_with_api_version(self):
         """Check that an API version can be specified for the get method"""
-        self.client = openphoto.OpenPhoto(host=self.test_host, api_version=1)
+        self.client = trovebox.Trovebox(host=self.test_host, api_version=1)
         self._register_uri(httpretty.GET,
                            uri="http://%s/v1/%s" % (self.test_host,
                                                     self.test_endpoint))
@@ -138,8 +138,8 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_post_with_api_version(self):
         """Check that an API version can be specified for the post method"""
-        self.client = openphoto.OpenPhoto(host=self.test_host, api_version=1,
-                                          **self.test_oauth)
+        self.client = trovebox.Trovebox(host=self.test_host, api_version=1,
+                                        **self.test_oauth)
         self._register_uri(httpretty.POST,
                            uri="http://%s/v1/%s" % (self.test_host,
                                                     self.test_endpoint))

@@ -41,7 +41,7 @@ def get_config_path(config_file):
         config_path = os.path.join(os.getenv('HOME'), ".config")
     if not config_file:
         config_file = "default"
-    return os.path.join(config_path, "openphoto", config_file)
+    return os.path.join(config_path, "trovebox", config_file)
 
 def read_config(config_path):
     """

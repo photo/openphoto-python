@@ -1,4 +1,4 @@
-OpenPhoto/Trovebox Python Testing
+Trovebox Python Testing
 =======================
 
 ###Unit Tests
@@ -26,8 +26,8 @@ To run the unit tests against all supported Python versions, use ```tox```:
 
 ###Functional Tests
 
-The functional tests check that the openphoto-python library interoperates
-correctly with a real OpenPhoto/Trovebox server.
+The functional tests check that the Trovebox python library interoperates
+correctly with a real Trovebox server.
 
 They are slow to run and rely on a stable HTTP connection to a test server.
 

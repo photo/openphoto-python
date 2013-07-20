@@ -5,7 +5,7 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
+import trovebox
 
 class TestTags(unittest.TestCase):
     test_host = "test.example.com"
@@ -14,8 +14,8 @@ class TestTags(unittest.TestCase):
                       {"count": 5, "id":"tag2"}]
 
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.test_host)
-        self.test_tags = [openphoto.objects.Tag(self.client, tag)
+        self.client = trovebox.Trovebox(host=self.test_host)
+        self.test_tags = [trovebox.objects.Tag(self.client, tag)
                           for tag in self.test_tags_dict]
 
     @staticmethod
@@ -23,7 +23,7 @@ class TestTags(unittest.TestCase):
         return {"message": message, "code": code, "result": result}
 
 class TestTagsList(TestTags):
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_tags_list(self, mock_get):
         """Check that the the tag list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_tags_dict)
@@ -36,7 +36,7 @@ class TestTagsList(TestTags):
         self.assertEqual(result[1].count, 5)
 
 class TestTagDelete(TestTags):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_delete(self, mock_post):
         """Check that a tag can be deleted"""
         mock_post.return_value = self._return_value(True)
@@ -44,7 +44,7 @@ class TestTagDelete(TestTags):
         mock_post.assert_called_with("/tag/tag1/delete.json")
         self.assertEqual(result, True)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_delete_id(self, mock_post):
         """Check that a tag can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
@@ -52,14 +52,14 @@ class TestTagDelete(TestTags):
         mock_post.assert_called_with("/tag/tag1/delete.json")
         self.assertEqual(result, True)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_delete_failure(self, mock_post):
         """Check that an exception is raised if a tag cannot be deleted"""
         mock_post.return_value = self._return_value(False)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.tag.delete(self.test_tags[0])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_object_delete(self, mock_post):
         """Check that a tag can be deleted when using the tag object directly"""
         mock_post.return_value = self._return_value(True)
@@ -70,18 +70,18 @@ class TestTagDelete(TestTags):
         self.assertEqual(tag.get_fields(), {})
         self.assertEqual(tag.id, None)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_object_delete_failure(self, mock_post):
         """
         Check that an exception is raised if a tag cannot be deleted
         when using the tag object directly
         """
         mock_post.return_value = self._return_value(False)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.test_tags[0].delete()
 
 class TestTagUpdate(TestTags):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_update(self, mock_post):
         """Check that a tag can be updated"""
         mock_post.return_value = self._return_value(self.test_tags_dict[1])
@@ -90,7 +90,7 @@ class TestTagUpdate(TestTags):
         self.assertEqual(result.id, "tag2")
         self.assertEqual(result.count, 5)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_update_id(self, mock_post):
         """Check that a tag can be updated using its ID"""
         mock_post.return_value = self._return_value(self.test_tags_dict[1])
@@ -99,7 +99,7 @@ class TestTagUpdate(TestTags):
         self.assertEqual(result.id, "tag2")
         self.assertEqual(result.count, 5)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_object_update(self, mock_post):
         """Check that a tag can be updated when using the tag object directly"""
         mock_post.return_value = self._return_value(self.test_tags_dict[1])
