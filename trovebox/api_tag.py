@@ -1,4 +1,4 @@
-from openphoto.objects import Tag
+from .objects import Tag
 
 class ApiTags:
     def __init__(self, client):
@@ -24,7 +24,7 @@ class ApiTag:
         """
         Delete a tag.
         Returns True if successful.
-        Raises an OpenPhotoError if not.
+        Raises an TroveboxError if not.
         """
         if not isinstance(tag, Tag):
             tag = Tag(self._client, {"id": tag})

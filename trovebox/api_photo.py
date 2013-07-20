@@ -1,8 +1,8 @@
 import base64
 
-from openphoto.errors import OpenPhotoError
-import openphoto.openphoto_http
-from openphoto.objects import Photo
+from .errors import TroveboxError
+from . import http
+from .objects import Photo
 
 def extract_ids(photos):
     """
@@ -24,31 +24,31 @@ class ApiPhotos:
     def list(self, **kwds):
         """ Returns a list of Photo objects """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
-        photos = openphoto.openphoto_http.result_to_list(photos)
+        photos = http.result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
     def update(self, photos, **kwds):
         """
         Updates a list of photos.
         Returns True if successful.
-        Raises OpenPhotoError if not.
+        Raises TroveboxError if not.
         """
         ids = extract_ids(photos)
         if not self._client.post("/photos/update.json", ids=ids,
                                  **kwds)["result"]:
-            raise OpenPhotoError("Update response returned False")
+            raise TroveboxError("Update response returned False")
         return True
 
     def delete(self, photos, **kwds):
         """
         Deletes a list of photos.
         Returns True if successful.
-        Raises OpenPhotoError if not.
+        Raises TroveboxError if not.
         """
         ids = extract_ids(photos)
         if not self._client.post("/photos/delete.json", ids=ids,
                                  **kwds)["result"]:
-            raise OpenPhotoError("Delete response returned False")
+            raise TroveboxError("Delete response returned False")
         return True
 
 class ApiPhoto:
@@ -59,7 +59,7 @@ class ApiPhoto:
         """
         Delete a photo.
         Returns True if successful.
-        Raises an OpenPhotoError if not.
+        Raises an TroveboxError if not.
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})

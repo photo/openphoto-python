@@ -1,16 +1,19 @@
-=================================
-OpenPhoto/Trovebox Python Library
-=================================
+=======================
+Trovebox Python Library
+=======================
+(Previously known as openphoto-python)
+
 .. image:: https://api.travis-ci.org/photo/openphoto-python.png
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
 
-.. image:: https://pypip.in/v/openphoto/badge.png
+.. image:: https://pypip.in/v/trovebox/badge.png
    :alt: Python Package Index (PyPI)
-   :target: https://pypi.python.org/pypi/openphoto
+   :target: https://pypi.python.org/pypi/trovebox
 
-This library works with any `OpenPhoto <https://github.com/photo>`__ server
-(including the `Trovebox <http://trovebox.com>`__ hosted service).
+This library works with any Trovebox server, either
+`Self-hosted <https://github.com/photo>`__, or using the
+`Trovebox hosted service <http://trovebox.com>`__).
 It provides full access to your photos and metadata, via a simple
 Pythonic API.
 
@@ -18,11 +21,11 @@ Installation
 ============
 ::
 
-    pip install openphoto
+    pip install trovebox
 
 Documentation
 =============
-See the `OpenPhoto/Trovebox API Documentation <https://trovebox.com/documentation>`__
+See the `Trovebox API Documentation <https://trovebox.com/documentation>`__
 for full API documentation, including Python examples.
 
 All development takes place at the `openphoto-python GitHub site <https://github.com/photo/openphoto-python>`__.
@@ -30,9 +33,9 @@ All development takes place at the `openphoto-python GitHub site <https://github
 Credentials
 ===========
 For full access to your photos, you need to create the following config
-file in ``~/.config/openphoto/default``::
+file in ``~/.config/trovebox/default``::
 
-    # ~/.config/openphoto/default
+    # ~/.config/trovebox/default
     host = your.host.com
     consumerKey = your_consumer_key
     consumerSecret = your_consumer_secret
@@ -52,14 +55,14 @@ Using the library
 =================
 ::
 
-    from openphoto import OpenPhoto
-    client = OpenPhoto()
+    from trovebox import Trovebox
+    client = Trovebox()
     photos = client.photos.list()
     photos[0].update(tags=["tag1", "tag2"])
     print(photos[0].tags)
 
-The OpenPhoto Python class hierarchy mirrors the
-`OpenPhoto/Trovebox API <https://trovebox.com/documentation>`__ endpoint layout.
+The Trovebox Python class hierarchy mirrors the
+`Trovebox API <https://trovebox.com/documentation>`__ endpoint layout.
 For example, the calls in the example above use the following API endpoints:
 
 * ``client.photos.list() -> /photos/list.json``
@@ -72,22 +75,22 @@ You can also access the API at a lower level using GET/POST methods::
 
 API Versioning
 ==============
-It may be useful to lock your application to a particular version of the OpenPhoto API.
+It may be useful to lock your application to a particular version of the Trovebox API.
 This ensures that future API updates won't cause unexpected breakages.
 
 To do this, add the optional ``api_version`` parameter when creating the client object::
 
-    from openphoto import OpenPhoto
-    client = OpenPhoto(api_version=2)
+    from trovebox import Trovebox
+    client = Trovebox(api_version=2)
 
 Commandline Tool
 ================
-You can run commands to the OpenPhoto API from your shell!
+You can run commands to the Trovebox API from your shell!
 
 These are the options you can pass to the shell program::
 
     --help         # Display help text
-    -c config_file # Either the name of a config file in ~/.config/openphoto/ or a full path to a config file
+    -c config_file # Either the name of a config file in ~/.config/trovebox/ or a full path to a config file
     -h hostname    # Overrides config_file for unauthenticated API calls
     -e endpoint    # [default=/photos/list.json]
     -X method      # [default=GET]
@@ -98,9 +101,9 @@ These are the options you can pass to the shell program::
 
 Commandline Examples
 --------------------
-Upload a public photo to the host specified in ```~/.config/openphoto/default```::
+Upload a public photo to the host specified in ```~/.config/trovebox/default```::
 
-    openphoto -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
+    trovebox -p -X POST -e /photo/upload.json -F 'photo=@/path/to/photo/jpg' -F 'permission=1'
     {
         "code":201,
         "message":"Photo 1eo uploaded successfully",
@@ -112,9 +115,9 @@ Upload a public photo to the host specified in ```~/.config/openphoto/default```
         }
     }
 
-Get a thumbnail URL from current.openphoto.me (unauthenticated access)::
+Get a thumbnail URL from current.trovebox.com (unauthenticated access)::
 
-    openphoto -h current.openphoto.me -p -e /photo/62/view.json -F 'returnSizes=20x20'
+    trovebox -h current.trovebox.com -p -e /photo/62/view.json -F 'returnSizes=20x20'
     {
         "code":200,
         "message":"Photo 62",
@@ -125,11 +128,11 @@ Get a thumbnail URL from current.openphoto.me (unauthenticated access)::
             ],
             ...
             ...
-            "path20x20":"http://current.openphoto.me/photo/62/create/36c0a/20x20.jpg",
-            "pathBase":"http://awesomeness.openphoto.me/base/201203/7ae997-Boracay-Philippines-007.jpg",
+            "path20x20":"http://current.trovebox.com/photo/62/create/36c0a/20x20.jpg",
+            "pathBase":"http://awesomeness.trovebox.com/base/201203/7ae997-Boracay-Philippines-007.jpg",
             "permission":"1",
             "photo20x20":[
-                "http://current.openphoto.me/photo/62/create/36c0a/20x20.jpg",
+                "http://current.trovebox.com/photo/62/create/36c0a/20x20.jpg",
                 13,
                 20
             ],

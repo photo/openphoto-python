@@ -5,7 +5,7 @@ try:
 except ImportError:
     import unittest
 
-import openphoto
+import trovebox
 
 class TestAlbums(unittest.TestCase):
     test_host = "test.example.com"
@@ -18,8 +18,8 @@ class TestAlbums(unittest.TestCase):
                          "name": "Album 2",
                          "totalRows": 2}]
     def setUp(self):
-        self.client = openphoto.OpenPhoto(host=self.test_host)
-        self.test_albums = [openphoto.objects.Album(self.client, album)
+        self.client = trovebox.Trovebox(host=self.test_host)
+        self.test_albums = [trovebox.objects.Album(self.client, album)
                             for album in self.test_albums_dict]
 
     @staticmethod
@@ -27,7 +27,7 @@ class TestAlbums(unittest.TestCase):
         return {"message": message, "code": code, "result": result}
 
 class TestAlbumsList(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_albums_list(self, mock_get):
         """Check that the album list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_albums_dict)
@@ -39,7 +39,7 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].id, "2")
         self.assertEqual(result[1].name, "Album 2")
 
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
         """Check that the album list returns cover photo objects"""
         mock_get.return_value = self._return_value(self.test_albums_dict)
@@ -56,7 +56,7 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].cover.tags, ["tag3", "tag4"])
 
 class TestAlbumCreate(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_create(self, mock_post):
         """Check that an album can be created"""
         mock_post.return_value = self._return_value(self.test_albums_dict[0])
@@ -69,7 +69,7 @@ class TestAlbumCreate(TestAlbums):
         self.assertEqual(result.cover.tags, ["tag1", "tag2"])
 
 class TestAlbumDelete(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_delete(self, mock_post):
         """Check that an album can be deleted"""
         mock_post.return_value = self._return_value(True)
@@ -77,7 +77,7 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_delete_id(self, mock_post):
         """Check that an album can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
@@ -85,14 +85,14 @@ class TestAlbumDelete(TestAlbums):
         mock_post.assert_called_with("/album/1/delete.json")
         self.assertEqual(result, True)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_delete_failure(self, mock_post):
         """Check that an exception is raised if an album cannot be deleted"""
         mock_post.return_value = self._return_value(False)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.client.album.delete(self.test_albums[0])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_delete(self, mock_post):
         """Check that an album can be deleted using the album object directly"""
         mock_post.return_value = self._return_value(True)
@@ -104,76 +104,76 @@ class TestAlbumDelete(TestAlbums):
         self.assertEqual(album.id, None)
         self.assertEqual(album.name, None)
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_delete_failure(self, mock_post):
         """
         Check that an exception is raised if an album cannot be deleted
         when using the album object directly
         """
         mock_post.return_value = self._return_value(False)
-        with self.assertRaises(openphoto.OpenPhotoError):
+        with self.assertRaises(trovebox.TroveboxError):
             self.test_albums[0].delete()
 
 class TestAlbumForm(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_form(self, _):
         """ If album.form gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.form(self.test_albums[0])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_form_id(self, _):
         """ If album.form gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.form("1")
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_form(self, _):
         """ If album.form gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.test_albums[0].form()
 
 class TestAlbumAddPhotos(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_add_photos(self, _):
         """ If album.add_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.add_photos(self.test_albums[0], ["Photo Objects"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_add_photos_id(self, _):
         """ If album.add_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.add_photos("1", ["Photo Objects"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_add_photos(self, _):
         """ If album.add_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.test_albums[0].add_photos(["Photo Objects"])
 
 class TestAlbumRemovePhotos(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_remove_photos(self, _):
         """ If album.remove_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos(self.test_albums[0],
                                             ["Photo Objects"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_remove_photos_id(self, _):
         """ If album.remove_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.client.album.remove_photos("1", ["Photo Objects"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_remove_photos(self, _):
         """ If album.remove_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):
             self.test_albums[0].remove_photos(["Photo Objects"])
 
 class TestAlbumUpdate(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_update(self, mock_post):
         """Check that an album can be updated"""
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
@@ -184,7 +184,7 @@ class TestAlbumUpdate(TestAlbums):
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_update_id(self, mock_post):
         """Check that an album can be updated using its ID"""
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
@@ -195,7 +195,7 @@ class TestAlbumUpdate(TestAlbums):
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'post')
+    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_update(self, mock_post):
         """Check that an album can be updated using the album object directly"""
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
@@ -208,7 +208,7 @@ class TestAlbumUpdate(TestAlbums):
         self.assertEqual(album.cover.tags, ["tag3", "tag4"])
 
 class TestAlbumView(TestAlbums):
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_album_view(self, mock_get):
         """Check that an album can be viewed"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
@@ -219,7 +219,7 @@ class TestAlbumView(TestAlbums):
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_album_view_id(self, mock_get):
         """Check that an album can be viewed using its ID"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
@@ -230,7 +230,7 @@ class TestAlbumView(TestAlbums):
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
 
-    @mock.patch.object(openphoto.OpenPhoto, 'get')
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_album_object_view(self, mock_get):
         """Check that an album can be viewed using the album object directly"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
