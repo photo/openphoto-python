@@ -1,6 +1,6 @@
 from .objects import Album
 
-class ApiAlbums:
+class ApiAlbums(object):
     def __init__(self, client):
         self._client = client
 
@@ -9,7 +9,7 @@ class ApiAlbums:
         results = self._client.get("/albums/list.json", **kwds)["result"]
         return [Album(self._client, album) for album in results]
 
-class ApiAlbum:
+class ApiAlbum(object):
     def __init__(self, client):
         self._client = client
 
@@ -30,12 +30,15 @@ class ApiAlbum:
         return album.delete(**kwds)
 
     def form(self, album, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def add_photos(self, album, photos, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def remove_photos(self, album, photos, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def update(self, album, **kwds):
