@@ -2,7 +2,7 @@
 # download and install from sneakypete81's pylint fork
 
 wget https://bitbucket.org/sneakypete81/pylint/get/use_ignore_patch.zip
-unzip $HG_HASH.zip
+unzip use_ignore_patch.zip
 cd sneakypete81-pylint-*
 python setup.py install
 
