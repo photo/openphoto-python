@@ -3,7 +3,7 @@ Trovebox Python Library
 =======================
 (Previously known as openphoto-python)
 
-.. image:: https://api.travis-ci.org/photo/openphoto-python.png
+.. image:: https://travis-ci.org/photo/openphoto-python.png?branch=master
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
 
