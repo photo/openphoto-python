@@ -7,6 +7,9 @@ install:
 script: tox
 
 after_script:
+  # Install dependencies for Pylint
+  - pip install requests requests-oauthlib
+
   # Run Pylint
   # (for information only, any errors don't affect the Travis result)
   - pylint --use-ignore-patch=y trovebox
