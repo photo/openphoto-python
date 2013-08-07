@@ -1,6 +1,6 @@
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_album.py /tmp/pylint_zL0Fvx/api_album.py
---- ./api_album.py	2013-07-28 19:34:26.921934852 +0100
-+++ /tmp/pylint_zL0Fvx/api_album.py	2013-07-28 19:34:32.149960776 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_album.py patched/api_album.py
+--- original/api_album.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/api_album.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,6 +1,7 @@
 + # pylint: disable=C0111
  from .objects import Album
@@ -19,9 +19,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_album.py /tmp
      def __init__(self, client):
          self._client = client
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_photo.py /tmp/pylint_zL0Fvx/api_photo.py
---- ./api_photo.py	2013-07-28 19:34:26.921934852 +0100
-+++ /tmp/pylint_zL0Fvx/api_photo.py	2013-07-28 19:34:33.981969860 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_photo.py patched/api_photo.py
+--- original/api_photo.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/api_photo.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  import base64
@@ -45,9 +45,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_photo.py /tmp
      def __init__(self, client):
          self._client = client
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_tag.py /tmp/pylint_zL0Fvx/api_tag.py
---- ./api_tag.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/api_tag.py	2013-07-28 19:34:45.134025160 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_tag.py patched/api_tag.py
+--- original/api_tag.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/api_tag.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,6 +1,7 @@
 + # pylint: disable=C0111
  from .objects import Tag
@@ -66,9 +66,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./api_tag.py /tmp/p
      def __init__(self, client):
          self._client = client
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./config.py /tmp/pylint_zL0Fvx/config.py
---- ./config.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/config.py	2013-07-28 19:34:40.522002291 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/config.py patched/config.py
+--- original/config.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/config.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,7 +1,8 @@
 + # pylint: disable=C0111
  from __future__ import unicode_literals
@@ -99,17 +99,17 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./config.py /tmp/py
      except AttributeError:
          parser.readfp(buf) # Python2
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./errors.py /tmp/pylint_zL0Fvx/errors.py
---- ./errors.py	2013-07-28 19:30:27.132745801 +0100
-+++ /tmp/pylint_zL0Fvx/errors.py	2013-07-28 19:34:41.930009273 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/errors.py patched/errors.py
+--- original/errors.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/errors.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  class TroveboxError(Exception):
      """ Indicates that an Trovebox operation failed """
      pass
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./http.py /tmp/pylint_zL0Fvx/http.py
---- ./http.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/http.py	2013-07-28 19:34:36.453982118 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py patched/http.py
+--- original/http.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/http.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,21 +1,22 @@
 + # pylint: disable=C0111
  from __future__ import unicode_literals
@@ -146,9 +146,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./http.py /tmp/pyli
                   consumer_key='', consumer_secret='',
                   token='', token_secret='', api_version=None):
          self._api_version = api_version
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./__init__.py /tmp/pylint_zL0Fvx/__init__.py
---- ./__init__.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/__init__.py	2013-07-28 19:34:28.705943698 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.py patched/__init__.py
+--- original/__init__.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/__init__.py	2013-08-07 21:13:59.879967978 +0100
 @@ -1,5 +1,6 @@
 + # pylint: disable=C0111
  from .http import Http
@@ -166,9 +166,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./__init__.py /tmp/
                   consumer_key='', consumer_secret='',
                   token='', token_secret='',
                   api_version=None):
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./main.py /tmp/pylint_zL0Fvx/main.py
---- ./main.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/main.py	2013-07-28 19:34:30.345951830 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py patched/main.py
+--- original/main.py	2013-08-07 21:13:32.151830000 +0100
++++ patched/main.py	2013-08-07 21:13:59.883967994 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  #!/usr/bin/env python
@@ -200,9 +200,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./main.py /tmp/pyli
              files[f].close()
  
      if options.verbose:
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./objects.py /tmp/pylint_zL0Fvx/objects.py
---- ./objects.py	2013-07-28 19:34:26.925934871 +0100
-+++ /tmp/pylint_zL0Fvx/objects.py	2013-07-28 19:34:38.969994595 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects.py patched/objects.py
+--- original/objects.py	2013-08-07 21:13:32.155830000 +0100
++++ patched/objects.py	2013-08-07 21:13:59.883967994 +0100
 @@ -1,14 +1,15 @@
 + # pylint: disable=C0111
  try:
@@ -222,36 +222,9 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' ./objects.py /tmp/p
          self.name = None
          self._trovebox = trovebox
          self._json_dict = json_dict
-@@ -54,7 +55,7 @@
-         return self._json_dict
- 
- 
--class Photo(TroveboxObject):
-+class Photo(TroveboxObject): # pylint: disable=C0111
-     def delete(self, **kwds):
-         """
-         Delete this photo.
-@@ -144,7 +145,7 @@
- 
-         self._replace_fields(new_dict)
- 
--class Tag(TroveboxObject):
-+class Tag(TroveboxObject): # pylint: disable=C0111
-     def delete(self, **kwds):
-         """
-         Delete this tag.
-@@ -165,7 +166,7 @@
-         self._replace_fields(new_dict)
- 
- 
--class Album(TroveboxObject):
-+class Album(TroveboxObject): # pylint: disable=C0111
-     def __init__(self, trovebox, json_dict):
-         self.photos = None
-         self.cover = None
-diff --unified --recursive '--exclude=.pylint-ignores.patch' ./_version.py /tmp/pylint_zL0Fvx/_version.py
---- ./_version.py	2013-07-28 19:30:27.132745801 +0100
-+++ /tmp/pylint_zL0Fvx/_version.py	2013-07-28 19:34:43.226015699 +0100
+diff --unified --recursive '--exclude=.pylint-ignores.patch' original/_version.py patched/_version.py
+--- original/_version.py	2013-08-07 21:12:22.487484000 +0100
++++ patched/_version.py	2013-08-07 21:14:05.947998060 +0100
 @@ -1 +1,2 @@
 + # pylint: disable=C0111
  __version__ = "0.4"
