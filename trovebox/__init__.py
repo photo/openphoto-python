@@ -1,3 +1,6 @@
+"""
+__init__.py : Trovebox package top level
+"""
 from .http import Http
 from .errors import *
 from ._version import __version__

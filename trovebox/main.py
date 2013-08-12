@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+main.py : Trovebox Console Script
+"""
 import os
 import sys
 import json

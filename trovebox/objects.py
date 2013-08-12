@@ -1,3 +1,6 @@
+"""
+objects.py : Basic Trovebox API Objects
+"""
 try:
     from urllib.parse import quote # Python3
 except ImportError:

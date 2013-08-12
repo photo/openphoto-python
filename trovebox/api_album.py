@@ -1,3 +1,6 @@
+"""
+api_album.py : Trovebox Album API Classes
+"""
 from .objects import Album
 
 class ApiAlbums(object):

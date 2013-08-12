@@ -1,3 +1,6 @@
+"""
+api_tag.py : Trovebox Tag API Classes
+"""
 from .objects import Tag
 
 class ApiTags(object):

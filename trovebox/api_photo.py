@@ -1,3 +1,6 @@
+"""
+api_photo.py : Trovebox Photo API Classes
+"""
 import base64
 
 from .errors import TroveboxError

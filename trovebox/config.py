@@ -1,3 +1,6 @@
+"""
+config.py : OAuth Config File Parser
+"""
 from __future__ import unicode_literals
 import os
 try:
