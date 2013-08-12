@@ -4,9 +4,9 @@ import requests
 import requests_oauthlib
 import logging
 try:
-    from urllib.parse import urlunparse # Python3
+    from urllib.parse import urlparse, urlunparse # Python3
 except ImportError:
-    from urlparse import urlunparse # Python2
+    from urlparse import urlparse, urlunparse # Python2
 
 from .objects import TroveboxObject
 from .errors import *
@@ -62,11 +62,7 @@ class Http(object):
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
-        if not endpoint.startswith("/"):
-            endpoint = "/" + endpoint
-        if self._api_version is not None:
-            endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self.host, endpoint, '', '', ''))
+        url = self._construct_url(endpoint)
 
         if self.config.consumer_key:
             auth = requests_oauthlib.OAuth1(self.config.consumer_key,
@@ -105,11 +101,7 @@ class Http(object):
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
-        if not endpoint.startswith("/"):
-            endpoint = "/" + endpoint
-        if self._api_version is not None:
-            endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self.host, endpoint, '', '', ''))
+        url = self._construct_url(endpoint)
 
         if not self.config.consumer_key:
             raise TroveboxError("Cannot issue POST without OAuth tokens")
@@ -145,6 +137,22 @@ class Http(object):
             return self._process_response(response)
         else:
             return response.text
+
+    def _construct_url(self, endpoint):
+        """Return the full URL to the specified endpoint"""
+        parsed_url = urlparse(self.host)
+        scheme = parsed_url[0]
+        host = parsed_url[1]
+        # Handle host without a scheme specified (eg. www.example.com)
+        if scheme == "":
+            scheme = "http"
+            host = self.host
+
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self._api_version is not None:
+            endpoint = "/v%d%s" % (self._api_version, endpoint)
+        return urlunparse((scheme, host, endpoint, '', '', ''))
 
     @staticmethod
     def _process_params(params):
