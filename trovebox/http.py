@@ -20,7 +20,7 @@ else:
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
 
-class Http:
+class Http(object):
     """
     Base class to handle HTTP requests to an Trovebox server.
     If no parameters are specified, config is loaded from the default

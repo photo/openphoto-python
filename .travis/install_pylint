@@ -1,11 +1,10 @@
 # Until the --use-ignore-patch makes it into pylint upstream, we need to
 # download and install from sneakypete81's pylint fork
-HG_HASH=16de8b9518be
 
-wget https://bitbucket.org/sneakypete81/pylint/get/$HG_HASH.zip
-unzip $HG_HASH.zip
-cd sneakypete81-pylint-$HG_HASH
+wget https://bitbucket.org/sneakypete81/pylint/get/use_ignore_patch.zip
+unzip use_ignore_patch.zip
+cd sneakypete81-pylint-*
 python setup.py install
 
 cd ..
-rm -r sneakypete81-pylint-$HG_HASH
+rm -r sneakypete81-pylint-*
