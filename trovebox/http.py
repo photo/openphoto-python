@@ -13,7 +13,7 @@ except ImportError:
 
 from .objects import TroveboxObject
 from .errors import *
-from .config import Config
+from .auth import Auth
 
 if sys.version < '3':
     TEXT_TYPE = unicode
@@ -26,8 +26,8 @@ DUPLICATE_RESPONSE = {"code": 409,
 class Http(object):
     """
     Base class to handle HTTP requests to an Trovebox server.
-    If no parameters are specified, config is loaded from the default
-        location (~/.config/trovebox/default).
+    If no parameters are specified, auth config is loaded from the
+        default location (~/.config/trovebox/default).
     The config_file parameter is used to specify an alternate config file.
     If the host parameter is specified, no config file is loaded and
         OAuth tokens (consumer*, token*) can optionally be specified.
@@ -42,11 +42,11 @@ class Http(object):
 
         self._logger = logging.getLogger("trovebox")
 
-        self.config = Config(config_file, host,
-                             consumer_key, consumer_secret,
-                             token, token_secret)
+        self.auth = Auth(config_file, host,
+                         consumer_key, consumer_secret,
+                         token, token_secret)
 
-        self.host = self.config.host
+        self.host = self.auth.host
 
         # Remember the most recent HTTP request and response
         self.last_url = None
@@ -67,11 +67,11 @@ class Http(object):
         params = self._process_params(params)
         url = self._construct_url(endpoint)
 
-        if self.config.consumer_key:
-            auth = requests_oauthlib.OAuth1(self.config.consumer_key,
-                                            self.config.consumer_secret,
-                                            self.config.token,
-                                            self.config.token_secret)
+        if self.auth.consumer_key:
+            auth = requests_oauthlib.OAuth1(self.auth.consumer_key,
+                                            self.auth.consumer_secret,
+                                            self.auth.token,
+                                            self.auth.token_secret)
         else:
             auth = None
 
@@ -106,13 +106,13 @@ class Http(object):
         params = self._process_params(params)
         url = self._construct_url(endpoint)
 
-        if not self.config.consumer_key:
+        if not self.auth.consumer_key:
             raise TroveboxError("Cannot issue POST without OAuth tokens")
 
-        auth = requests_oauthlib.OAuth1(self.config.consumer_key,
-                                        self.config.consumer_secret,
-                                        self.config.token,
-                                        self.config.token_secret)
+        auth = requests_oauthlib.OAuth1(self.auth.consumer_key,
+                                        self.auth.consumer_secret,
+                                        self.auth.token,
+                                        self.auth.token_secret)
         with requests.Session() as session:
             if files:
                 # Need to pass parameters as URL query, so they get OAuth signed

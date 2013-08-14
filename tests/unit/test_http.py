@@ -44,7 +44,7 @@ class TestHttp(unittest.TestCase):
     def test_attributes(self):
         """Check that the host attribute has been set correctly"""
         self.assertEqual(self.client.host, self.test_host)
-        self.assertEqual(self.client.config.host, self.test_host)
+        self.assertEqual(self.client.auth.host, self.test_host)
 
     @httpretty.activate
     def test_get_with_http_scheme(self):
