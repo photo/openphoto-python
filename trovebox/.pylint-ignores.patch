@@ -1,6 +1,6 @@
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_album.py patched/api_album.py
---- original/api_album.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/api_album.py	2013-08-07 21:13:59.879967978 +0100
+--- original/api_album.py	2013-08-12 17:24:58.207574000 +0100
++++ patched/api_album.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,6 +1,7 @@
 + # pylint: disable=C0111
  from .objects import Album
@@ -20,8 +20,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_album.
          self._client = client
  
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_photo.py patched/api_photo.py
---- original/api_photo.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/api_photo.py	2013-08-07 21:13:59.879967978 +0100
+--- original/api_photo.py	2013-08-12 17:24:58.207574000 +0100
++++ patched/api_photo.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  import base64
@@ -46,8 +46,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_photo.
          self._client = client
  
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_tag.py patched/api_tag.py
---- original/api_tag.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/api_tag.py	2013-08-07 21:13:59.879967978 +0100
+--- original/api_tag.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/api_tag.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,6 +1,7 @@
 + # pylint: disable=C0111
  from .objects import Tag
@@ -67,8 +67,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api_tag.py
          self._client = client
  
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/config.py patched/config.py
---- original/config.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/config.py	2013-08-07 21:13:59.879967978 +0100
+--- original/config.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/config.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,7 +1,8 @@
 + # pylint: disable=C0111
  from __future__ import unicode_literals
@@ -100,28 +100,24 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/config.py 
          parser.readfp(buf) # Python2
  
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/errors.py patched/errors.py
---- original/errors.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/errors.py	2013-08-07 21:13:59.879967978 +0100
+--- original/errors.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/errors.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  class TroveboxError(Exception):
      """ Indicates that an Trovebox operation failed """
      pass
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py patched/http.py
---- original/http.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/http.py	2013-08-07 21:13:59.879967978 +0100
-@@ -1,21 +1,22 @@
-+ # pylint: disable=C0111
- from __future__ import unicode_literals
- import sys
- import requests
+--- original/http.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/http.py	2013-08-12 17:27:23.828296874 +0100
+@@ -4,18 +4,18 @@
  import requests_oauthlib
  import logging
  try:
--    from urllib.parse import urlunparse # Python3
-+    from urllib.parse import urlunparse # Python3 # pylint: disable=F0401,E0611
+-    from urllib.parse import urlparse, urlunparse # Python3
++    from urllib.parse import urlparse, urlunparse # Python3 # pylint: disable=F0401,E0611
  except ImportError:
-     from urlparse import urlunparse # Python2
+     from urlparse import urlparse, urlunparse # Python2
  
  from .objects import TroveboxObject
 -from .errors import *
@@ -137,7 +133,7 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py pa
  
  DUPLICATE_RESPONSE = {"code": 409,
                        "message": "This photo already exists"}
-@@ -32,7 +33,7 @@
+@@ -32,7 +32,7 @@
      This should be used to ensure that your application will continue to work
          even if the Trovebox API is updated to a new revision.
      """
@@ -147,8 +143,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py pa
                   token='', token_secret='', api_version=None):
          self._api_version = api_version
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.py patched/__init__.py
---- original/__init__.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/__init__.py	2013-08-07 21:13:59.879967978 +0100
+--- original/__init__.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/__init__.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,5 +1,6 @@
 + # pylint: disable=C0111
  from .http import Http
@@ -167,8 +163,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.p
                   token='', token_secret='',
                   api_version=None):
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py patched/main.py
---- original/main.py	2013-08-07 21:13:32.151830000 +0100
-+++ patched/main.py	2013-08-07 21:13:59.883967994 +0100
+--- original/main.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/main.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,3 +1,4 @@
 + # pylint: disable=C0111
  #!/usr/bin/env python
@@ -201,8 +197,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py pa
  
      if options.verbose:
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects.py patched/objects.py
---- original/objects.py	2013-08-07 21:13:32.155830000 +0100
-+++ patched/objects.py	2013-08-07 21:13:59.883967994 +0100
+--- original/objects.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/objects.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1,14 +1,15 @@
 + # pylint: disable=C0111
  try:
@@ -223,8 +219,8 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects.py
          self._trovebox = trovebox
          self._json_dict = json_dict
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/_version.py patched/_version.py
---- original/_version.py	2013-08-07 21:12:22.487484000 +0100
-+++ patched/_version.py	2013-08-07 21:14:05.947998060 +0100
+--- original/_version.py	2013-08-12 17:24:58.211574000 +0100
++++ patched/_version.py	2013-08-12 17:27:10.872232623 +0100
 @@ -1 +1,2 @@
 + # pylint: disable=C0111
  __version__ = "0.4"

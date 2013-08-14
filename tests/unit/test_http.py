@@ -47,6 +47,96 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(self.client.config.host, self.test_host)
 
     @httpretty.activate
+    def test_get_with_http_scheme(self):
+        """Check that the get method works with a host starting with 'http://'"""
+        self._register_uri(httpretty.GET,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="http://test.example.com",
+                                        **self.test_oauth)
+        response = self.client.get(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    def test_get_with_no_scheme(self):
+        """Check that the get method works with a host without a 'http://' prefix"""
+        self._register_uri(httpretty.GET,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="test.example.com",
+                                        **self.test_oauth)
+        response = self.client.get(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    def test_get_with_https_scheme(self):
+        """Check that the get method works with a host starting with 'https://'"""
+        self._register_uri(httpretty.GET,
+                           uri="https://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="https://test.example.com",
+                                        **self.test_oauth)
+        response = self.client.get(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "https://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    def test_post_with_http_scheme(self):
+        """Check that the post method works with a host starting with 'http://'"""
+        self._register_uri(httpretty.POST,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="http://test.example.com",
+                                        **self.test_oauth)
+        response = self.client.post(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    def test_post_with_no_scheme(self):
+        """Check that the post method works with a host without a 'http://' prefix"""
+        self._register_uri(httpretty.POST,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="test.example.com",
+                                        **self.test_oauth)
+        response = self.client.post(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    def test_post_with_https_scheme(self):
+        """Check that the post method works with a host starting with 'https://'"""
+        self._register_uri(httpretty.POST,
+                           uri="https://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="https://test.example.com",
+                                        **self.test_oauth)
+        response = self.client.post(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "https://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
     def test_get_with_parameters(self):
         """Check that the get method accepts parameters correctly"""
         self._register_uri(httpretty.GET)
