@@ -10,7 +10,7 @@ from trovebox import Trovebox
 CONFIG_HOME_PATH = os.path.join("tests", "config")
 CONFIG_PATH = os.path.join(CONFIG_HOME_PATH, "trovebox")
 
-class TestConfig(unittest.TestCase):
+class TestAuth(unittest.TestCase):
     def setUp(self):
         """ Override XDG_CONFIG_HOME env var, to use test configs """
         try:
@@ -42,47 +42,47 @@ class TestConfig(unittest.TestCase):
         """ Ensure the default config is loaded """
         self.create_config("default", "Test Default Host")
         client = Trovebox()
-        config = client.config
+        auth = client.auth
         self.assertEqual(client.host, "Test Default Host")
-        self.assertEqual(config.consumer_key, "default_consumer_key")
-        self.assertEqual(config.consumer_secret, "default_consumer_secret")
-        self.assertEqual(config.token, "default_token")
-        self.assertEqual(config.token_secret, "default_token_secret")
+        self.assertEqual(auth.consumer_key, "default_consumer_key")
+        self.assertEqual(auth.consumer_secret, "default_consumer_secret")
+        self.assertEqual(auth.token, "default_token")
+        self.assertEqual(auth.token_secret, "default_token_secret")
 
     def test_custom_config(self):
         """ Ensure a custom config can be loaded """
         self.create_config("default", "Test Default Host")
         self.create_config("custom", "Test Custom Host")
         client = Trovebox(config_file="custom")
-        config = client.config
+        auth = client.auth
         self.assertEqual(client.host, "Test Custom Host")
-        self.assertEqual(config.consumer_key, "custom_consumer_key")
-        self.assertEqual(config.consumer_secret, "custom_consumer_secret")
-        self.assertEqual(config.token, "custom_token")
-        self.assertEqual(config.token_secret, "custom_token_secret")
+        self.assertEqual(auth.consumer_key, "custom_consumer_key")
+        self.assertEqual(auth.consumer_secret, "custom_consumer_secret")
+        self.assertEqual(auth.token, "custom_token")
+        self.assertEqual(auth.token_secret, "custom_token_secret")
 
     def test_full_config_path(self):
         """ Ensure a full custom config path can be loaded """
         self.create_config("path", "Test Path Host")
         full_path = os.path.abspath(CONFIG_PATH)
         client = Trovebox(config_file=os.path.join(full_path, "path"))
-        config = client.config
+        auth = client.auth
         self.assertEqual(client.host, "Test Path Host")
-        self.assertEqual(config.consumer_key, "path_consumer_key")
-        self.assertEqual(config.consumer_secret, "path_consumer_secret")
-        self.assertEqual(config.token, "path_token")
-        self.assertEqual(config.token_secret, "path_token_secret")
+        self.assertEqual(auth.consumer_key, "path_consumer_key")
+        self.assertEqual(auth.consumer_secret, "path_consumer_secret")
+        self.assertEqual(auth.token, "path_token")
+        self.assertEqual(auth.token_secret, "path_token_secret")
 
     def test_host_override(self):
         """ Ensure that specifying a host overrides the default config """
         self.create_config("default", "Test Default Host")
         client = Trovebox(host="host_override")
-        config = client.config
-        self.assertEqual(config.host, "host_override")
-        self.assertEqual(config.consumer_key, "")
-        self.assertEqual(config.consumer_secret, "")
-        self.assertEqual(config.token, "")
-        self.assertEqual(config.token_secret, "")
+        auth = client.auth
+        self.assertEqual(auth.host, "host_override")
+        self.assertEqual(auth.consumer_key, "")
+        self.assertEqual(auth.consumer_secret, "")
+        self.assertEqual(auth.token, "")
+        self.assertEqual(auth.token_secret, "")
 
     def test_missing_config_files(self):
         """ Ensure that missing config files raise exceptions """

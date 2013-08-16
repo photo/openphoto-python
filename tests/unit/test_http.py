@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import os
 import json
+import mock
 import httpretty
 try:
     import unittest2 as unittest # Python2.6
@@ -44,7 +45,7 @@ class TestHttp(unittest.TestCase):
     def test_attributes(self):
         """Check that the host attribute has been set correctly"""
         self.assertEqual(self.client.host, self.test_host)
-        self.assertEqual(self.client.config.host, self.test_host)
+        self.assertEqual(self.client.auth.host, self.test_host)
 
     @httpretty.activate
     def test_get_with_http_scheme(self):
@@ -219,7 +220,8 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_get_with_api_version(self):
         """Check that an API version can be specified for the get method"""
-        self.client = trovebox.Trovebox(host=self.test_host, api_version=1)
+        self.client = trovebox.Trovebox(host=self.test_host)
+        self.client.configure(api_version=1)
         self._register_uri(httpretty.GET,
                            uri="http://%s/v1/%s" % (self.test_host,
                                                     self.test_endpoint))
@@ -228,12 +230,38 @@ class TestHttp(unittest.TestCase):
     @httpretty.activate
     def test_post_with_api_version(self):
         """Check that an API version can be specified for the post method"""
-        self.client = trovebox.Trovebox(host=self.test_host, api_version=1,
-                                        **self.test_oauth)
+        self.client = trovebox.Trovebox(host=self.test_host, **self.test_oauth)
+        self.client.configure(api_version=1)
         self._register_uri(httpretty.POST,
                            uri="http://%s/v1/%s" % (self.test_host,
                                                     self.test_endpoint))
         self.client.post(self.test_endpoint)
+
+    @mock.patch.object(trovebox.http.requests, 'Session')
+    def test_get_with_ssl_verify_disabled(self, mock_session):
+        """Check that SSL verification can be disabled for the get method"""
+        session = mock_session.return_value.__enter__.return_value
+        session.get.return_value.text = "response text"
+        session.get.return_value.status_code = 200
+        session.get.return_value.json.return_value = self.test_data
+
+        self.client = trovebox.Trovebox(host=self.test_host, **self.test_oauth)
+        self.client.configure(ssl_verify=False)
+        self.client.get(self.test_endpoint)
+        self.assertEqual(session.verify, False)
+
+    @mock.patch.object(trovebox.http.requests, 'Session')
+    def test_post_with_ssl_verify_disabled(self, mock_session):
+        """Check that SSL verification can be disabled for the post method"""
+        session = mock_session.return_value.__enter__.return_value
+        session.post.return_value.text = "response text"
+        session.post.return_value.status_code = 200
+        session.post.return_value.json.return_value = self.test_data
+
+        self.client = trovebox.Trovebox(host=self.test_host, **self.test_oauth)
+        self.client.configure(ssl_verify=False)
+        self.client.post(self.test_endpoint)
+        self.assertEqual(session.verify, False)
 
     @httpretty.activate
     def test_post_file(self):

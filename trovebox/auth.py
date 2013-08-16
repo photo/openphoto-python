@@ -1,5 +1,5 @@
 """
-config.py : OAuth Config File Parser
+auth.py : OAuth Config File Parser
 """
 from __future__ import unicode_literals
 import os
@@ -12,7 +12,7 @@ try:
 except ImportError:
     import StringIO as io # Python2
 
-class Config(object):
+class Auth(object):
     def __init__(self, config_file, host,
                  consumer_key, consumer_secret,
                  token, token_secret):

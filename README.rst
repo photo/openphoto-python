@@ -77,11 +77,16 @@ API Versioning
 ==============
 It may be useful to lock your application to a particular version of the Trovebox API.
 This ensures that future API updates won't cause unexpected breakages.
+To do this, configure your Trovebox client as follows:
 
-To do this, add the optional ``api_version`` parameter when creating the client object::
+    client.configure(api_version=2)
 
-    from trovebox import Trovebox
-    client = Trovebox(api_version=2)
+SSL Verification
+================
+If you connect to your Trovebox server over HTTPS, its SSL certificate is automatically verified.
+You can configure your Trovebox client to bypass this verification step:
+
+   client.configure(ssl_verify=False)
 
 Commandline Tool
 ================
