@@ -12,6 +12,7 @@ They run very quickly and don't require any external test hosts.
 #### Requirements
  * mock >= 1.0.0
  * httpretty >= 0.6.1
+ * ddt >= 0.3.0
  * tox (optional)
 
 #### Running the Unit Tests
@@ -19,7 +20,7 @@ They run very quickly and don't require any external test hosts.
     python -m unittest discover tests/unit
 
 To run the unit tests against all supported Python versions, use ```tox```:
-    
+
     tox
 
 ----------------------------------------
