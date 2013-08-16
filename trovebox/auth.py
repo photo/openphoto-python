@@ -13,6 +13,7 @@ except ImportError:
     import StringIO as io # Python2
 
 class Auth(object):
+    """OAuth secrets"""
     def __init__(self, config_file, host,
                  consumer_key, consumer_secret,
                  token, token_secret):
