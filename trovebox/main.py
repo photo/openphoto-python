@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+"""
+main.py : Trovebox Console Script
+"""
 import os
 import sys
 import json
@@ -44,7 +47,7 @@ def main(args=sys.argv[1:]):
                       action="store_true", dest="pretty", default=False)
     parser.add_option('-v', help="Verbose output",
                       action="store_true", dest="verbose", default=False)
-    parser.add_option('--version', help="Display the current version information",
+    parser.add_option('--version', help="Display the current version",
                       action="store_true")
     parser.add_option('--help', help='show this help message',
                       action="store_true")
@@ -107,7 +110,8 @@ def main(args=sys.argv[1:]):
 
 def extract_files(params):
     """
-    Extract filenames from the "photo" parameter, so they can be uploaded, returning (updated_params, files).
+    Extract filenames from the "photo" parameter so they can be uploaded,
+    returning (updated_params, files).
     Uses the same technique as the Trovebox PHP commandline tool:
       * Filename can only be in the "photo" parameter
       * Filename must be prefixed with "@"

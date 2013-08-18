@@ -1,16 +1,19 @@
+"""
+http.py : Trovebox HTTP Access
+"""
 from __future__ import unicode_literals
 import sys
 import requests
 import requests_oauthlib
 import logging
 try:
-    from urllib.parse import urlunparse # Python3
+    from urllib.parse import urlparse, urlunparse # Python3
 except ImportError:
-    from urlparse import urlunparse # Python2
+    from urlparse import urlparse, urlunparse # Python2
 
 from .objects import TroveboxObject
 from .errors import *
-from .config import Config
+from .auth import Auth
 
 if sys.version < '3':
     TEXT_TYPE = unicode
@@ -20,35 +23,57 @@ else:
 DUPLICATE_RESPONSE = {"code": 409,
                       "message": "This photo already exists"}
 
-class Http:
+class Http(object):
     """
     Base class to handle HTTP requests to an Trovebox server.
-    If no parameters are specified, config is loaded from the default
-        location (~/.config/trovebox/default).
+    If no parameters are specified, auth config is loaded from the
+        default location (~/.config/trovebox/default).
     The config_file parameter is used to specify an alternate config file.
     If the host parameter is specified, no config file is loaded and
         OAuth tokens (consumer*, token*) can optionally be specified.
-    All requests will include the api_version path, if specified.
-    This should be used to ensure that your application will continue to work
-        even if the Trovebox API is updated to a new revision.
     """
+
+    _CONFIG_DEFAULTS = {"api_version" : None,
+                        "ssl_verify" : True,
+                        }
+
     def __init__(self, config_file=None, host=None,
                  consumer_key='', consumer_secret='',
                  token='', token_secret='', api_version=None):
-        self._api_version = api_version
+
+        self.config = dict(self._CONFIG_DEFAULTS)
+
+        if api_version is not None:
+            print("Deprecation Warning: api_version should be set by "
+                  "calling the configure function")
+            self.config["api_version"] = api_version
 
         self._logger = logging.getLogger("trovebox")
 
-        self.config = Config(config_file, host,
-                             consumer_key, consumer_secret,
-                             token, token_secret)
+        self.auth = Auth(config_file, host,
+                         consumer_key, consumer_secret,
+                         token, token_secret)
 
-        self.host = self.config.host
+        self.host = self.auth.host
 
         # Remember the most recent HTTP request and response
         self.last_url = None
         self.last_params = None
         self.last_response = None
+
+    def configure(self, **kwds):
+        """
+        Update Trovebox HTTP client configuration.
+
+        :param api_version: Include a Trovebox API version in all requests.
+            This can be used to ensure that your application will continue
+            to work even if the Trovebox API is updated to a new revision.
+            [default: None]
+        :param ssl_verify: If true, HTTPS SSL certificates will always be
+            verified [default: True]
+        """
+        for item in kwds:
+            self.config[item] = kwds[item]
 
     def get(self, endpoint, process_response=True, **params):
         """
@@ -62,21 +87,18 @@ class Http:
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
-        if not endpoint.startswith("/"):
-            endpoint = "/" + endpoint
-        if self._api_version is not None:
-            endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self.host, endpoint, '', '', ''))
+        url = self._construct_url(endpoint)
 
-        if self.config.consumer_key:
-            auth = requests_oauthlib.OAuth1(self.config.consumer_key,
-                                            self.config.consumer_secret,
-                                            self.config.token,
-                                            self.config.token_secret)
+        if self.auth.consumer_key:
+            auth = requests_oauthlib.OAuth1(self.auth.consumer_key,
+                                            self.auth.consumer_secret,
+                                            self.auth.token,
+                                            self.auth.token_secret)
         else:
             auth = None
 
         with requests.Session() as session:
+            session.verify = self.config["ssl_verify"]
             response = session.get(url, params=params, auth=auth)
 
         self._logger.info("============================")
@@ -105,20 +127,17 @@ class Http:
         Returns the raw response if process_response=False
         """
         params = self._process_params(params)
-        if not endpoint.startswith("/"):
-            endpoint = "/" + endpoint
-        if self._api_version is not None:
-            endpoint = "/v%d%s" % (self._api_version, endpoint)
-        url = urlunparse(('http', self.host, endpoint, '', '', ''))
+        url = self._construct_url(endpoint)
 
-        if not self.config.consumer_key:
+        if not self.auth.consumer_key:
             raise TroveboxError("Cannot issue POST without OAuth tokens")
 
-        auth = requests_oauthlib.OAuth1(self.config.consumer_key,
-                                        self.config.consumer_secret,
-                                        self.config.token,
-                                        self.config.token_secret)
+        auth = requests_oauthlib.OAuth1(self.auth.consumer_key,
+                                        self.auth.consumer_secret,
+                                        self.auth.token,
+                                        self.auth.token_secret)
         with requests.Session() as session:
+            session.verify = self.config["ssl_verify"]
             if files:
                 # Need to pass parameters as URL query, so they get OAuth signed
                 response = session.post(url, params=params,
@@ -145,6 +164,22 @@ class Http:
             return self._process_response(response)
         else:
             return response.text
+
+    def _construct_url(self, endpoint):
+        """Return the full URL to the specified endpoint"""
+        parsed_url = urlparse(self.host)
+        scheme = parsed_url[0]
+        host = parsed_url[1]
+        # Handle host without a scheme specified (eg. www.example.com)
+        if scheme == "":
+            scheme = "http"
+            host = self.host
+
+        if not endpoint.startswith("/"):
+            endpoint = "/" + endpoint
+        if self.config["api_version"] is not None:
+            endpoint = "/v%d%s" % (self.config["api_version"], endpoint)
+        return urlunparse((scheme, host, endpoint, '', '', ''))
 
     @staticmethod
     def _process_params(params):

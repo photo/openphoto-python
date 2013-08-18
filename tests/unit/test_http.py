@@ -1,7 +1,10 @@
 from __future__ import unicode_literals
 import os
 import json
+import mock
 import httpretty
+from httpretty import GET, POST
+from ddt import ddt, data
 try:
     import unittest2 as unittest # Python2.6
 except ImportError:
@@ -9,6 +12,21 @@ except ImportError:
 
 import trovebox
 
+class GetOrPost(object):
+    """Helper class to call the correct (GET/POST) method"""
+    def __init__(self, client, method):
+        self.client = client
+        self.method = method
+
+    def call(self, *args, **kwds):
+        if self.method == GET:
+            return self.client.get(*args, **kwds)
+        elif self.method == POST:
+            return self.client.post(*args, **kwds)
+        else:
+            raise ValueError("unknown method: %s" % self.method)
+
+@ddt
 class TestHttp(unittest.TestCase):
     test_host = "test.example.com"
     test_endpoint = "test.json"
@@ -44,7 +62,55 @@ class TestHttp(unittest.TestCase):
     def test_attributes(self):
         """Check that the host attribute has been set correctly"""
         self.assertEqual(self.client.host, self.test_host)
-        self.assertEqual(self.client.config.host, self.test_host)
+        self.assertEqual(self.client.auth.host, self.test_host)
+
+    @httpretty.activate
+    @data(GET, POST)
+    def test_http_scheme(self, method):
+        """Check that we can access hosts starting with 'http://'"""
+        self._register_uri(method,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="http://test.example.com",
+                                        **self.test_oauth)
+        response = GetOrPost(self.client, method).call(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    @data(GET, POST)
+    def test_no_scheme(self, method):
+        """Check that we can access hosts without a 'http://' prefix"""
+        self._register_uri(method,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="test.example.com",
+                                        **self.test_oauth)
+        response = GetOrPost(self.client, method).call(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
+    @data(GET, POST)
+    def test_https_scheme(self, method):
+        """Check that we can access hosts starting with 'https://'"""
+        self._register_uri(method,
+                           uri="https://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="https://test.example.com",
+                                        **self.test_oauth)
+        response = GetOrPost(self.client, method).call(self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "https://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
     def test_get_with_parameters(self):
@@ -93,17 +159,12 @@ class TestHttp(unittest.TestCase):
             self.client.post(self.test_endpoint)
 
     @httpretty.activate
-    def test_get_without_response_processing(self):
-        """Check that the get method works with response processing disabled"""
-        self._register_uri(httpretty.GET)
-        response = self.client.get(self.test_endpoint, process_response=False)
-        self.assertEqual(response, json.dumps(self.test_data))
-
-    @httpretty.activate
-    def test_post_without_response_processing(self):
-        """Check that the post method works with response processing disabled"""
-        self._register_uri(httpretty.POST)
-        response = self.client.post(self.test_endpoint, process_response=False)
+    @data(GET, POST)
+    def test_no_response_processing(self, method):
+        """Check that get/post methods work with response processing disabled"""
+        self._register_uri(method)
+        response = GetOrPost(self.client, method).call(self.test_endpoint,
+                                                       process_response=False)
         self.assertEqual(response, json.dumps(self.test_data))
 
     @httpretty.activate
@@ -127,23 +188,31 @@ class TestHttp(unittest.TestCase):
         self.assertIn(params["unicode_"], [["\xc3\xbcmlaut"], ["\xfcmlaut"]])
 
     @httpretty.activate
-    def test_get_with_api_version(self):
-        """Check that an API version can be specified for the get method"""
-        self.client = trovebox.Trovebox(host=self.test_host, api_version=1)
-        self._register_uri(httpretty.GET,
+    @data(GET, POST)
+    def test_api_version(self, method):
+        """Check that an API version can be specified"""
+        self.client = trovebox.Trovebox(host=self.test_host, **self.test_oauth)
+        self.client.configure(api_version=1)
+        self._register_uri(method,
                            uri="http://%s/v1/%s" % (self.test_host,
                                                     self.test_endpoint))
-        self.client.get(self.test_endpoint)
+        GetOrPost(self.client, method).call(self.test_endpoint)
 
-    @httpretty.activate
-    def test_post_with_api_version(self):
-        """Check that an API version can be specified for the post method"""
-        self.client = trovebox.Trovebox(host=self.test_host, api_version=1,
-                                        **self.test_oauth)
-        self._register_uri(httpretty.POST,
-                           uri="http://%s/v1/%s" % (self.test_host,
-                                                    self.test_endpoint))
-        self.client.post(self.test_endpoint)
+    @mock.patch.object(trovebox.http.requests, 'Session')
+    @data(GET, POST)
+    def test_ssl_verify_disabled(self, method, mock_session):
+        """Check that SSL verification can be disabled for the get method"""
+        session = mock_session.return_value.__enter__.return_value
+        session.get.return_value.text = "response text"
+        session.get.return_value.status_code = 200
+        session.get.return_value.json.return_value = self.test_data
+        # Handle either post or get
+        session.post = session.get
+
+        self.client = trovebox.Trovebox(host=self.test_host, **self.test_oauth)
+        self.client.configure(ssl_verify=False)
+        GetOrPost(self.client, method).call(self.test_endpoint)
+        self.assertEqual(session.verify, False)
 
     @httpretty.activate
     def test_post_file(self):

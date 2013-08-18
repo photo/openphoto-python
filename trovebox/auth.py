@@ -1,3 +1,6 @@
+"""
+auth.py : OAuth Config File Parser
+"""
 from __future__ import unicode_literals
 import os
 try:
@@ -9,7 +12,8 @@ try:
 except ImportError:
     import StringIO as io # Python2
 
-class Config:
+class Auth(object):
+    """OAuth secrets"""
     def __init__(self, config_file, host,
                  consumer_key, consumer_secret,
                  token, token_secret):
@@ -46,7 +50,8 @@ def get_config_path(config_file):
 def read_config(config_path):
     """
     Loads config data from the specified file path.
-    If config_file doesn't exist, returns an empty authentication config for localhost.
+    If config_file doesn't exist, returns an empty authentication config
+    for localhost.
     """
     section = "DUMMY"
     defaults = {'host': 'localhost',

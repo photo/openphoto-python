@@ -1,6 +1,9 @@
+"""
+api_tag.py : Trovebox Tag API Classes
+"""
 from .objects import Tag
 
-class ApiTags:
+class ApiTags(object):
     def __init__(self, client):
         self._client = client
 
@@ -9,7 +12,7 @@ class ApiTags:
         results = self._client.get("/tags/list.json", **kwds)["result"]
         return [Tag(self._client, tag) for tag in results]
 
-class ApiTag:
+class ApiTag(object):
     def __init__(self, client):
         self._client = client
 

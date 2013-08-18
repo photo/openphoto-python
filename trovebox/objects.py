@@ -1,3 +1,6 @@
+"""
+objects.py : Basic Trovebox API Objects
+"""
 try:
     from urllib.parse import quote # Python3
 except ImportError:
@@ -5,7 +8,7 @@ except ImportError:
 
 from .errors import TroveboxError
 
-class TroveboxObject:
+class TroveboxObject(object):
     """ Base object supporting the storage of custom fields as attributes """
     def __init__(self, trovebox, json_dict):
         self.id = None
@@ -75,9 +78,11 @@ class Photo(TroveboxObject):
         return result["markup"]
 
     def replace(self, photo_file, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def replace_encoded(self, photo_file, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def update(self, **kwds):
@@ -96,6 +101,7 @@ class Photo(TroveboxObject):
         self._replace_fields(new_dict)
 
     def dynamic_url(self, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def next_previous(self, **kwds):
@@ -194,12 +200,15 @@ class Album(TroveboxObject):
         return result
 
     def form(self, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def add_photos(self, photos, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def remove_photos(self, photos, **kwds):
+        """ Not implemented yet """
         raise NotImplementedError()
 
     def update(self, **kwds):

@@ -1,3 +1,6 @@
+"""
+errors.py : Trovebox Error Classes
+"""
 class TroveboxError(Exception):
     """ Indicates that an Trovebox operation failed """
     pass

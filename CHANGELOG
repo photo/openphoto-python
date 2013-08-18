@@ -1,0 +1,25 @@
+=================================
+Trovebox Python Library Changelog
+=================================
+
+v0.5
+====
+ * Pylint improvements - using .pylint-ignores to waive warnings (#49)
+ * Add support for https URLs (#51)
+ * Configuration improvements (#53)
+ * Allow https SSL verification bypass (#50)
+ * Test improvements (#54)
+
+v0.4
+====
+
+First release
+
+ * Added more unit tests (#44, #45)
+ * Fixed consistency problems found with unit tests (#46)
+ * Renamed to Trovebox (#48)
+ * Packaged for PyPI:
+    - Updated metadata
+    - Store the version number inside the package, and add --version CLI option
+    - Update README and convert to ReStructuredText, as required by PyPI
+

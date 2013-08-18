@@ -1,3 +1,6 @@
+"""
+api_photo.py : Trovebox Photo API Classes
+"""
 import base64
 
 from .errors import TroveboxError
@@ -17,7 +20,7 @@ def extract_ids(photos):
             ids.append(photo)
     return ids
 
-class ApiPhotos:
+class ApiPhotos(object):
     def __init__(self, client):
         self._client = client
 
@@ -51,7 +54,7 @@ class ApiPhotos:
             raise TroveboxError("Delete response returned False")
         return True
 
-class ApiPhoto:
+class ApiPhoto(object):
     def __init__(self, client):
         self._client = client
 
@@ -72,9 +75,11 @@ class ApiPhoto:
         return photo.edit(**kwds)
 
     def replace(self, photo, photo_file, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def replace_encoded(self, photo, photo_file, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def update(self, photo, **kwds):
@@ -114,6 +119,7 @@ class ApiPhoto:
         return Photo(self._client, result)
 
     def dynamic_url(self, photo, **kwds):
+        """ Not yet implemented """
         raise NotImplementedError()
 
     def next_previous(self, photo, **kwds):
