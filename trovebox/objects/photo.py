@@ -35,18 +35,18 @@ class Photo(TroveboxObject):
 
     def update(self, **kwds):
         """ Update this photo with the specified parameters """
-        new_dict = self._trovebox.post("/photo/%s/update.json" %
-                                       self.id, **kwds)["result"]
-        self._replace_fields(new_dict)
+        result = self._trovebox.post("/photo/%s/update.json" %
+                                     self.id, **kwds)["result"]
+        self._replace_fields(result)
 
     def view(self, **kwds):
         """
         Used to view the photo at a particular size.
         Updates the photo's fields with the response.
         """
-        new_dict = self._trovebox.get("/photo/%s/view.json" %
-                                      self.id, **kwds)["result"]
-        self._replace_fields(new_dict)
+        result = self._trovebox.get("/photo/%s/view.json" %
+                                    self.id, **kwds)["result"]
+        self._replace_fields(result)
 
     def dynamic_url(self, **kwds):
         """ Not implemented yet """
@@ -85,12 +85,12 @@ class Photo(TroveboxObject):
         Performs transformation specified in **kwds
         Example: transform(rotate=90)
         """
-        new_dict = self._trovebox.post("/photo/%s/transform.json" %
-                                       self.id, **kwds)["result"]
+        result = self._trovebox.post("/photo/%s/transform.json" %
+                                     self.id, **kwds)["result"]
 
         # APIv1 doesn't return the transformed photo (frontend issue #955)
-        if isinstance(new_dict, bool):
-            new_dict = self._trovebox.get("/photo/%s/view.json" %
-                                          self.id)["result"]
+        if isinstance(result, bool):
+            result = self._trovebox.get("/photo/%s/view.json" %
+                                        self.id)["result"]
 
-        self._replace_fields(new_dict)
+        self._replace_fields(result)

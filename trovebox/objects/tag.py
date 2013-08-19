@@ -26,6 +26,6 @@ class Tag(TroveboxObject):
 
     def update(self, **kwds):
         """ Update this tag with the specified parameters """
-        new_dict = self._trovebox.post("/tag/%s/update.json" % quote(self.id),
-                                       **kwds)["result"]
-        self._replace_fields(new_dict)
+        result = self._trovebox.post("/tag/%s/update.json" % quote(self.id),
+                                     **kwds)["result"]
+        self._replace_fields(result)

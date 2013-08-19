@@ -51,15 +51,15 @@ class Album(TroveboxObject):
 
     def update(self, **kwds):
         """ Update this album with the specified parameters """
-        new_dict = self._trovebox.post("/album/%s/update.json" %
-                                       self.id, **kwds)["result"]
+        result = self._trovebox.post("/album/%s/update.json" %
+                                     self.id, **kwds)["result"]
 
         # APIv1 doesn't return the updated album (frontend issue #937)
-        if isinstance(new_dict, bool):
-            new_dict = self._trovebox.get("/album/%s/view.json" %
-                                           self.id)["result"]
+        if isinstance(result, bool):
+            result = self._trovebox.get("/album/%s/view.json" %
+                                        self.id)["result"]
 
-        self._replace_fields(new_dict)
+        self._replace_fields(result)
         self._update_fields_with_objects()
 
     def view(self, **kwds):
