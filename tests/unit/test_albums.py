@@ -19,7 +19,7 @@ class TestAlbums(unittest.TestCase):
                          "totalRows": 2}]
     def setUp(self):
         self.client = trovebox.Trovebox(host=self.test_host)
-        self.test_albums = [trovebox.objects.Album(self.client, album)
+        self.test_albums = [trovebox.objects.album.Album(self.client, album)
                             for album in self.test_albums_dict]
 
     @staticmethod

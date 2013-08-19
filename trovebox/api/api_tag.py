@@ -1,9 +1,10 @@
 """
 api_tag.py : Trovebox Tag API Classes
 """
-from .objects import Tag
+from trovebox.objects.tag import Tag
 
 class ApiTags(object):
+    """ Definitions of /tags/ API endpoints """
     def __init__(self, client):
         self._client = client
 
@@ -13,6 +14,7 @@ class ApiTags(object):
         return [Tag(self._client, tag) for tag in results]
 
 class ApiTag(object):
+    """ Definitions of /tag/ API endpoints """
     def __init__(self, client):
         self._client = client
 

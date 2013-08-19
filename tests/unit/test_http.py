@@ -171,9 +171,9 @@ class TestHttp(unittest.TestCase):
     def test_get_parameter_processing(self):
         """Check that the parameter processing function is working"""
         self._register_uri(httpretty.GET)
-        photo = trovebox.objects.Photo(None, {"id": "photo_id"})
-        album = trovebox.objects.Album(None, {"id": "album_id"})
-        tag = trovebox.objects.Tag(None, {"id": "tag_id"})
+        photo = trovebox.objects.photo.Photo(None, {"id": "photo_id"})
+        album = trovebox.objects.photo.Album(None, {"id": "album_id"})
+        tag = trovebox.objects.tag.Tag(None, {"id": "tag_id"})
         self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
                         list_=[photo, album, tag],

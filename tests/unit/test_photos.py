@@ -18,7 +18,7 @@ class TestPhotos(unittest.TestCase):
                          "totalPages": 1, "totalRows": 2}]
     def setUp(self):
         self.client = trovebox.Trovebox(host=self.test_host)
-        self.test_photos = [trovebox.objects.Photo(self.client, photo)
+        self.test_photos = [trovebox.objects.photo.Photo(self.client, photo)
                             for photo in self.test_photos_dict]
 
     @staticmethod

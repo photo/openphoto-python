@@ -3,9 +3,9 @@ api_photo.py : Trovebox Photo API Classes
 """
 import base64
 
-from .errors import TroveboxError
-from . import http
-from .objects import Photo
+from trovebox.errors import TroveboxError
+from trovebox import http
+from trovebox.objects.photo import Photo
 
 def extract_ids(photos):
     """
@@ -21,6 +21,7 @@ def extract_ids(photos):
     return ids
 
 class ApiPhotos(object):
+    """ Definitions of /photos/ API endpoints """
     def __init__(self, client):
         self._client = client
 
@@ -55,6 +56,7 @@ class ApiPhotos(object):
         return True
 
 class ApiPhoto(object):
+    """ Definitions of /photo/ API endpoints """
     def __init__(self, client):
         self._client = client
 
