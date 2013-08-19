@@ -8,6 +8,7 @@ from trovebox.api import api_photo
 from trovebox.api import api_tag
 from trovebox.api import api_album
 from trovebox.api import api_action
+from trovebox.api import api_activity
 
 LATEST_API_VERSION = 2
 
@@ -38,3 +39,5 @@ class Trovebox(Http):
         self.albums = api_album.ApiAlbums(self)
         self.album = api_album.ApiAlbum(self)
         self.action = api_action.ApiAction(self)
+        self.activities = api_activity.ApiActivities(self)
+        self.activity = api_activity.ApiActivity(self)

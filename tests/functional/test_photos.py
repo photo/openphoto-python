@@ -18,7 +18,7 @@ class TestPhotos(test_base.TestBase):
         # Check that they're gone
         self.assertEqual(self.client.photos.list(), [])
 
-        # Re-upload the photos, one of them using Bas64 encoding
+        # Re-upload the photos, one of them using Base64 encoding
         ret_val = self.client.photo.upload("tests/data/test_photo1.jpg",
                                            title=self.TEST_TITLE)
         self.client.photo.upload("tests/data/test_photo2.jpg",

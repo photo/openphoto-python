@@ -5,7 +5,7 @@ except ImportError:
 
 from tests.functional import test_base
 
-class TestActionss(test_base.TestBase):
+class TestActions(test_base.TestBase):
     testcase_name = "action API"
 
     # TODO: Enable this test (and write more) once the Actions API is working.
