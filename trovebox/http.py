@@ -11,7 +11,7 @@ try:
 except ImportError:
     from urlparse import urlparse, urlunparse # Python2
 
-from objects.trovebox_object import TroveboxObject
+from trovebox.objects.trovebox_object import TroveboxObject
 from .errors import *
 from .auth import Auth
 
