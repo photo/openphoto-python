@@ -10,7 +10,7 @@ class Photo(TroveboxObject):
         """
         Delete this photo.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         result = self._trovebox.post("/photo/%s/delete.json" %
                                      self.id, **kwds)["result"]

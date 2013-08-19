@@ -2,7 +2,7 @@
 errors.py : Trovebox Error Classes
 """
 class TroveboxError(Exception):
-    """ Indicates that an Trovebox operation failed """
+    """ Indicates that a Trovebox operation failed """
     pass
 
 class TroveboxDuplicateError(TroveboxError):

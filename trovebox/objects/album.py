@@ -28,7 +28,7 @@ class Album(TroveboxObject):
         """
         Delete this album.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         result = self._trovebox.post("/album/%s/delete.json" %
                                      self.id, **kwds)["result"]

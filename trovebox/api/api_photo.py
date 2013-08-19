@@ -64,7 +64,7 @@ class ApiPhoto(object):
         """
         Delete a photo.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})

@@ -25,7 +25,7 @@ DUPLICATE_RESPONSE = {"code": 409,
 
 class Http(object):
     """
-    Base class to handle HTTP requests to an Trovebox server.
+    Base class to handle HTTP requests to a Trovebox server.
     If no parameters are specified, auth config is loaded from the
         default location (~/.config/trovebox/default).
     The config_file parameter is used to specify an alternate config file.

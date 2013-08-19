@@ -15,7 +15,7 @@ class Tag(TroveboxObject):
         """
         Delete this tag.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         result = self._trovebox.post("/tag/%s/delete.json" %
                                      quote(self.id), **kwds)["result"]

@@ -29,7 +29,7 @@ class ApiTag(object):
         """
         Delete a tag.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         if not isinstance(tag, Tag):
             tag = Tag(self._client, {"id": tag})

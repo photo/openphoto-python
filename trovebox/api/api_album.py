@@ -28,7 +28,7 @@ class ApiAlbum(object):
         """
         Delete an album.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})
