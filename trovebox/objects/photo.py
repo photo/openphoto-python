@@ -62,7 +62,7 @@ class Photo(TroveboxObject):
         value = {}
         if "next" in result:
             # Workaround for APIv1
-            if not isinstance(result["next"], list):
+            if not isinstance(result["next"], list): # pragma: no cover
                 result["next"] = [result["next"]]
 
             value["next"] = []
@@ -71,7 +71,7 @@ class Photo(TroveboxObject):
 
         if "previous" in result:
             # Workaround for APIv1
-            if not isinstance(result["previous"], list):
+            if not isinstance(result["previous"], list): # pragma: no cover
                 result["previous"] = [result["previous"]]
 
             value["previous"] = []
@@ -89,7 +89,7 @@ class Photo(TroveboxObject):
                                      self.id, **kwds)["result"]
 
         # APIv1 doesn't return the transformed photo (frontend issue #955)
-        if isinstance(result, bool):
+        if isinstance(result, bool): # pragma: no cover
             result = self._trovebox.get("/photo/%s/view.json" %
                                         self.id)["result"]
 

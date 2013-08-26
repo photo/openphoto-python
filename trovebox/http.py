@@ -17,7 +17,7 @@ from .auth import Auth
 
 if sys.version < '3':
     TEXT_TYPE = unicode
-else:
+else: # pragma: no cover
     TEXT_TYPE = str
 
 DUPLICATE_RESPONSE = {"code": 409,
@@ -43,7 +43,7 @@ class Http(object):
 
         self.config = dict(self._CONFIG_DEFAULTS)
 
-        if api_version is not None:
+        if api_version is not None: # pragma: no cover
             print("Deprecation Warning: api_version should be set by "
                   "calling the configure function")
             self.config["api_version"] = api_version
@@ -246,7 +246,7 @@ def result_to_list(result):
     """ Handle the case where the result contains no items """
     if not result:
         return []
-    if result[0]["totalRows"] == 0:
+    if "totalRows" in result[0] and result[0]["totalRows"] == 0:
         return []
     else:
         return result
