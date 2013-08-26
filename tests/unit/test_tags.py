@@ -25,7 +25,7 @@ class TestTags(unittest.TestCase):
 class TestTagsList(TestTags):
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_tags_list(self, mock_get):
-        """Check that the the tag list is returned correctly"""
+        """Check that the tag list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_tags_dict)
         result = self.client.tags.list()
         mock_get.assert_called_with("/tags/list.json")
@@ -34,6 +34,22 @@ class TestTagsList(TestTags):
         self.assertEqual(result[0].count, 11)
         self.assertEqual(result[1].id, "tag2")
         self.assertEqual(result[1].count, 5)
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_empty_result(self, mock_get):
+        """Check that an empty result is transformed into an empty list """
+        mock_get.return_value = self._return_value("")
+        result = self.client.tags.list()
+        mock_get.assert_called_with("/tags/list.json")
+        self.assertEqual(result, [])
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_zero_rows(self, mock_get):
+        """Check that totalRows=0 is transformed into an empty list """
+        mock_get.return_value = self._return_value([{"totalRows": 0}])
+        result = self.client.tags.list()
+        mock_get.assert_called_with("/tags/list.json")
+        self.assertEqual(result, [])
 
 class TestTagCreate(TestTags):
     @mock.patch.object(trovebox.Trovebox, 'post')
