@@ -172,7 +172,7 @@ class TestHttp(unittest.TestCase):
         """Check that the parameter processing function is working"""
         self._register_uri(httpretty.GET)
         photo = trovebox.objects.photo.Photo(None, {"id": "photo_id"})
-        album = trovebox.objects.photo.Album(None, {"id": "album_id"})
+        album = trovebox.objects.album.Album(None, {"id": "album_id"})
         tag = trovebox.objects.tag.Tag(None, {"id": "tag_id"})
         self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
