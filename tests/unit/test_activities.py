@@ -117,3 +117,11 @@ class TestActivityView(TestActivities):
         activity.view(foo="bar")
         mock_get.assert_called_with("/activity/1/view.json", foo="bar")
         self.assertEqual(activity.get_fields(), self.test_activities_dict[1])
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_activity_view_invalid_type(self, mock_get):
+        """Check that an invalid activity type raises an exception"""
+        mock_get.return_value = self._return_value(self._view_wrapper(
+                                {"data": "", "type": "invalid"}))
+        with self.assertRaises(NotImplementedError):
+            self.client.activity.view(self.test_activities[0], foo="bar")
