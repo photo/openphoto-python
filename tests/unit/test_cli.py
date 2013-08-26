@@ -108,9 +108,10 @@ class TestCli(unittest.TestCase):
     @mock.patch('sys.stdout', new_callable=io.StringIO)
     def test_verbose(self, mock_stdout, _):
         """Check that the verbose option is working"""
-        main(["-v"])
+        main(["-v", "-F foo=bar"])
         self.assertIn("Method: GET", mock_stdout.getvalue())
         self.assertIn("Endpoint: /photos/list.json", mock_stdout.getvalue())
+        self.assertIn("foo=bar", mock_stdout.getvalue())
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
@@ -127,3 +128,8 @@ class TestCli(unittest.TestCase):
         main(["--version"])
         self.assertEqual(mock_stdout.getvalue(), trovebox.__version__ + "\n")
 
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_help(self, mock_stdout):
+        """Check that the help string is correctly printed"""
+        main(["--help"])
+        self.assertIn("show this help message", mock_stdout.getvalue())
