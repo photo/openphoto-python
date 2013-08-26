@@ -1,6 +1,7 @@
 """
 api_tag.py : Trovebox Tag API Classes
 """
+from trovebox import http
 from trovebox.objects.tag import Tag
 
 class ApiTags(object):
@@ -10,8 +11,9 @@ class ApiTags(object):
 
     def list(self, **kwds):
         """ Returns a list of Tag objects """
-        results = self._client.get("/tags/list.json", **kwds)["result"]
-        return [Tag(self._client, tag) for tag in results]
+        tags = self._client.get("/tags/list.json", **kwds)["result"]
+        tags = http.result_to_list(tags)
+        return [Tag(self._client, tag) for tag in tags]
 
 class ApiTag(object):
     """ Definitions of /tag/ API endpoints """
