@@ -35,6 +35,15 @@ class TestTagsList(TestTags):
         self.assertEqual(result[1].id, "tag2")
         self.assertEqual(result[1].count, 5)
 
+class TestTagCreate(TestTags):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_tag_create(self, mock_post):
+        """Check that a tag can be created"""
+        mock_post.return_value = self._return_value(True)
+        result = self.client.tag.create("test")
+        mock_post.assert_called_with("/tag/create.json", tag="test")
+        self.assertEqual(result, True)
+
 class TestTagDelete(TestTags):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_delete(self, mock_post):
