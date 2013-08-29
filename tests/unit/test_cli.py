@@ -106,12 +106,21 @@ class TestCli(unittest.TestCase):
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
-    def test_verbose(self, mock_stdout, _):
-        """Check that the verbose option is working"""
+    def test_verbose_without_params(self, mock_stdout, _):
+        """Check that the verbose option works with no parameters"""
+        main(["-v"])
+        self.assertIn("Method: GET", mock_stdout.getvalue())
+        self.assertIn("Endpoint: /photos/list.json", mock_stdout.getvalue())
+        self.assertNotIn("Fields:", mock_stdout.getvalue())
+
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_verbose_with_params(self, mock_stdout, _):
+        """Check that the verbose option works with parameters"""
         main(["-v", "-F foo=bar"])
         self.assertIn("Method: GET", mock_stdout.getvalue())
         self.assertIn("Endpoint: /photos/list.json", mock_stdout.getvalue())
-        self.assertIn("foo=bar", mock_stdout.getvalue())
+        self.assertIn("Fields:\n   foo=bar", mock_stdout.getvalue())
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
