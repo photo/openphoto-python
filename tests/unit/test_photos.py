@@ -443,3 +443,31 @@ class TestPhotoTransform(TestPhotos):
         photo.transform(rotate="90")
         mock_post.assert_called_with("/photo/1a/transform.json", rotate="90")
         self.assertEqual(photo.get_fields(), self.test_photos_dict[1])
+
+class TestPhotoObject(TestPhotos):
+    def test_photo_object_repr_without_id_or_name(self):
+        """
+        Ensure the string representation on an object includes its class name
+        if the ID and Name attributes don't exist.
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {})
+        self.assertEqual(repr(photo), "<Photo>")
+
+    def test_photo_object_repr_with_id(self):
+        """ Ensure the string representation on an object includes its id, if present """
+        photo = trovebox.objects.photo.Photo(self.client, {"id": "Test ID"})
+        self.assertEqual(repr(photo), "<Photo id='Test ID'>")
+
+    def test_photo_object_repr_with_id_and_name(self):
+        """ Ensure the string representation on an object includes its name, if present """
+        photo = trovebox.objects.photo.Photo(self.client, {"id": "Test ID",
+                                                           "name": "Test Name"})
+        self.assertEqual(repr(photo), "<Photo name='Test Name'>")
+
+    def test_photo_object_illegal_attribute(self):
+        """
+        Check that an exception is raised when creating an Photo object
+        with an illegal attribute
+        """
+        with self.assertRaises(ValueError):
+            photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
