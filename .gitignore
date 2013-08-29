@@ -6,3 +6,5 @@ dist
 tests/tokens.py
 tests.log
 .tox
+.coverage
+htmlcov
