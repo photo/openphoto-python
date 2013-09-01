@@ -42,8 +42,8 @@ class TestBase(unittest.TestCase):
             else:
                 print("\nTesting %s v%d" % (cls.testcase_name, cls.api_version))
 
-        cls.client = trovebox.Trovebox(config_file=cls.config_file,
-                                         api_version=cls.api_version)
+        cls.client = trovebox.Trovebox(config_file=cls.config_file)
+        cls.client.configure(api_version=cls.api_version)
 
         if cls.client.photos.list() != []:
             raise ValueError("The test server (%s) contains photos. "
