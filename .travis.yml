@@ -1,14 +1,20 @@
 language: python
 
 install:
+  # Install test dependencies
   - pip install tox --use-mirrors
+  - pip install coveralls --use-mirrors
   - .travis/install_pylint
 
 script: tox
 
+after_success:
+  # Send coverage results to coveralls.io
+  - coveralls
+
 after_script:
   # Install dependencies for Pylint
-  - pip install requests requests-oauthlib
+  - pip install requests requests-oauthlib --use-mirrors
 
   # Run Pylint
   # (for information only, any errors don't affect the Travis result)
