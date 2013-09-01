@@ -42,3 +42,12 @@ export TROVEBOX_TEST_CONFIG=test-hosted
 unset TROVEBOX_TEST_SERVER_API
 python -m unittest discover --catch tests/functional
 
+# Test account on hosted trovebox.com site over HTTPS
+tput setaf 3
+echo
+echo "Testing latest hosted site over HTTPS..."
+tput sgr0
+export TROVEBOX_TEST_CONFIG=test-hosted-https
+unset TROVEBOX_TEST_SERVER_API
+python -m unittest discover --catch tests/functional
+
