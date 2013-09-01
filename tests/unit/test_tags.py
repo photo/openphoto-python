@@ -15,7 +15,7 @@ class TestTags(unittest.TestCase):
 
     def setUp(self):
         self.client = trovebox.Trovebox(host=self.test_host)
-        self.test_tags = [trovebox.objects.Tag(self.client, tag)
+        self.test_tags = [trovebox.objects.tag.Tag(self.client, tag)
                           for tag in self.test_tags_dict]
 
     @staticmethod

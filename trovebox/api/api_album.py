@@ -1,9 +1,10 @@
 """
 api_album.py : Trovebox Album API Classes
 """
-from .objects import Album
+from trovebox.objects.album import Album
 
 class ApiAlbums(object):
+    """ Definitions of /albums/ API endpoints """
     def __init__(self, client):
         self._client = client
 
@@ -13,6 +14,7 @@ class ApiAlbums(object):
         return [Album(self._client, album) for album in results]
 
 class ApiAlbum(object):
+    """ Definitions of /album/ API endpoints """
     def __init__(self, client):
         self._client = client
 
@@ -26,7 +28,7 @@ class ApiAlbum(object):
         """
         Delete an album.
         Returns True if successful.
-        Raises an TroveboxError if not.
+        Raises a TroveboxError if not.
         """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})
