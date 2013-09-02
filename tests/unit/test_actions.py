@@ -14,10 +14,12 @@ class TestActions(unittest.TestCase):
     test_actions_dict = [{"id": "1",
                           "target": test_photos_dict[0],
                           "target_type": "photo",
+                          "type": "comment",
                           "totalRows": 2},
                          {"id": "2",
                           "target": test_photos_dict[1],
                           "target_type": "photo",
+                          "type": "comment",
                           "totalRows": 2}]
 
     def setUp(self):
@@ -36,26 +38,31 @@ class TestActionCreate(TestActions):
     def test_action_create(self, mock_post):
         """Check that an action can be created on a photo object"""
         mock_post.return_value = self._return_value(self.test_actions_dict[0])
-        result = self.client.action.create(target=self.test_photos[0], foo="bar")
-        mock_post.assert_called_with("/action/create.json", target=self.test_photos[0].id,
-                                     target_type="photo",
+        result = self.client.action.create(target=self.test_photos[0], type="comment", foo="bar")
+        mock_post.assert_called_with("/action/%s/photo/create.json" %
+                                     self.test_photos[0].id,
+                                     type="comment",
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.target.id, "photo1")
         self.assertEqual(result.target_type, "photo")
+        self.assertEqual(result.type, "comment")
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_id(self, mock_post):
         """Check that an action can be created using a photo id"""
         mock_post.return_value = self._return_value(self.test_actions_dict[0])
-        result = self.client.action.create(target=self.test_photos[0].id, 
-                                           target_type="photo", foo="bar")
-        mock_post.assert_called_with("/action/create.json", target=self.test_photos[0].id,
-                                     target_type="photo",
+        result = self.client.action.create(target=self.test_photos[0].id,
+                                           target_type="photo", type="comment",
+                                           foo="bar")
+        mock_post.assert_called_with("/action/%s/photo/create.json" %
+                                     self.test_photos[0].id,
+                                     type="comment",
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.target.id, "photo1")
         self.assertEqual(result.target_type, "photo")
+        self.assertEqual(result.type, "comment")
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_type(self, mock_post):

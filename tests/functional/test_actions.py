@@ -3,15 +3,21 @@ try:
 except ImportError:
     import unittest
 
+import trovebox
 from tests.functional import test_base
 
 class TestActions(test_base.TestBase):
     testcase_name = "action API"
 
-    # TODO: Enable this test (and write more) once the Actions API is working.
-    #       Currently always returns:
-    #       "Could not find route /action/create.json from /action/create.json"
-    @unittest.expectedFailure
-    def test_create_delete(self):
-        """ Create an action on a photo, then delete it """
-        action = self.client.action.create(target=self.photos[0])
+    def test_create_view_delete(self):
+        """ Create an action on a photo, view it, then delete it """
+        # Create and check that the action exists
+        action = self.client.action.create(target=self.photos[0], type="comment", name="test")
+        action_id = action.id
+        self.assertEqual(self.client.action.view(action_id).name, "test")
+
+        # Delete and check that the action is gone
+        action.delete()
+        with self.assertRaises(trovebox.TroveboxError):
+            self.client.action.view(action_id)
+

@@ -20,9 +20,7 @@ class ApiAction(object):
             if isinstance(target, Photo):
                 target_type = "photo"
             else:
-                raise NotImplementedError("Actions can only be assigned to "
-                                          "Photos when target_type isn't "
-                                          "specified")
+                raise NotImplementedError("Unsupported target type")
         # Extract the ID from the target
         try:
             target_id = target.id
@@ -30,8 +28,8 @@ class ApiAction(object):
             # Assume the ID was passed in directly
             target_id = target
 
-        result = self._client.post("/action/create.json",
-                                   target=target_id, target_type=target_type,
+        result = self._client.post("/action/%s/%s/create.json" %
+                                   (target_id, target_type),
                                    **kwds)["result"]
         return Action(self._client, result)
 
