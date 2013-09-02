@@ -113,6 +113,22 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(self.client.last_response.json(), self.test_data)
 
     @httpretty.activate
+    @data(GET, POST)
+    def test_endpoint_leading_slash(self, method):
+        """Check that an endpoint with a leading slash is constructed correctly"""
+        self._register_uri(method,
+                           uri="http://test.example.com/%s" % self.test_endpoint)
+
+        self.client = trovebox.Trovebox(host="http://test.example.com",
+                                        **self.test_oauth)
+        response = GetOrPost(self.client, method).call("/" + self.test_endpoint)
+        self.assertIn("OAuth", self._last_request().headers["authorization"])
+        self.assertEqual(response, self.test_data)
+        self.assertEqual(self.client.last_url,
+                         "http://test.example.com/%s" % self.test_endpoint)
+        self.assertEqual(self.client.last_response.json(), self.test_data)
+
+    @httpretty.activate
     def test_get_with_parameters(self):
         """Check that the get method accepts parameters correctly"""
         self._register_uri(httpretty.GET)
@@ -177,6 +193,7 @@ class TestHttp(unittest.TestCase):
         self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
                         list_=[photo, album, tag],
+                        list2=["1", "2", "3"],
                         boolean=True,
                         unicode_="\xfcmlaut")
         params = self._last_request().querystring
@@ -184,6 +201,7 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(params["album"], ["album_id"])
         self.assertEqual(params["tag"], ["tag_id"])
         self.assertEqual(params["list_"], ["photo_id,album_id,tag_id"])
+        self.assertEqual(params["list2"], ["1,2,3"])
         self.assertEqual(params["boolean"], ["1"])
         self.assertIn(params["unicode_"], [["\xc3\xbcmlaut"], ["\xfcmlaut"]])
 

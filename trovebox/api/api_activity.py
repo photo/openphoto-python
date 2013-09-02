@@ -1,6 +1,7 @@
 """
 api_activity.py : Trovebox Activity API Classes
 """
+from trovebox import http
 from trovebox.errors import TroveboxError
 from trovebox.objects.activity import Activity
 
@@ -12,6 +13,7 @@ class ApiActivities(object):
     def list(self, **kwds):
         """ Returns a list of Activity objects """
         activities = self._client.get("/activities/list.json", **kwds)["result"]
+        activities = http.result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]
 
     def purge(self, **kwds):

@@ -39,11 +39,11 @@ class TroveboxObject(object):
 
     def __repr__(self):
         if self.name is not None:
-            return "<%s name='%s'>" % (self.__class__, self.name)
+            return "<%s name='%s'>" % (self.__class__.__name__, self.name)
         elif self.id is not None:
-            return "<%s id='%s'>" % (self.__class__, self.id)
+            return "<%s id='%s'>" % (self.__class__.__name__, self.id)
         else:
-            return "<%s>" % (self.__class__)
+            return "<%s>" % (self.__class__.__name__)
 
     def get_fields(self):
         """ Returns this object's attributes """

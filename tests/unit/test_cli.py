@@ -106,11 +106,21 @@ class TestCli(unittest.TestCase):
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
-    def test_verbose(self, mock_stdout, _):
-        """Check that the verbose option is working"""
+    def test_verbose_without_params(self, mock_stdout, _):
+        """Check that the verbose option works with no parameters"""
         main(["-v"])
         self.assertIn("Method: GET", mock_stdout.getvalue())
         self.assertIn("Endpoint: /photos/list.json", mock_stdout.getvalue())
+        self.assertNotIn("Fields:", mock_stdout.getvalue())
+
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_verbose_with_params(self, mock_stdout, _):
+        """Check that the verbose option works with parameters"""
+        main(["-v", "-F foo=bar"])
+        self.assertIn("Method: GET", mock_stdout.getvalue())
+        self.assertIn("Endpoint: /photos/list.json", mock_stdout.getvalue())
+        self.assertIn("Fields:\n   foo=bar", mock_stdout.getvalue())
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
@@ -127,3 +137,8 @@ class TestCli(unittest.TestCase):
         main(["--version"])
         self.assertEqual(mock_stdout.getvalue(), trovebox.__version__ + "\n")
 
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_help(self, mock_stdout):
+        """Check that the help string is correctly printed"""
+        main(["--help"])
+        self.assertIn("show this help message", mock_stdout.getvalue())

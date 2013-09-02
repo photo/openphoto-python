@@ -63,6 +63,14 @@ class TestActionCreate(TestActions):
         with self.assertRaises(NotImplementedError):
             self.client.action.create(target=object(), foo="bar")
 
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_action_create_invalid_return_type(self, mock_post):
+        """Check that an exception is raised if an non photo object is returned"""
+        mock_post.return_value = self._return_value({"target": "test",
+                                                     "target_type": "invalid"})
+        with self.assertRaises(NotImplementedError):
+            self.client.action.create(target=self.test_photos[0], foo="bar")
+
 class TestActionDelete(TestActions):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_delete(self, mock_post):

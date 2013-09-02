@@ -129,5 +129,5 @@ def extract_files(params):
 
     return updated_params, files
 
-if __name__ == "__main__":
+if __name__ == "__main__": # pragma: no cover
     main()

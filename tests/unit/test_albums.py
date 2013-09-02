@@ -40,6 +40,22 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].name, "Album 2")
 
     @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_empty_result(self, mock_get):
+        """Check that an empty result is transformed into an empty list """
+        mock_get.return_value = self._return_value("")
+        result = self.client.albums.list()
+        mock_get.assert_called_with("/albums/list.json")
+        self.assertEqual(result, [])
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_zero_rows(self, mock_get):
+        """Check that totalRows=0 is transformed into an empty list """
+        mock_get.return_value = self._return_value([{"totalRows": 0}])
+        result = self.client.albums.list()
+        mock_get.assert_called_with("/albums/list.json")
+        self.assertEqual(result, [])
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
         """Check that the album list returns cover photo objects"""
         mock_get.return_value = self._return_value(self.test_albums_dict)

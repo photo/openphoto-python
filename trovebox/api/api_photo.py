@@ -3,8 +3,8 @@ api_photo.py : Trovebox Photo API Classes
 """
 import base64
 
-from trovebox.errors import TroveboxError
 from trovebox import http
+from trovebox.errors import TroveboxError
 from trovebox.objects.photo import Photo
 
 def extract_ids(photos):
