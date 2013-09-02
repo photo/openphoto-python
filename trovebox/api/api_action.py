@@ -3,12 +3,10 @@ api_action.py : Trovebox Action API Classes
 """
 from trovebox.objects.action import Action
 from trovebox.objects.photo import Photo
+from .api_base import ApiBase
 
-class ApiAction(object):
+class ApiAction(ApiBase):
     """ Definitions of /action/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def create(self, target, target_type=None, **kwds):
         """
         Create a new action and return it.

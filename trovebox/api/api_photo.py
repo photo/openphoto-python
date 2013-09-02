@@ -6,6 +6,7 @@ import base64
 from trovebox import http
 from trovebox.errors import TroveboxError
 from trovebox.objects.photo import Photo
+from .api_base import ApiBase
 
 def extract_ids(photos):
     """
@@ -20,11 +21,8 @@ def extract_ids(photos):
             ids.append(photo)
     return ids
 
-class ApiPhotos(object):
+class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def list(self, **kwds):
         """ Returns a list of Photo objects """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
@@ -55,11 +53,8 @@ class ApiPhotos(object):
             raise TroveboxError("Delete response returned False")
         return True
 
-class ApiPhoto(object):
+class ApiPhoto(ApiBase):
     """ Definitions of /photo/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def delete(self, photo, **kwds):
         """
         Delete a photo.

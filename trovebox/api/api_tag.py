@@ -3,23 +3,18 @@ api_tag.py : Trovebox Tag API Classes
 """
 from trovebox import http
 from trovebox.objects.tag import Tag
+from .api_base import ApiBase
 
-class ApiTags(object):
+class ApiTags(ApiBase):
     """ Definitions of /tags/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def list(self, **kwds):
         """ Returns a list of Tag objects """
         tags = self._client.get("/tags/list.json", **kwds)["result"]
         tags = http.result_to_list(tags)
         return [Tag(self._client, tag) for tag in tags]
 
-class ApiTag(object):
+class ApiTag(ApiBase):
     """ Definitions of /tag/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def create(self, tag, **kwds):
         """
         Create a new tag.

@@ -3,23 +3,18 @@ api_album.py : Trovebox Album API Classes
 """
 from trovebox.objects.album import Album
 from trovebox import http
+from .api_base import ApiBase
 
-class ApiAlbums(object):
+class ApiAlbums(ApiBase):
     """ Definitions of /albums/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def list(self, **kwds):
         """ Return a list of Album objects """
         albums = self._client.get("/albums/list.json", **kwds)["result"]
         albums = http.result_to_list(albums)
         return [Album(self._client, album) for album in albums]
 
-class ApiAlbum(object):
+class ApiAlbum(ApiBase):
     """ Definitions of /album/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def create(self, name, **kwds):
         """ Create a new album and return it"""
         result = self._client.post("/album/create.json",
