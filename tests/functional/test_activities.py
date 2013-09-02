@@ -7,9 +7,11 @@ from tests.functional import test_base
 
 class TestActivities(test_base.TestBase):
     testcase_name = "activity API"
-    
+
+    @unittest.skipIf(test_base.get_test_server_api() == 1,
+                     "The activity/list endpoint behaves differenty at v1")
     def test_list(self):
-        """ 
+        """
         Upload three photos, and check that three corresponding activities
         are created.
         """
@@ -36,7 +38,7 @@ class TestActivities(test_base.TestBase):
         """ Test that the view endpoint is working correctly """
         activity = self.client.activities.list()[0]
         fields = activity.get_fields().copy()
-        
+
         # Check that the view method returns the same data as the list
         activity.view()
         self.assertEqual(fields, activity.get_fields())
