@@ -68,6 +68,17 @@ class TestActivitiesList(TestActivities):
         mock_get.assert_called_with("/activities/list.json")
         self.assertEqual(result, [])
 
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_filters(self, mock_get):
+        """Check that the activity list filters are applied properly"""
+        mock_get.return_value = self._return_value(self.test_activities_dict)
+        self.client.activities.list(filters={"foo": "bar",
+                                             "test1": "test2"})
+        # Dict element can be any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/activities/foo-bar/test1-test2/list.json",),
+                       ("/activities/test1-test2/foo-bar/list.json",)])
+
 class TestActivitiesPurge(TestActivities):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_activity_purge(self, mock_get):

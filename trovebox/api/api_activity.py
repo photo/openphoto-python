@@ -4,15 +4,15 @@ api_activity.py : Trovebox Activity API Classes
 from trovebox import http
 from trovebox.errors import TroveboxError
 from trovebox.objects.activity import Activity
+from .api_base import ApiBase
 
-class ApiActivities(object):
+class ApiActivities(ApiBase):
     """ Definitions of /activities/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
-    def list(self, **kwds):
+    def list(self, filters={}, **kwds):
         """ Returns a list of Activity objects """
-        activities = self._client.get("/activities/list.json", **kwds)["result"]
+        filter_string = self._build_filter_string(filters)
+        activities = self._client.get("/activities/%slist.json" % filter_string,
+                                      **kwds)["result"]
         activities = http.result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]
 
@@ -22,11 +22,8 @@ class ApiActivities(object):
             raise TroveboxError("Purge response returned False")
         return True
 
-class ApiActivity(object):
+class ApiActivity(ApiBase):
     """ Definitions of /activity/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def view(self, activity, **kwds):
         """
         View an activity's contents.

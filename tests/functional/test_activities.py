@@ -21,9 +21,26 @@ class TestActivities(test_base.TestBase):
 
         # Check that each activity is for a valid test photo
         activities = self.client.activities.list()
-        self.assertEqual(len(activities), len(self.photos))
+        self.assertEqual(len(activities), len(photos))
         for activity in activities:
             self.assertIn(activity.data.id, [photo.id for photo in photos])
+
+    def test_list_filter(self):
+        """
+        Check that the activity list filter parameter works correctly
+        """
+        self._delete_all()
+        self._create_test_photos(tag=False)
+        photos = self.client.photos.list()
+
+        # Dummy photo update activity
+        photos[0].update(tags=photos[0].tags)
+
+        # Check that the activities can be filtered
+        upload_activities = self.client.activities.list(filters={"type": "photo-upload"})
+        update_activities = self.client.activities.list(filters={"type": "photo-update"})
+        self.assertEqual(len(upload_activities), len(photos))
+        self.assertEqual(len(update_activities), 1)
 
     # The purge endpoint currently reports a 500: Internal Server Error
     @unittest.expectedFailure
