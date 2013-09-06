@@ -124,3 +124,15 @@ class TestHttpErrors(unittest.TestCase):
         response = GetOrPost(self.client, method).call(self.test_endpoint)
         self.assertEqual(response["code"], 202)
 
+    @httpretty.activate
+    @data(GET, POST)
+    def test_http_error_with_no_response_processing(self, method):
+        """
+        Check that get/post methods work with response processing disabled
+        when an HTTP error code is returned.
+        """
+        httpretty.register_uri(method, self.test_uri, status=500)
+        with self.assertRaises(trovebox.TroveboxError):
+            response = GetOrPost(self.client, method).call(self.test_endpoint,
+                                                           process_response=False)
+
