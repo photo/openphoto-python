@@ -1,6 +1,8 @@
 from __future__ import unicode_literals
 import json
 import httpretty
+from httpretty import GET, POST
+from ddt import ddt, data
 
 # TEMP: Temporary hack until httpretty string checking is fixed
 if httpretty.compat.PY3:
@@ -11,8 +13,10 @@ try:
 except ImportError:
     import unittest
 
+from test_http import GetOrPost
 import trovebox
 
+@ddt
 class TestHttpErrors(unittest.TestCase):
     test_host = "test.example.com"
     test_endpoint = "test.json"
@@ -42,146 +46,81 @@ class TestHttpErrors(unittest.TestCase):
                                **kwds)
 
     @httpretty.activate
-    def test_get_with_error_status(self):
+    @data(GET, POST)
+    def test_error_status(self, method):
         """
-        Check that an error status causes the get method
+        Check that an error status causes the get/post methods
         to raise an exception
         """
-        self._register_uri(httpretty.GET, status=500)
+        self._register_uri(method, status=500)
         with self.assertRaises(trovebox.TroveboxError):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_error_status(self):
+    @data(GET, POST)
+    def test_404_status(self, method):
         """
-        Check that an error status causes the post method
-        to raise an exception
-        """
-        self._register_uri(httpretty.POST, status=500)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_404_status(self):
-        """
-        Check that a 404 status causes the get method
+        Check that a 404 status causes the get/post methods
         to raise a 404 exception
         """
-        self._register_uri(httpretty.GET, status=404)
+        self._register_uri(method, status=404)
         with self.assertRaises(trovebox.Trovebox404Error):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_404_status(self):
+    @data(GET, POST)
+    def test_with_invalid_json(self, method):
         """
-        Check that a 404 status causes the post method
-        to raise a 404 exception
-        """
-        self._register_uri(httpretty.POST, status=404)
-        with self.assertRaises(trovebox.Trovebox404Error):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_invalid_json(self):
-        """
-        Check that invalid JSON causes the get method to
+        Check that invalid JSON causes the get/post methods to
         raise an exception
         """
-        self._register_uri(httpretty.GET, body="Invalid JSON")
+        self._register_uri(method, body="Invalid JSON")
         with self.assertRaises(ValueError):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_invalid_json(self):
+    @data(GET, POST)
+    def test_with_error_status_and_invalid_json(self, method):
         """
-        Check that invalid JSON causes the post method to
-        raise an exception
+        Check that invalid JSON causes the get/post methods to raise
+        an exception, even with an error status is returned
         """
-        self._register_uri(httpretty.POST, body="Invalid JSON")
-        with self.assertRaises(ValueError):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_error_status_and_invalid_json(self):
-        """
-        Check that invalid JSON causes the get method to raise an exception,
-        even with an error status is returned
-        """
-        self._register_uri(httpretty.GET, body="Invalid JSON", status=500)
+        self._register_uri(method, body="Invalid JSON", status=500)
         with self.assertRaises(trovebox.TroveboxError):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_error_status_and_invalid_json(self):
+    @data(GET, POST)
+    def test_with_404_status_and_invalid_json(self, method):
         """
-        Check that invalid JSON causes the post method to raise an exception,
-        even with an error status is returned
+        Check that invalid JSON causes the get/post methods to raise
+        an exception, even with a 404 status is returned
         """
-        self._register_uri(httpretty.POST, body="Invalid JSON", status=500)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_404_status_and_invalid_json(self):
-        """
-        Check that invalid JSON causes the get method to raise an exception,
-        even with a 404 status is returned
-        """
-        self._register_uri(httpretty.GET, body="Invalid JSON", status=404)
+        self._register_uri(method, body="Invalid JSON", status=404)
         with self.assertRaises(trovebox.Trovebox404Error):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_404_status_and_invalid_json(self):
+    @data(GET, POST)
+    def test_with_duplicate_status(self, method):
         """
-        Check that invalid JSON causes the post method to raise an exception,
-        even with a 404 status is returned
-        """
-        self._register_uri(httpretty.POST, body="Invalid JSON", status=404)
-        with self.assertRaises(trovebox.Trovebox404Error):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_duplicate_status(self):
-        """
-        Check that a get with a duplicate status
+        Check that a get/post with a duplicate status
         raises a duplicate exception
         """
         data = {"message": "This photo already exists", "code": 409}
-        self._register_uri(httpretty.GET, data=data, status=409)
+        self._register_uri(method, data=data, status=409)
         with self.assertRaises(trovebox.TroveboxDuplicateError):
-            self.client.get(self.test_endpoint)
+            GetOrPost(self.client, method).call(self.test_endpoint)
 
     @httpretty.activate
-    def test_post_with_duplicate_status(self):
-        """
-        Check that a post with a duplicate status
-        raises a duplicate exception
-        """
-        data = {"message": "This photo already exists", "code": 409}
-        self._register_uri(httpretty.POST, data=data, status=409)
-        with self.assertRaises(trovebox.TroveboxDuplicateError):
-            self.client.post(self.test_endpoint)
-
-    @httpretty.activate
-    def test_get_with_status_code_mismatch(self):
+    @data(GET, POST)
+    def test_with_status_code_mismatch(self, method):
         """
         Check that a mismatched HTTP status code still returns the
-        JSON status code for get requests.
+        JSON status code.
         """
         data = {"message": "Test Message", "code": 202}
-        self._register_uri(httpretty.GET, data=data, status=200)
-        response = self.client.get(self.test_endpoint)
-        self.assertEqual(response["code"], 202)
-
-    @httpretty.activate
-    def test_post_with_status_code_mismatch(self):
-        """
-        Check that a mismatched HTTP status code still returns the
-        JSON status code for post requests.
-        """
-        data = {"message": "Test Message", "code": 202}
-        self._register_uri(httpretty.POST, data=data, status=200)
-        response = self.client.post(self.test_endpoint)
+        self._register_uri(method, data=data, status=200)
+        response = GetOrPost(self.client, method).call(self.test_endpoint)
         self.assertEqual(response["code"], 202)
 
