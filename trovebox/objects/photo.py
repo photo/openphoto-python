@@ -8,7 +8,9 @@ class Photo(TroveboxObject):
     """ Representation of a Photo object """
     def delete(self, **kwds):
         """
-        Delete this photo.
+        Endpoint: /photo/<id>/delete.json
+
+        Deletes this photo.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -19,8 +21,14 @@ class Photo(TroveboxObject):
         self._delete_fields()
         return result
 
+    # def delete_source(self, **kwds):
+
     def edit(self, **kwds):
-        """ Returns an HTML form to edit the photo """
+        """
+        Endpoint: /photo/<id>/edit.json
+
+        Returns an HTML form to edit this photo's attributes.
+        """
         result = self._trovebox.get("/photo/%s/edit.json" %
                                     self.id, **kwds)["result"]
         return result["markup"]
@@ -34,14 +42,23 @@ class Photo(TroveboxObject):
         raise NotImplementedError()
 
     def update(self, **kwds):
-        """ Update this photo with the specified parameters """
+        """
+        Endpoint: /photo/<id>/update.json
+
+        Updates this photo with the specified parameters.
+        """
         result = self._trovebox.post("/photo/%s/update.json" %
                                      self.id, **kwds)["result"]
         self._replace_fields(result)
 
+    # TODO: Add options
     def view(self, **kwds):
         """
-        Used to view the photo at a particular size.
+        Endpoint: /photo/<id>/view.json
+
+        Requests all properties of this photo.
+        Can be used to obtain URLs for the photo at a particular size,
+          by using the "returnSizes" parameter.
         Updates the photo's fields with the response.
         """
         result = self._trovebox.get("/photo/%s/view.json" %
@@ -52,8 +69,11 @@ class Photo(TroveboxObject):
         """ Not implemented yet """
         raise NotImplementedError()
 
+    # TODO: Add options
     def next_previous(self, **kwds):
         """
+        Endpoint: /photo/<id>/nextprevious.json
+
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
@@ -82,8 +102,11 @@ class Photo(TroveboxObject):
 
     def transform(self, **kwds):
         """
-        Performs transformation specified in **kwds
-        Example: transform(rotate=90)
+        Endpoint: /photo/<id>/transform.json
+
+        Performs the specified transformations.
+          eg. transform(photo, rotate=90)
+        Updates the photo's fields with the response.
         """
         result = self._trovebox.post("/photo/%s/transform.json" %
                                      self.id, **kwds)["result"]

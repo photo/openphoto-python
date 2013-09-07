@@ -18,6 +18,8 @@ class Album(TroveboxObject):
         if isinstance(self.cover, dict):
             self.cover = Photo(self._trovebox, self.cover)
 
+    # def cover_update(self, photo, **kwds):
+
     def delete(self, **kwds):
         """
         Endpoint: /album/<id>/delete.json
@@ -37,10 +39,12 @@ class Album(TroveboxObject):
         """ Not implemented yet """
         raise NotImplementedError()
 
+    # TODO: Should be just "add"
     def add_photos(self, photos, **kwds):
         """ Not implemented yet """
         raise NotImplementedError()
 
+    # TODO: Should be just "remove"
     def remove_photos(self, photos, **kwds):
         """ Not implemented yet """
         raise NotImplementedError()

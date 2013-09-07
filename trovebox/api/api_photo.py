@@ -8,7 +8,7 @@ from trovebox.errors import TroveboxError
 from trovebox.objects.photo import Photo
 from .api_base import ApiBase
 
-def extract_ids(photos):
+def _extract_ids(photos):
     """
     Given a list of objects, extract the photo id for each Photo
     object.
@@ -23,41 +23,54 @@ def extract_ids(photos):
 
 class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
+    # TODO: Add options
     def list(self, **kwds):
-        """ Returns a list of Photo objects """
+        """
+        Endpoint: /photos/list.json
+
+        Returns a list of Photo objects.
+        """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
         photos = http.result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
-    def update(self, photos, **kwds):
-        """
-        Updates a list of photos.
-        Returns True if successful.
-        Raises TroveboxError if not.
-        """
-        ids = extract_ids(photos)
-        if not self._client.post("/photos/update.json", ids=ids,
-                                 **kwds)["result"]:
-            raise TroveboxError("Update response returned False")
-        return True
+    # def share(self, **kwds):
 
     def delete(self, photos, **kwds):
         """
+        Endpoint: /photos/delete.json
+
         Deletes a list of photos.
         Returns True if successful.
-        Raises TroveboxError if not.
+        Raises a TroveboxError if not.
         """
-        ids = extract_ids(photos)
+        ids = _extract_ids(photos)
         if not self._client.post("/photos/delete.json", ids=ids,
                                  **kwds)["result"]:
             raise TroveboxError("Delete response returned False")
+        return True
+
+    def update(self, photos, **kwds):
+        """
+        Endpoint: /photos/<id>/update.json
+
+        Updates a list of photos with the specified parameters.
+        Returns True if successful.
+        Raises TroveboxError if not.
+        """
+        ids = _extract_ids(photos)
+        if not self._client.post("/photos/update.json", ids=ids,
+                                 **kwds)["result"]:
+            raise TroveboxError("Update response returned False")
         return True
 
 class ApiPhoto(ApiBase):
     """ Definitions of /photo/ API endpoints """
     def delete(self, photo, **kwds):
         """
-        Delete a photo.
+        Endpoint: /photo/<id>/delete.json
+
+        Deletes a photo.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -65,8 +78,14 @@ class ApiPhoto(ApiBase):
             photo = Photo(self._client, {"id": photo})
         return photo.delete(**kwds)
 
+    # def delete_source(self, photo, **kwds):
+
     def edit(self, photo, **kwds):
-        """ Returns an HTML form to edit a photo """
+        """
+        Endpoint: /photo/<id>/edit.json
+
+        Returns an HTML form to edit a photo's attributes.
+        """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
         return photo.edit(**kwds)
@@ -81,18 +100,25 @@ class ApiPhoto(ApiBase):
 
     def update(self, photo, **kwds):
         """
-        Update a photo with the specified parameters.
-        Returns the updated photo object
+        Endpoint: /photo/<id>/update.json
+
+        Updates a photo with the specified parameters.
+        Returns the updated photo object.
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
         photo.update(**kwds)
         return photo
 
+    # TODO: Add options
     def view(self, photo, **kwds):
         """
-        Used to view the photo at a particular size.
-        Returns the requested photo object
+        Endpoint: /photo/<id>/view.json
+
+        Requests all properties of a photo.
+        Can be used to obtain URLs for the photo at a particular size,
+          by using the "returnSizes" parameter.
+        Returns the requested photo object.
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
@@ -100,7 +126,11 @@ class ApiPhoto(ApiBase):
         return photo
 
     def upload(self, photo_file, **kwds):
-        """ Uploads the specified file to the server """
+        """
+        Endpoint: /photo/upload.json
+
+        Uploads the specified photo filename.
+        """
         with open(photo_file, 'rb') as in_file:
             result = self._client.post("/photo/upload.json",
                                        files={'photo': in_file},
@@ -108,7 +138,11 @@ class ApiPhoto(ApiBase):
         return Photo(self._client, result)
 
     def upload_encoded(self, photo_file, **kwds):
-        """ Base64-encodes and uploads the specified file """
+        """
+        Endpoint: /photo/upload.json
+
+        Base64-encodes and uploads the specified photo filename.
+        """
         with open(photo_file, "rb") as in_file:
             encoded_photo = base64.b64encode(in_file.read())
         result = self._client.post("/photo/upload.json", photo=encoded_photo,
@@ -119,8 +153,11 @@ class ApiPhoto(ApiBase):
         """ Not yet implemented """
         raise NotImplementedError()
 
+    # TODO: Add options
     def next_previous(self, photo, **kwds):
         """
+        Endpoint: /photo/<id>/nextprevious.json
+
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
@@ -130,8 +167,11 @@ class ApiPhoto(ApiBase):
 
     def transform(self, photo, **kwds):
         """
-        Performs transformation specified in **kwds
-        Example: transform(photo, rotate=90)
+        Endpoint: /photo/<id>/transform.json
+
+        Performs the specified transformations.
+          eg. transform(photo, rotate=90)
+        Returns the transformed photo.
         """
         if not isinstance(photo, Photo):
             photo = Photo(self._client, {"id": photo})
