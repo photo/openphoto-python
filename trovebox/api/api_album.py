@@ -16,14 +16,20 @@ class ApiAlbums(ApiBase):
 class ApiAlbum(ApiBase):
     """ Definitions of /album/ API endpoints """
     def create(self, name, **kwds):
-        """ Create a new album and return it"""
+        """
+        Endpoint: /album/create.json
+
+        Creates a new album and returns it.
+        """
         result = self._client.post("/album/create.json",
                                    name=name, **kwds)["result"]
         return Album(self._client, result)
 
     def delete(self, album, **kwds):
         """
-        Delete an album.
+        Endpoint: /album/<id>/delete.json
+
+        Deletes an album.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -44,7 +50,11 @@ class ApiAlbum(ApiBase):
         raise NotImplementedError()
 
     def update(self, album, **kwds):
-        """ Update an album """
+        """
+        Endpoint: /album/<id>/update.json
+
+        Updates an album with the specified parameters.
+        """
         if not isinstance(album, Album):
             album = Album(self._client, {"id": album})
         album.update(**kwds)
@@ -52,7 +62,9 @@ class ApiAlbum(ApiBase):
 
     def view(self, album, **kwds):
         """
-        View an album's contents.
+        Endpoint: /album/<id>/view.json
+
+        Requests all properties of an album.
         Returns the requested album object.
         """
         if not isinstance(album, Album):

@@ -26,6 +26,8 @@ class Activity(TroveboxObject):
 
     def view(self, **kwds):
         """
+        Endpoint: /activity/<id>/view.json
+
         Requests the full contents of the activity.
         Updates the activity's fields with the response.
         """

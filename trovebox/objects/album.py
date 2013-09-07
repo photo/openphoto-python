@@ -20,7 +20,9 @@ class Album(TroveboxObject):
 
     def delete(self, **kwds):
         """
-        Delete this album.
+        Endpoint: /album/<id>/delete.json
+
+        Deletes this album.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -44,7 +46,11 @@ class Album(TroveboxObject):
         raise NotImplementedError()
 
     def update(self, **kwds):
-        """ Update this album with the specified parameters """
+        """
+        Endpoint: /album/<id>/update.json
+
+        Updates this album with the specified parameters.
+        """
         result = self._trovebox.post("/album/%s/update.json" %
                                      self.id, **kwds)["result"]
 
@@ -58,7 +64,9 @@ class Album(TroveboxObject):
 
     def view(self, **kwds):
         """
-        Requests the full contents of the album.
+        Endpoint: /album/<id>/view.json
+
+        Requests all properties of an album.
         Updates the album's fields with the response.
         """
         result = self._trovebox.get("/album/%s/view.json" %

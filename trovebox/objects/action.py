@@ -25,7 +25,9 @@ class Action(TroveboxObject):
 
     def delete(self, **kwds):
         """
-        Delete this action.
+        Endpoint: /action/<id>/delete.json
+
+        Deletes this action.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -38,6 +40,8 @@ class Action(TroveboxObject):
 
     def view(self, **kwds):
         """
+        Endpoint: /action/<id>/view.json
+
         Requests the full contents of the action.
         Updates the action's fields with the response.
         """

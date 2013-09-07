@@ -9,9 +9,12 @@ class ApiAction(ApiBase):
     """ Definitions of /action/ API endpoints """
     def create(self, target, target_type=None, **kwds):
         """
-        Create a new action and return it.
-        If the target_type parameter isn't specified, it is automatically
-        generated.
+        Endpoint: /action/<target_id>/<target_type>/create.json
+
+        Creates a new action and returns it.
+        The target parameter can either be an id or a Trovebox object.
+        If a Trovebox object is used, the target type is inferred
+        automatically.
         """
         if target_type is None:
             # Determine the target type
@@ -33,7 +36,9 @@ class ApiAction(ApiBase):
 
     def delete(self, action, **kwds):
         """
-        Delete an action.
+        Endpoint: /action/<id>/delete.json
+
+        Deletes an action.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -43,7 +48,9 @@ class ApiAction(ApiBase):
 
     def view(self, action, **kwds):
         """
-        View an action's contents.
+        Endpoint: /action/<id>/view.json
+
+        Requests all properties of an action.
         Returns the requested action object.
         """
         if not isinstance(action, Action):
