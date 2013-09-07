@@ -13,7 +13,9 @@ class Tag(TroveboxObject):
     """ Representation of a Tag object """
     def delete(self, **kwds):
         """
-        Delete this tag.
+        Endpoint: /tag/<id>/delete.json
+
+        Deletes this tag.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
@@ -25,7 +27,14 @@ class Tag(TroveboxObject):
         return result
 
     def update(self, **kwds):
-        """ Update this tag with the specified parameters """
+        """
+        Endpoint: /tag/<id>/update.json
+
+        Updates this tag with the specified parameters.
+        Returns the updated tag object.
+        """
         result = self._trovebox.post("/tag/%s/update.json" % quote(self.id),
                                      **kwds)["result"]
         self._replace_fields(result)
+
+    # def view(self, **kwds):
