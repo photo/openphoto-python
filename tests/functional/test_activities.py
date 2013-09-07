@@ -43,12 +43,18 @@ class TestActivities(test_base.TestBase):
         self.assertEqual(len(update_activities), 1)
 
     # The purge endpoint currently reports a 500: Internal Server Error
+    # PHP Fatal error:
+    #   Call to undefined method DatabaseMySql::postActivitiesPurge()
+    #   in /var/www/openphoto-master/src/libraries/models/Activity.php
+    #   on line 66
+    # Tracked in frontend/#1368
     @unittest.expectedFailure
     def test_purge(self):
         """ Test that the purge endpoint deletes all activities """
         activities = self.client.activities.list()
         self.assertNotEqual(activities, [])
         self.client.activities.purge()
+        activities = self.client.activities.list()
         self.assertEqual(activities, [])
 
     def test_view(self):
