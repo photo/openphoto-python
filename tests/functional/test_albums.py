@@ -63,11 +63,6 @@ class TestAlbums(test_base.TestBase):
         for photo in self.photos:
             self.assertIn(photo.id, [p.id for p in album.photos])
 
-    def test_form(self):
-        """ If album.form gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.form(None)
-
     def test_add_photos(self):
         """ If album.add_photos gets implemented, write a test! """
         with self.assertRaises(NotImplementedError):

@@ -80,16 +80,6 @@ class ApiPhoto(ApiBase):
 
     # def delete_source(self, photo, **kwds):
 
-    def edit(self, photo, **kwds):
-        """
-        Endpoint: /photo/<id>/edit.json
-
-        Returns an HTML form to edit a photo's attributes.
-        """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        return photo.edit(**kwds)
-
     def replace(self, photo, photo_file, **kwds):
         """ Not yet implemented """
         raise NotImplementedError()

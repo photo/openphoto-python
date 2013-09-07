@@ -130,25 +130,6 @@ class TestAlbumDelete(TestAlbums):
         with self.assertRaises(trovebox.TroveboxError):
             self.test_albums[0].delete()
 
-class TestAlbumForm(TestAlbums):
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_album_form(self, _):
-        """ If album.form gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.form(self.test_albums[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_album_form_id(self, _):
-        """ If album.form gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.form("1")
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_album_object_form(self, _):
-        """ If album.form gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.test_albums[0].form()
-
 class TestAlbumAddPhotos(TestAlbums):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_add_photos(self, _):

@@ -23,16 +23,6 @@ class Photo(TroveboxObject):
 
     # def delete_source(self, **kwds):
 
-    def edit(self, **kwds):
-        """
-        Endpoint: /photo/<id>/edit.json
-
-        Returns an HTML form to edit this photo's attributes.
-        """
-        result = self._trovebox.get("/photo/%s/edit.json" %
-                                    self.id, **kwds)["result"]
-        return result["markup"]
-
     def replace(self, photo_file, **kwds):
         """ Not implemented yet """
         raise NotImplementedError()

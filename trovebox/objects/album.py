@@ -35,10 +35,6 @@ class Album(TroveboxObject):
         self._delete_fields()
         return result
 
-    def form(self, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
-
     # TODO: Should be just "add"
     def add_photos(self, photos, **kwds):
         """ Not implemented yet """

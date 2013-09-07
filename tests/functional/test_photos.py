@@ -47,16 +47,6 @@ class TestPhotos(test_base.TestBase):
         self._delete_all()
         self._create_test_photos()
 
-    def test_edit(self):
-        """ Check that the edit request returns an HTML form """
-        # Test using the Trovebox class
-        html = self.client.photo.edit(self.photos[0])
-        self.assertIn("<form", html.lower())
-
-        # And the Photo object directly
-        html = self.photos[0].edit()
-        self.assertIn("<form", html.lower())
-
     def test_upload_duplicate(self):
         """ Ensure that duplicate photos are rejected """
         # Attempt to upload a duplicate

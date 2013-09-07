@@ -43,10 +43,6 @@ class ApiAlbum(ApiBase):
             album = Album(self._client, {"id": album})
         return album.delete(**kwds)
 
-    def form(self, album, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
-
     # TODO: Should be just "add"
     def add_photos(self, album, photos, **kwds):
         """ Not yet implemented """

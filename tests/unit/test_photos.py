@@ -159,34 +159,6 @@ class TestPhotoDelete(TestPhotos):
         with self.assertRaises(trovebox.TroveboxError):
             self.test_photos[0].delete()
 
-class TestPhotoEdit(TestPhotos):
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_edit(self, mock_get):
-        """Check that a the photo edit endpoint is working"""
-        mock_get.return_value = self._return_value({"markup": "<form/>"})
-        result = self.client.photo.edit(self.test_photos[0])
-        mock_get.assert_called_with("/photo/1a/edit.json")
-        self.assertEqual(result, "<form/>")
-
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_edit_id(self, mock_get):
-        """Check that a the photo edit endpoint is working when using an ID"""
-        mock_get.return_value = self._return_value({"markup": "<form/>"})
-        result = self.client.photo.edit("1a")
-        mock_get.assert_called_with("/photo/1a/edit.json")
-        self.assertEqual(result, "<form/>")
-
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_object_edit(self, mock_get):
-        """
-        Check that a the photo edit endpoint is working
-        when using the photo object directly
-        """
-        mock_get.return_value = self._return_value({"markup": "<form/>"})
-        result = self.test_photos[0].edit()
-        mock_get.assert_called_with("/photo/1a/edit.json")
-        self.assertEqual(result, "<form/>")
-
 class TestPhotoReplace(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_replace(self, _):
