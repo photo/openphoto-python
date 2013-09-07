@@ -5,11 +5,12 @@ except ImportError:
 
 from tests.functional import test_base
 
+@unittest.skipIf(test_base.get_test_server_api() == 1,
+                 ("Activities never get deleted in v1, which makes "
+                  "these tests too hard to write"))
 class TestActivities(test_base.TestBase):
     testcase_name = "activity API"
 
-    @unittest.skipIf(test_base.get_test_server_api() == 1,
-                     "The activity/list endpoint behaves differenty at v1")
     def test_list(self):
         """
         Upload three photos, and check that three corresponding activities
