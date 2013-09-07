@@ -9,16 +9,21 @@ import trovebox
 
 class TestAlbums(unittest.TestCase):
     test_host = "test.example.com"
+    test_photo_dict = {"id": "1a", "tags": ["tag1", "tag2"]}
     test_albums_dict = [{"cover": {"id": "1a", "tags": ["tag1", "tag2"]},
                          "id": "1",
                          "name": "Album 1",
+                         "photos": [test_photo_dict],
                          "totalRows": 2},
                         {"cover": {"id": "2b", "tags": ["tag3", "tag4"]},
                          "id": "2",
                          "name": "Album 2",
+                         "photos": [test_photo_dict],
                          "totalRows": 2}]
     def setUp(self):
         self.client = trovebox.Trovebox(host=self.test_host)
+        self.test_photo = trovebox.objects.photo.Photo(self.client,
+                                                       self.test_photo_dict)
         self.test_albums = [trovebox.objects.album.Album(self.client, album)
                             for album in self.test_albums_dict]
 
@@ -209,33 +214,35 @@ class TestAlbumView(TestAlbums):
     def test_album_view(self, mock_get):
         """Check that an album can be viewed"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
-        result = self.client.album.view(self.test_albums[0], name="Test")
-        mock_get.assert_called_with("/album/1/view.json", name="Test")
+        result = self.client.album.view(self.test_albums[0], includeElements=True)
+        mock_get.assert_called_with("/album/1/view.json", includeElements=True)
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.photos[0].id, self.test_photo.id)
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_album_view_id(self, mock_get):
         """Check that an album can be viewed using its ID"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
-        result = self.client.album.view("1", name="Test")
-        mock_get.assert_called_with("/album/1/view.json", name="Test")
+        result = self.client.album.view("1", includeElements=True)
+        mock_get.assert_called_with("/album/1/view.json", includeElements=True)
         self.assertEqual(result.id, "2")
         self.assertEqual(result.name, "Album 2")
         self.assertEqual(result.cover.id, "2b")
         self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+        self.assertEqual(result.photos[0].id, self.test_photo.id)
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_album_object_view(self, mock_get):
         """Check that an album can be viewed using the album object directly"""
         mock_get.return_value = self._return_value(self.test_albums_dict[1])
         album = self.test_albums[0]
-        album.view(name="Test")
-        mock_get.assert_called_with("/album/1/view.json", name="Test")
+        album.view(includeElements=True)
+        mock_get.assert_called_with("/album/1/view.json", includeElements=True)
         self.assertEqual(album.id, "2")
         self.assertEqual(album.name, "Album 2")
         self.assertEqual(album.cover.id, "2b")
         self.assertEqual(album.cover.tags, ["tag3", "tag4"])
-
+        self.assertEqual(album.photos[0].id, self.test_photo.id)
