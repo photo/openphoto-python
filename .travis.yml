@@ -4,7 +4,6 @@ install:
   # Install test dependencies
   - pip install tox --use-mirrors
   - pip install coveralls --use-mirrors
-  - .travis/install_pylint
 
 script: tox
 
@@ -14,8 +13,11 @@ after_success:
 
 after_script:
   # Install dependencies for Pylint
-  - pip install requests requests-oauthlib --use-mirrors
+  - pip install pylint-patcher --use-mirrors
+  - pip install requests --use-mirrors
+  - pip install requests-oauthlib --use-mirrors
 
   # Run Pylint
+  # Uses pylint-patcher to allow exceptions to be stored in a patchfile
   # (for information only, any errors don't affect the Travis result)
-  - pylint --use-ignore-patch=y trovebox
+  - pylint-patcher trovebox
