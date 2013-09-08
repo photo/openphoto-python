@@ -3,6 +3,7 @@ api_base.py: Base class for all API classes
 """
 
 class ApiBase(object):
+    """ Base class for all API objects """
     def __init__(self, client):
         self._client = client
 
@@ -13,6 +14,7 @@ class ApiBase(object):
         :returns: filter_string formatted for an API endpoint
         """
         filter_string = ""
-        for filter in filters:
-            filter_string += "%s-%s/" % (filter, filters[filter])
+        if filters is not None:
+            for filt in filters:
+                filter_string += "%s-%s/" % (filt, filters[filt])
         return filter_string

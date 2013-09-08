@@ -12,6 +12,7 @@ class Activity(TroveboxObject):
         self.data = None
         self.type = None
         TroveboxObject.__init__(self, trovebox, json_dict)
+        self._type = "activity"
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):

@@ -11,18 +11,25 @@ class Album(TroveboxObject):
         self.photos = None
         self.cover = None
         TroveboxObject.__init__(self, trovebox, json_dict)
+        self._type = "album"
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):
         """ Convert dict fields into objects, where appropriate """
         # Update the cover with a photo object
-        if isinstance(self.cover, dict):
-            self.cover = Photo(self._trovebox, self.cover)
+        try:
+            if isinstance(self.cover, dict):
+                self.cover = Photo(self._trovebox, self.cover)
+        except AttributeError:
+            pass # No cover
+
         # Update the photo list with photo objects
-        if isinstance(self.photos, list):
+        try:
             for i, photo in enumerate(self.photos):
                 if isinstance(photo, dict):
                     self.photos[i] = Photo(self._trovebox, photo)
+        except (AttributeError, TypeError):
+            pass # No photos, or not a list
 
     def cover_update(self, photo, **kwds):
         """
@@ -60,15 +67,45 @@ class Album(TroveboxObject):
         self._delete_fields()
         return result
 
-    # TODO: Should be just "add"
-    def add_photos(self, photos, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+    def add(self, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/add.json
 
-    # TODO: Should be just "remove"
-    def remove_photos(self, photos, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        Add objects (eg. Photos) to this album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Updates the album's fields with the response.
+        """
+        result = self._trovebox.album.add(self, objects, object_type, **kwds)
+
+        # API currently doesn't return the updated album
+        # (frontend issue #1369)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._trovebox.get("/album/%s/view.json" %
+                                        self.id)["result"]
+        self._replace_fields(result)
+        self._update_fields_with_objects()
+
+    def remove(self, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/remove.json
+
+        Remove objects (eg. Photos) from this album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Updates the album's fields with the response.
+        """
+        result = self._trovebox.album.remove(self, objects, object_type,
+                                             **kwds)
+        # API currently doesn't return the updated album
+        # (frontend issue #1369)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._trovebox.get("/album/%s/view.json" %
+                                        self.id)["result"]
+        self._replace_fields(result)
+        self._update_fields_with_objects()
 
     def update(self, **kwds):
         """

@@ -66,13 +66,16 @@ class TestActionCreate(TestActions):
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_type(self, mock_post):
-        """Check that an exception is raised if an action is created on a non photo object"""
-        with self.assertRaises(NotImplementedError):
+        """
+        Check that an exception is raised if an action is created on an
+        invalid object.
+        """
+        with self.assertRaises(AttributeError):
             self.client.action.create(target=object(), foo="bar")
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_return_type(self, mock_post):
-        """Check that an exception is raised if an non photo object is returned"""
+        """Check that an exception is raised if an invalid object is returned"""
         mock_post.return_value = self._return_value({"target": "test",
                                                      "target_type": "invalid"})
         with self.assertRaises(NotImplementedError):

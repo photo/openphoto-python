@@ -11,6 +11,10 @@ from .trovebox_object import TroveboxObject
 
 class Tag(TroveboxObject):
     """ Representation of a Tag object """
+    def __init__(self, trovebox, json_dict):
+        TroveboxObject.__init__(self, trovebox, json_dict)
+        self._type = "tag"
+
     def delete(self, **kwds):
         """
         Endpoint: /tag/<id>/delete.json

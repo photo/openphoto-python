@@ -2,7 +2,6 @@
 api_action.py : Trovebox Action API Classes
 """
 from trovebox.objects.action import Action
-from trovebox.objects.photo import Photo
 from .api_base import ApiBase
 
 class ApiAction(ApiBase):
@@ -16,12 +15,10 @@ class ApiAction(ApiBase):
         If a Trovebox object is used, the target type is inferred
         automatically.
         """
+        # Extract the type from the target
         if target_type is None:
-            # Determine the target type
-            if isinstance(target, Photo):
-                target_type = "photo"
-            else:
-                raise NotImplementedError("Unsupported target type")
+            target_type = target.get_type()
+
         # Extract the ID from the target
         try:
             target_id = target.id

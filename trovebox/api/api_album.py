@@ -1,6 +1,9 @@
 """
 api_album.py : Trovebox Album API Classes
 """
+import collections
+
+from trovebox.objects.trovebox_object import TroveboxObject
 from trovebox.objects.album import Album
 from trovebox import http
 from .api_base import ApiBase
@@ -53,15 +56,59 @@ class ApiAlbum(ApiBase):
             album = Album(self._client, {"id": album})
         return album.delete(**kwds)
 
-    # TODO: Should be just "add"
-    def add_photos(self, album, photos, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
+    def add(self, album, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/add.json
 
-    # TODO: Should be just "remove"
-    def remove_photos(self, album, photos, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
+        Add objects (eg. Photos) to an album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Returns True if the album was updated successfully.
+        """
+        return self._add_remove("add", album, objects, object_type,
+                                **kwds)
+
+    def remove(self, album, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/remove.json
+
+        Remove objects (eg. Photos) to an album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Returns True if the album was updated successfully.
+        """
+        return self._add_remove("remove", album, objects, object_type,
+                                **kwds)
+
+    def _add_remove(self, action, album, objects, object_type=None,
+                    **kwds):
+        """Common code for the add and remove endpoints."""
+        # Extract the id of the album
+        if isinstance(album, Album):
+            album = album.id
+
+        # Ensure we have an iterable of objects
+        if not isinstance(objects, collections.Iterable):
+            objects = [objects]
+
+        # Extract the type of the objects
+        if object_type is None:
+            object_type = objects[0].get_type()
+
+        for i, obj in enumerate(objects):
+            if isinstance(obj, TroveboxObject):
+                # Ensure all objects are the same type
+                if obj.get_type() != object_type:
+                    raise ValueError("Not all objects are of type '%s'"
+                                     % object_type)
+                # Extract the ids of the objects
+                objects[i] = obj.id
+
+        return self._client.post("/album/%s/%s/%s.json" %
+                                 (album, object_type, action),
+                                 ids=objects, **kwds)["result"]
 
     def update(self, album, **kwds):
         """

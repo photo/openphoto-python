@@ -6,6 +6,10 @@ from .trovebox_object import TroveboxObject
 
 class Photo(TroveboxObject):
     """ Representation of a Photo object """
+    def __init__(self, trovebox, json_dict):
+        TroveboxObject.__init__(self, trovebox, json_dict)
+        self._type = "photo"
+
     def delete(self, **kwds):
         """
         Endpoint: /photo/<id>/delete.json
