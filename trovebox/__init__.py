@@ -2,7 +2,7 @@
 __init__.py : Trovebox package top level
 """
 from .http import Http
-from .errors import *
+from .errors import TroveboxError, TroveboxDuplicateError, Trovebox404Error
 from ._version import __version__
 from trovebox.api import api_photo
 from trovebox.api import api_tag

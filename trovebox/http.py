@@ -12,7 +12,7 @@ except ImportError:
     from urlparse import urlparse, urlunparse # Python2
 
 from trovebox.objects.trovebox_object import TroveboxObject
-from .errors import *
+from .errors import TroveboxError, Trovebox404Error, TroveboxDuplicateError
 from .auth import Auth
 
 if sys.version < '3':
