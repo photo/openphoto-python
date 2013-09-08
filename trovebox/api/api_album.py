@@ -19,7 +19,17 @@ class ApiAlbums(ApiBase):
 
 class ApiAlbum(ApiBase):
     """ Definitions of /album/ API endpoints """
-    # def cover_update(self, album, photo, **kwds):
+    def cover_update(self, album, photo, **kwds):
+        """
+        Endpoint: /album/<album_id>/cover/<photo_id>/update.json
+
+        Update the cover photo of an album.
+        Returns the updated album object.
+        """
+        if not isinstance(album, Album):
+            album = Album(self._client, {"id": album})
+        album.cover_update(photo, **kwds)
+        return album
 
     def create(self, name, **kwds):
         """

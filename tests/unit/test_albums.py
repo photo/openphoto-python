@@ -76,6 +76,45 @@ class TestAlbumsList(TestAlbums):
         self.assertEqual(result[1].cover.id, "2b")
         self.assertEqual(result[1].cover.tags, ["tag3", "tag4"])
 
+class TestAlbumUpdateCover(TestAlbums):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_album_cover_update(self, mock_post):
+        """Check that an album cover can be updated"""
+        mock_post.return_value = self._return_value(self.test_albums_dict[1])
+        result = self.client.album.cover_update(self.test_albums[0],
+                                                self.test_photo, foo="bar")
+        mock_post.assert_called_with("/album/1/cover/1a/update.json",
+                                     foo="bar")
+        self.assertEqual(result.id, "2")
+        self.assertEqual(result.name, "Album 2")
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_album_cover_update_id(self, mock_post):
+        """Check that an album cover can be updated using IDs"""
+        mock_post.return_value = self._return_value(self.test_albums_dict[1])
+        result = self.client.album.cover_update("1", "1a", foo="bar")
+        mock_post.assert_called_with("/album/1/cover/1a/update.json",
+                                     foo="bar")
+        self.assertEqual(result.id, "2")
+        self.assertEqual(result.name, "Album 2")
+        self.assertEqual(result.cover.id, "2b")
+        self.assertEqual(result.cover.tags, ["tag3", "tag4"])
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_album_object_cover_update(self, mock_post):
+        """Check that an album cover can be updated using the album object directly"""
+        mock_post.return_value = self._return_value(self.test_albums_dict[1])
+        album = self.test_albums[0]
+        album.cover_update(self.test_photo, foo="bar")
+        mock_post.assert_called_with("/album/1/cover/1a/update.json",
+                                     foo="bar")
+        self.assertEqual(album.id, "2")
+        self.assertEqual(album.name, "Album 2")
+        self.assertEqual(album.cover.id, "2b")
+        self.assertEqual(album.cover.tags, ["tag3", "tag4"])
+
 class TestAlbumCreate(TestAlbums):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_create(self, mock_post):

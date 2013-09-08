@@ -24,7 +24,26 @@ class Album(TroveboxObject):
                 if isinstance(photo, dict):
                     self.photos[i] = Photo(self._trovebox, photo)
 
-    # def cover_update(self, photo, **kwds):
+    def cover_update(self, photo, **kwds):
+        """
+        Endpoint: /album/<album_id>/cover/<photo_id>/update.json
+
+        Update the cover photo of this album.
+        """
+        if not isinstance(photo, Photo):
+            photo = Photo(self._trovebox, {"id": photo})
+
+        result = self._trovebox.post("/album/%s/cover/%s/update.json" %
+                                     (self.id, photo.id),
+                                     **kwds)["result"]
+
+        # API currently doesn't return the updated album
+        # (frontend issue #1369)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._trovebox.get("/album/%s/view.json" %
+                                        self.id)["result"]
+        self._replace_fields(result)
+        self._update_fields_with_objects()
 
     def delete(self, **kwds):
         """

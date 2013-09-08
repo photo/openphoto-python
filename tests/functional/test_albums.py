@@ -53,6 +53,12 @@ class TestAlbums(test_base.TestBase):
         self.albums = self.client.albums.list()
         self.assertEqual(self.albums[0].name, self.TEST_ALBUM)
 
+    def test_update_cover(self):
+        """ Test that an album cover can be updated """
+        self.assertNotEqual(self.albums[0].cover.id, self.photos[1].id)
+        self.albums[0].cover_update(self.photos[1])
+        self.assertEqual(self.albums[0].cover.id, self.photos[1].id)
+
     def test_view(self):
         """ Test the album view """
         album = self.albums[0]
