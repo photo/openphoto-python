@@ -7,11 +7,12 @@ from .photo import Photo
 
 class Action(TroveboxObject):
     """ Representation of an Action object """
-    def __init__(self, trovebox, json_dict):
+    _type = "action"
+
+    def __init__(self, client, json_dict):
         self.target = None
         self.target_type = None
-        TroveboxObject.__init__(self, trovebox, json_dict)
-        self._type = "action"
+        TroveboxObject.__init__(self, client, json_dict)
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):
@@ -19,7 +20,7 @@ class Action(TroveboxObject):
         # Update the photo target with photo objects
         if self.target is not None:
             if self.target_type == "photo":
-                self.target = Photo(self._trovebox, self.target)
+                self.target = Photo(self._client, self.target)
             else:
                 raise NotImplementedError("Actions can only be assigned to "
                                           "Photos")
@@ -32,8 +33,8 @@ class Action(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._trovebox.post("/action/%s/delete.json" %
-                                     self.id, **kwds)["result"]
+        result = self._client.post("/action/%s/delete.json" %
+                                   self.id, **kwds)["result"]
         if not result:
             raise TroveboxError("Delete response returned False")
         self._delete_fields()
@@ -46,7 +47,7 @@ class Action(TroveboxObject):
         Requests the full contents of the action.
         Updates the action's fields with the response.
         """
-        result = self._trovebox.get("/action/%s/view.json" %
-                                    self.id, **kwds)["result"]
+        result = self._client.get("/action/%s/view.json" %
+                                  self.id, **kwds)["result"]
         self._replace_fields(result)
         self._update_fields_with_objects()

@@ -6,9 +6,7 @@ from .trovebox_object import TroveboxObject
 
 class Photo(TroveboxObject):
     """ Representation of a Photo object """
-    def __init__(self, trovebox, json_dict):
-        TroveboxObject.__init__(self, trovebox, json_dict)
-        self._type = "photo"
+    _type = "photo"
 
     def delete(self, **kwds):
         """
@@ -18,8 +16,8 @@ class Photo(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._trovebox.post("/photo/%s/delete.json" %
-                                     self.id, **kwds)["result"]
+        result = self._client.post("/photo/%s/delete.json" %
+                                   self.id, **kwds)["result"]
         if not result:
             raise TroveboxError("Delete response returned False")
         self._delete_fields()
@@ -41,8 +39,8 @@ class Photo(TroveboxObject):
 
         Updates this photo with the specified parameters.
         """
-        result = self._trovebox.post("/photo/%s/update.json" %
-                                     self.id, **kwds)["result"]
+        result = self._client.post("/photo/%s/update.json" %
+                                   self.id, **kwds)["result"]
         self._replace_fields(result)
 
     # TODO: Add options
@@ -55,8 +53,8 @@ class Photo(TroveboxObject):
           by using the "returnSizes" parameter.
         Updates the photo's fields with the response.
         """
-        result = self._trovebox.get("/photo/%s/view.json" %
-                                    self.id, **kwds)["result"]
+        result = self._client.get("/photo/%s/view.json" %
+                                  self.id, **kwds)["result"]
         self._replace_fields(result)
 
     def dynamic_url(self, **kwds):
@@ -71,8 +69,8 @@ class Photo(TroveboxObject):
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
-        result = self._trovebox.get("/photo/%s/nextprevious.json" %
-                                     self.id, **kwds)["result"]
+        result = self._client.get("/photo/%s/nextprevious.json" %
+                                  self.id, **kwds)["result"]
         value = {}
         if "next" in result:
             # Workaround for APIv1
@@ -81,7 +79,7 @@ class Photo(TroveboxObject):
 
             value["next"] = []
             for photo in result["next"]:
-                value["next"].append(Photo(self._trovebox, photo))
+                value["next"].append(Photo(self._client, photo))
 
         if "previous" in result:
             # Workaround for APIv1
@@ -90,7 +88,7 @@ class Photo(TroveboxObject):
 
             value["previous"] = []
             for photo in result["previous"]:
-                value["previous"].append(Photo(self._trovebox, photo))
+                value["previous"].append(Photo(self._client, photo))
 
         return value
 
@@ -102,12 +100,12 @@ class Photo(TroveboxObject):
           eg. transform(photo, rotate=90)
         Updates the photo's fields with the response.
         """
-        result = self._trovebox.post("/photo/%s/transform.json" %
-                                     self.id, **kwds)["result"]
+        result = self._client.post("/photo/%s/transform.json" %
+                                   self.id, **kwds)["result"]
 
         # APIv1 doesn't return the transformed photo (frontend issue #955)
         if isinstance(result, bool): # pragma: no cover
-            result = self._trovebox.get("/photo/%s/view.json" %
-                                        self.id)["result"]
+            result = self._client.get("/photo/%s/view.json" %
+                                      self.id)["result"]
 
         self._replace_fields(result)

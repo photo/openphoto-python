@@ -3,11 +3,11 @@ Base object supporting the storage of custom fields as attributes
 """
 class TroveboxObject(object):
     """ Base object supporting the storage of custom fields as attributes """
-    def __init__(self, trovebox, json_dict):
-        self._type = "None"
+    _type = "None"
+    def __init__(self, client, json_dict):
         self.id = None
         self.name = None
-        self._trovebox = trovebox
+        self._client = client
         self._json_dict = json_dict
         self._set_fields(json_dict)
 

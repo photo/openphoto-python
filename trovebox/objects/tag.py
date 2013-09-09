@@ -11,9 +11,7 @@ from .trovebox_object import TroveboxObject
 
 class Tag(TroveboxObject):
     """ Representation of a Tag object """
-    def __init__(self, trovebox, json_dict):
-        TroveboxObject.__init__(self, trovebox, json_dict)
-        self._type = "tag"
+    _type = "tag"
 
     def delete(self, **kwds):
         """
@@ -23,8 +21,8 @@ class Tag(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._trovebox.post("/tag/%s/delete.json" %
-                                     quote(self.id), **kwds)["result"]
+        result = self._client.post("/tag/%s/delete.json" %
+                                   quote(self.id), **kwds)["result"]
         if not result:
             raise TroveboxError("Delete response returned False")
         self._delete_fields()
@@ -37,8 +35,8 @@ class Tag(TroveboxObject):
         Updates this tag with the specified parameters.
         Returns the updated tag object.
         """
-        result = self._trovebox.post("/tag/%s/update.json" % quote(self.id),
-                                     **kwds)["result"]
+        result = self._client.post("/tag/%s/update.json" % quote(self.id),
+                                   **kwds)["result"]
         self._replace_fields(result)
 
     # def view(self, **kwds):
