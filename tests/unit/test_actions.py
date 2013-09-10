@@ -71,7 +71,7 @@ class TestActionCreate(TestActions):
         invalid object.
         """
         with self.assertRaises(AttributeError):
-            self.client.action.create(target=object(), foo="bar")
+            self.client.action.create(target=object())
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_return_type(self, mock_post):
@@ -79,23 +79,23 @@ class TestActionCreate(TestActions):
         mock_post.return_value = self._return_value({"target": "test",
                                                      "target_type": "invalid"})
         with self.assertRaises(NotImplementedError):
-            self.client.action.create(target=self.test_photos[0], foo="bar")
+            self.client.action.create(target=self.test_photos[0])
 
 class TestActionDelete(TestActions):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_delete(self, mock_post):
         """Check that an action can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.action.delete(self.test_actions[0])
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = self.client.action.delete(self.test_actions[0], foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_delete_id(self, mock_post):
         """Check that an action can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.action.delete("1")
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = self.client.action.delete("1", foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -110,8 +110,8 @@ class TestActionDelete(TestActions):
         """Check that an action can be deleted using the action object directly"""
         mock_post.return_value = self._return_value(True)
         action = self.test_actions[0]
-        result = action.delete()
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = action.delete(foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
         self.assertEqual(action.get_fields(), {})
         self.assertEqual(action.id, None)

@@ -27,8 +27,8 @@ class TestTagsList(TestTags):
     def test_tags_list(self, mock_get):
         """Check that the tag list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_tags_dict)
-        result = self.client.tags.list()
-        mock_get.assert_called_with("/tags/list.json")
+        result = self.client.tags.list(foo="bar")
+        mock_get.assert_called_with("/tags/list.json", foo="bar")
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].id, "tag1")
         self.assertEqual(result[0].count, 11)
@@ -39,16 +39,16 @@ class TestTagsList(TestTags):
     def test_empty_result(self, mock_get):
         """Check that an empty result is transformed into an empty list """
         mock_get.return_value = self._return_value("")
-        result = self.client.tags.list()
-        mock_get.assert_called_with("/tags/list.json")
+        result = self.client.tags.list(foo="bar")
+        mock_get.assert_called_with("/tags/list.json", foo="bar")
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_zero_rows(self, mock_get):
         """Check that totalRows=0 is transformed into an empty list """
         mock_get.return_value = self._return_value([{"totalRows": 0}])
-        result = self.client.tags.list()
-        mock_get.assert_called_with("/tags/list.json")
+        result = self.client.tags.list(foo="bar")
+        mock_get.assert_called_with("/tags/list.json", foo="bar")
         self.assertEqual(result, [])
 
 class TestTagCreate(TestTags):
@@ -56,8 +56,9 @@ class TestTagCreate(TestTags):
     def test_tag_create(self, mock_post):
         """Check that a tag can be created"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.tag.create("test")
-        mock_post.assert_called_with("/tag/create.json", tag="test")
+        result = self.client.tag.create("test", foo="bar")
+        mock_post.assert_called_with("/tag/create.json", tag="test",
+                                     foo="bar")
         self.assertEqual(result, True)
 
 class TestTagDelete(TestTags):
@@ -65,16 +66,16 @@ class TestTagDelete(TestTags):
     def test_tag_delete(self, mock_post):
         """Check that a tag can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.tag.delete(self.test_tags[0])
-        mock_post.assert_called_with("/tag/tag1/delete.json")
+        result = self.client.tag.delete(self.test_tags[0], foo="bar")
+        mock_post.assert_called_with("/tag/tag1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_delete_id(self, mock_post):
         """Check that a tag can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.tag.delete("tag1")
-        mock_post.assert_called_with("/tag/tag1/delete.json")
+        result = self.client.tag.delete("tag1", foo="bar")
+        mock_post.assert_called_with("/tag/tag1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -89,8 +90,8 @@ class TestTagDelete(TestTags):
         """Check that a tag can be deleted when using the tag object directly"""
         mock_post.return_value = self._return_value(True)
         tag = self.test_tags[0]
-        result = tag.delete()
-        mock_post.assert_called_with("/tag/tag1/delete.json")
+        result = tag.delete(foo="bar")
+        mock_post.assert_called_with("/tag/tag1/delete.json", foo="bar")
         self.assertEqual(result, True)
         self.assertEqual(tag.get_fields(), {})
         self.assertEqual(tag.id, None)

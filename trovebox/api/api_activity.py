@@ -1,7 +1,7 @@
 """
 api_activity.py : Trovebox Activity API Classes
 """
-from trovebox import http
+import json
 from trovebox.errors import TroveboxError
 from trovebox.objects.activity import Activity
 from .api_base import ApiBase
@@ -19,7 +19,7 @@ class ApiActivities(ApiBase):
         filter_string = self._build_filter_string(filters)
         activities = self._client.get("/activities/%slist.json" % filter_string,
                                       **kwds)["result"]
-        activities = http.result_to_list(activities)
+        activities = self._result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]
 
     def purge(self, **kwds):
@@ -42,7 +42,11 @@ class ApiActivity(ApiBase):
         Requests all properties of an activity.
         Returns the requested activity object.
         """
-        if not isinstance(activity, Activity):
-            activity = Activity(self._client, {"id": activity})
-        activity.view(**kwds)
-        return activity
+        result = self._client.get("/activity/%s/view.json" %
+                                  self._extract_id(activity),
+                                  **kwds)["result"]
+
+        # TBD: Why is the result enclosed/encoded like this?
+        result = result["0"]
+        result["data"] = json.loads(result["data"])
+        return Activity(self._client, result)

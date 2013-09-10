@@ -14,7 +14,7 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_al
 --- original/api/api_album.py
 +++ patched/api/api_album.py
 @@ -8,7 +8,7 @@
- from trovebox import http
+ from trovebox.objects.album import Album
  from .api_base import ApiBase
  
 -class ApiAlbums(ApiBase):
@@ -37,7 +37,16 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_ba
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_tag.py patched/api/api_tag.py
 --- original/api/api_tag.py
 +++ patched/api/api_tag.py
-@@ -5,7 +5,7 @@
+@@ -2,7 +2,7 @@
+ api_tag.py : Trovebox Tag API Classes
+ """
+ try:
+-    from urllib.parse import quote # Python3
++    from urllib.parse import quote # Python3 # pylint: disable=import-error,no-name-in-module
+ except ImportError:
+     from urllib import quote # Python2
+ 
+@@ -10,7 +10,7 @@
  from trovebox.objects.tag import Tag
  from .api_base import ApiBase
  
@@ -159,27 +168,15 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py pa
                               files=files, **params)
          for file_ in files:
              files[file_].close()
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects/tag.py patched/objects/tag.py
---- original/objects/tag.py
-+++ patched/objects/tag.py
-@@ -2,7 +2,7 @@
- Representation of a Tag object
- """
- try:
--    from urllib.parse import quote # Python3
-+    from urllib.parse import quote # Python3 # pylint: disable=import-error,no-name-in-module
- except ImportError:
-     from urllib import quote # Python2
- 
 diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects/trovebox_object.py patched/objects/trovebox_object.py
 --- original/objects/trovebox_object.py
 +++ patched/objects/trovebox_object.py
 @@ -5,7 +5,7 @@
      """ Base object supporting the storage of custom fields as attributes """
-     def __init__(self, trovebox, json_dict):
-         self._type = "None"
+     _type = "None"
+     def __init__(self, client, json_dict):
 -        self.id = None
 +        self.id = None # pylint: disable=invalid-name
          self.name = None
-         self._trovebox = trovebox
+         self._client = client
          self._json_dict = json_dict

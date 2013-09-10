@@ -249,12 +249,3 @@ class Http(object):
             raise TroveboxDuplicateError("Code %d: %s" % (code, message))
         else:
             raise TroveboxError("Code %d: %s" % (code, message))
-
-def result_to_list(result):
-    """ Handle the case where the result contains no items """
-    if not result:
-        return []
-    if "totalRows" in result[0] and result[0]["totalRows"] == 0:
-        return []
-    else:
-        return result

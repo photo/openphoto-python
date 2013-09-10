@@ -1,7 +1,6 @@
 """
 Representation of an Action object
 """
-from trovebox.errors import TroveboxError
 from .trovebox_object import TroveboxObject
 from .photo import Photo
 
@@ -33,10 +32,7 @@ class Action(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/action/%s/delete.json" %
-                                   self.id, **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
+        result = self._client.action.delete(self, **kwds)
         self._delete_fields()
         return result
 
@@ -45,9 +41,8 @@ class Action(TroveboxObject):
         Endpoint: /action/<id>/view.json
 
         Requests the full contents of the action.
-        Updates the action's fields with the response.
+        Updates the action object's fields with the response.
         """
-        result = self._client.get("/action/%s/view.json" %
-                                  self.id, **kwds)["result"]
-        self._replace_fields(result)
+        result = self._client.action.view(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()

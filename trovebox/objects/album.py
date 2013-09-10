@@ -1,7 +1,6 @@
 """
 Representation of an Album object
 """
-from trovebox.errors import TroveboxError
 from .trovebox_object import TroveboxObject
 from .photo import Photo
 
@@ -38,19 +37,8 @@ class Album(TroveboxObject):
 
         Update the cover photo of this album.
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-
-        result = self._client.post("/album/%s/cover/%s/update.json" %
-                                   (self.id, photo.id),
-                                   **kwds)["result"]
-
-        # API currently doesn't return the updated album
-        # (frontend issue #1369)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._client.get("/album/%s/view.json" %
-                                      self.id)["result"]
-        self._replace_fields(result)
+        result = self._client.album.cover_update(self, photo, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
 
     def delete(self, **kwds):
@@ -61,10 +49,7 @@ class Album(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/album/%s/delete.json" %
-                                   self.id, **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
+        result = self._client.album.delete(self, **kwds)
         self._delete_fields()
         return result
 
@@ -79,13 +64,7 @@ class Album(TroveboxObject):
         Updates the album's fields with the response.
         """
         result = self._client.album.add(self, objects, object_type, **kwds)
-
-        # API currently doesn't return the updated album
-        # (frontend issue #1369)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._client.get("/album/%s/view.json" %
-                                      self.id)["result"]
-        self._replace_fields(result)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
 
     def remove(self, objects, object_type=None, **kwds):
@@ -100,12 +79,7 @@ class Album(TroveboxObject):
         """
         result = self._client.album.remove(self, objects, object_type,
                                            **kwds)
-        # API currently doesn't return the updated album
-        # (frontend issue #1369)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._client.get("/album/%s/view.json" %
-                                      self.id)["result"]
-        self._replace_fields(result)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
 
     def update(self, **kwds):
@@ -114,15 +88,8 @@ class Album(TroveboxObject):
 
         Updates this album with the specified parameters.
         """
-        result = self._client.post("/album/%s/update.json" %
-                                   self.id, **kwds)["result"]
-
-        # APIv1 doesn't return the updated album (frontend issue #937)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._client.get("/album/%s/view.json" %
-                                      self.id)["result"]
-
-        self._replace_fields(result)
+        result = self._client.album.update(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
 
     def view(self, **kwds):
@@ -132,7 +99,6 @@ class Album(TroveboxObject):
         Requests all properties of an album.
         Updates the album's fields with the response.
         """
-        result = self._client.get("/album/%s/view.json" %
-                                  self.id, **kwds)["result"]
-        self._replace_fields(result)
+        result = self._client.album.view(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()

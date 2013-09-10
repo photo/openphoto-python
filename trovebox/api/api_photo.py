@@ -3,23 +3,9 @@ api_photo.py : Trovebox Photo API Classes
 """
 import base64
 
-from trovebox import http
 from trovebox.errors import TroveboxError
 from trovebox.objects.photo import Photo
 from .api_base import ApiBase
-
-def _extract_ids(photos):
-    """
-    Given a list of objects, extract the photo id for each Photo
-    object.
-    """
-    ids = []
-    for photo in photos:
-        if isinstance(photo, Photo):
-            ids.append(photo.id)
-        else:
-            ids.append(photo)
-    return ids
 
 class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
@@ -31,7 +17,7 @@ class ApiPhotos(ApiBase):
         Returns a list of Photo objects.
         """
         photos = self._client.get("/photos/list.json", **kwds)["result"]
-        photos = http.result_to_list(photos)
+        photos = self._result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
     # def share(self, **kwds):
@@ -44,7 +30,7 @@ class ApiPhotos(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        ids = _extract_ids(photos)
+        ids = [self._extract_id(photo) for photo in photos]
         if not self._client.post("/photos/delete.json", ids=ids,
                                  **kwds)["result"]:
             raise TroveboxError("Delete response returned False")
@@ -58,7 +44,7 @@ class ApiPhotos(ApiBase):
         Returns True if successful.
         Raises TroveboxError if not.
         """
-        ids = _extract_ids(photos)
+        ids = [self._extract_id(photo) for photo in photos]
         if not self._client.post("/photos/update.json", ids=ids,
                                  **kwds)["result"]:
             raise TroveboxError("Update response returned False")
@@ -74,9 +60,12 @@ class ApiPhoto(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        return photo.delete(**kwds)
+        result = self._client.post("/photo/%s/delete.json" %
+                                   self._extract_id(photo),
+                                   **kwds)["result"]
+        if not result:
+            raise TroveboxError("Delete response returned False")
+        return result
 
     # def delete_source(self, photo, **kwds):
 
@@ -95,10 +84,10 @@ class ApiPhoto(ApiBase):
         Updates a photo with the specified parameters.
         Returns the updated photo object.
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        photo.update(**kwds)
-        return photo
+        result = self._client.post("/photo/%s/update.json" %
+                                   self._extract_id(photo),
+                                   **kwds)["result"]
+        return Photo(self._client, result)
 
     # TODO: Add options
     def view(self, photo, **kwds):
@@ -110,10 +99,10 @@ class ApiPhoto(ApiBase):
           by using the "returnSizes" parameter.
         Returns the requested photo object.
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        photo.view(**kwds)
-        return photo
+        result = self._client.get("/photo/%s/view.json" %
+                                  self._extract_id(photo),
+                                  **kwds)["result"]
+        return Photo(self._client, result)
 
     def upload(self, photo_file, **kwds):
         """
@@ -151,9 +140,29 @@ class ApiPhoto(ApiBase):
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        return photo.next_previous(**kwds)
+        result = self._client.get("/photo/%s/nextprevious.json" %
+                                  self._extract_id(photo),
+                                  **kwds)["result"]
+        value = {}
+        if "next" in result:
+            # Workaround for APIv1
+            if not isinstance(result["next"], list): # pragma: no cover
+                result["next"] = [result["next"]]
+
+            value["next"] = []
+            for photo in result["next"]:
+                value["next"].append(Photo(self._client, photo))
+
+        if "previous" in result:
+            # Workaround for APIv1
+            if not isinstance(result["previous"], list): # pragma: no cover
+                result["previous"] = [result["previous"]]
+
+            value["previous"] = []
+            for photo in result["previous"]:
+                value["previous"].append(Photo(self._client, photo))
+
+        return value
 
     def transform(self, photo, **kwds):
         """
@@ -163,7 +172,13 @@ class ApiPhoto(ApiBase):
           eg. transform(photo, rotate=90)
         Returns the transformed photo.
         """
-        if not isinstance(photo, Photo):
-            photo = Photo(self._client, {"id": photo})
-        photo.transform(**kwds)
-        return photo
+        result = self._client.post("/photo/%s/transform.json" %
+                                   self._extract_id(photo),
+                                   **kwds)["result"]
+
+        # APIv1 doesn't return the transformed photo (frontend issue #955)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._client.get("/photo/%s/view.json" %
+                                      self._extract_id(photo))["result"]
+
+        return Photo(self._client, result)

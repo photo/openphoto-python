@@ -1,7 +1,12 @@
 """
 api_tag.py : Trovebox Tag API Classes
 """
-from trovebox import http
+try:
+    from urllib.parse import quote # Python3
+except ImportError:
+    from urllib import quote # Python2
+
+from trovebox.errors import TroveboxError
 from trovebox.objects.tag import Tag
 from .api_base import ApiBase
 
@@ -14,7 +19,7 @@ class ApiTags(ApiBase):
         Returns a list of Tag objects.
         """
         tags = self._client.get("/tags/list.json", **kwds)["result"]
-        tags = http.result_to_list(tags)
+        tags = self._result_to_list(tags)
         return [Tag(self._client, tag) for tag in tags]
 
 class ApiTag(ApiBase):
@@ -37,9 +42,12 @@ class ApiTag(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        if not isinstance(tag, Tag):
-            tag = Tag(self._client, {"id": tag})
-        return tag.delete(**kwds)
+        result = self._client.post("/tag/%s/delete.json" %
+                                   quote(self._extract_id(tag)),
+                                   **kwds)["result"]
+        if not result:
+            raise TroveboxError("Delete response returned False")
+        return result
 
     def update(self, tag, **kwds):
         """
@@ -48,9 +56,9 @@ class ApiTag(ApiBase):
         Updates a tag with the specified parameters.
         Returns the updated tag object.
         """
-        if not isinstance(tag, Tag):
-            tag = Tag(self._client, {"id": tag})
-        tag.update(**kwds)
-        return tag
+        result = self._client.post("/tag/%s/update.json" %
+                                   quote(self._extract_id(tag)),
+                                   **kwds)["result"]
+        return Tag(self._client, result)
 
     # def view(self, tag, **kwds):

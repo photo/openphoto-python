@@ -1,6 +1,7 @@
 """
 api_action.py : Trovebox Action API Classes
 """
+from trovebox.errors import TroveboxError
 from trovebox.objects.action import Action
 from .api_base import ApiBase
 
@@ -15,15 +16,14 @@ class ApiAction(ApiBase):
         If a Trovebox object is used, the target type is inferred
         automatically.
         """
-        # Extract the type from the target
+        # Extract the target type
         if target_type is None:
             target_type = target.get_type()
 
-        # Extract the ID from the target
+        # Extract the target ID
         try:
             target_id = target.id
         except AttributeError:
-            # Assume the ID was passed in directly
             target_id = target
 
         result = self._client.post("/action/%s/%s/create.json" %
@@ -39,9 +39,12 @@ class ApiAction(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        if not isinstance(action, Action):
-            action = Action(self._client, {"id": action})
-        return action.delete(**kwds)
+        result = self._client.post("/action/%s/delete.json" %
+                                   self._extract_id(action),
+                                   **kwds)["result"]
+        if not result:
+            raise TroveboxError("Delete response returned False")
+        return result
 
     def view(self, action, **kwds):
         """
@@ -50,7 +53,7 @@ class ApiAction(ApiBase):
         Requests all properties of an action.
         Returns the requested action object.
         """
-        if not isinstance(action, Action):
-            action = Action(self._client, {"id": action})
-        action.view(**kwds)
-        return action
+        result = self._client.get("/action/%s/view.json" %
+                                  self._extract_id(action),
+                                  **kwds)["result"]
+        return Action(self._client, result)

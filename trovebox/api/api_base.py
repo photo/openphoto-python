@@ -18,3 +18,21 @@ class ApiBase(object):
             for filt in filters:
                 filter_string += "%s-%s/" % (filt, filters[filt])
         return filter_string
+
+    @staticmethod
+    def _extract_id(obj):
+        """ Return obj.id, or obj if the object doesn't have an ID """
+        try:
+            return obj.id
+        except AttributeError:
+            return obj
+
+    @staticmethod
+    def _result_to_list(result):
+        """ Handle the case where the result contains no items """
+        if not result:
+            return []
+        if "totalRows" in result[0] and result[0]["totalRows"] == 0:
+            return []
+        else:
+            return result

@@ -3,9 +3,9 @@ api_album.py : Trovebox Album API Classes
 """
 import collections
 
+from trovebox.errors import TroveboxError
 from trovebox.objects.trovebox_object import TroveboxObject
 from trovebox.objects.album import Album
-from trovebox import http
 from .api_base import ApiBase
 
 class ApiAlbums(ApiBase):
@@ -17,7 +17,7 @@ class ApiAlbums(ApiBase):
         Returns a list of Album objects.
         """
         albums = self._client.get("/albums/list.json", **kwds)["result"]
-        albums = http.result_to_list(albums)
+        albums = self._result_to_list(albums)
         return [Album(self._client, album) for album in albums]
 
 class ApiAlbum(ApiBase):
@@ -29,10 +29,18 @@ class ApiAlbum(ApiBase):
         Update the cover photo of an album.
         Returns the updated album object.
         """
-        if not isinstance(album, Album):
-            album = Album(self._client, {"id": album})
-        album.cover_update(photo, **kwds)
-        return album
+        result = self._client.post("/album/%s/cover/%s/update.json" %
+                                   (self._extract_id(album),
+                                    self._extract_id(photo)),
+                                   **kwds)["result"]
+
+        # API currently doesn't return the updated album
+        # (frontend issue #1369)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._client.get("/album/%s/view.json" %
+                                      self._extract_id(album))["result"]
+
+        return Album(self._client, result)
 
     def create(self, name, **kwds):
         """
@@ -52,9 +60,12 @@ class ApiAlbum(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        if not isinstance(album, Album):
-            album = Album(self._client, {"id": album})
-        return album.delete(**kwds)
+        result = self._client.post("/album/%s/delete.json" %
+                                   self._extract_id(album),
+                                   **kwds)["result"]
+        if not result:
+            raise TroveboxError("Delete response returned False")
+        return result
 
     def add(self, album, objects, object_type=None, **kwds):
         """
@@ -64,7 +75,7 @@ class ApiAlbum(ApiBase):
         The objects are a list of either IDs or Trovebox objects.
         If Trovebox objects are used, the object type is inferred
         automatically.
-        Returns True if the album was updated successfully.
+        Returns the updated album object.
         """
         return self._add_remove("add", album, objects, object_type,
                                 **kwds)
@@ -77,7 +88,7 @@ class ApiAlbum(ApiBase):
         The objects are a list of either IDs or Trovebox objects.
         If Trovebox objects are used, the object type is inferred
         automatically.
-        Returns True if the album was updated successfully.
+        Returns the updated album object.
         """
         return self._add_remove("remove", album, objects, object_type,
                                 **kwds)
@@ -85,10 +96,6 @@ class ApiAlbum(ApiBase):
     def _add_remove(self, action, album, objects, object_type=None,
                     **kwds):
         """Common code for the add and remove endpoints."""
-        # Extract the id of the album
-        if isinstance(album, Album):
-            album = album.id
-
         # Ensure we have an iterable of objects
         if not isinstance(objects, collections.Iterable):
             objects = [objects]
@@ -106,9 +113,17 @@ class ApiAlbum(ApiBase):
                 # Extract the ids of the objects
                 objects[i] = obj.id
 
-        return self._client.post("/album/%s/%s/%s.json" %
-                                 (album, object_type, action),
-                                 ids=objects, **kwds)["result"]
+        result = self._client.post("/album/%s/%s/%s.json" %
+                                   (self._extract_id(album),
+                                    object_type, action),
+                                   ids=objects, **kwds)["result"]
+
+        # API currently doesn't return the updated album
+        # (frontend issue #1369)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._client.get("/album/%s/view.json" %
+                                      self._extract_id(album))["result"]
+        return Album(self._client, result)
 
     def update(self, album, **kwds):
         """
@@ -117,10 +132,16 @@ class ApiAlbum(ApiBase):
         Updates an album with the specified parameters.
         Returns the updated album object.
         """
-        if not isinstance(album, Album):
-            album = Album(self._client, {"id": album})
-        album.update(**kwds)
-        return album
+        result = self._client.post("/album/%s/update.json" %
+                                   self._extract_id(album),
+                                   **kwds)["result"]
+
+        # APIv1 doesn't return the updated album (frontend issue #937)
+        if isinstance(result, bool): # pragma: no cover
+            result = self._client.get("/album/%s/view.json" %
+                                      self._extract_id(album))["result"]
+
+        return Album(self._client, result)
 
     def view(self, album, **kwds):
         """
@@ -129,7 +150,7 @@ class ApiAlbum(ApiBase):
         Requests all properties of an album.
         Returns the requested album object.
         """
-        if not isinstance(album, Album):
-            album = Album(self._client, {"id": album})
-        album.view(**kwds)
-        return album
+        result = self._client.get("/album/%s/view.json" %
+                                  self._extract_id(album),
+                                  **kwds)["result"]
+        return Album(self._client, result)

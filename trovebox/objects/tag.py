@@ -1,12 +1,6 @@
 """
 Representation of a Tag object
 """
-try:
-    from urllib.parse import quote # Python3
-except ImportError:
-    from urllib import quote # Python2
-
-from trovebox.errors import TroveboxError
 from .trovebox_object import TroveboxObject
 
 class Tag(TroveboxObject):
@@ -21,10 +15,7 @@ class Tag(TroveboxObject):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/tag/%s/delete.json" %
-                                   quote(self.id), **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
+        result = self._client.tag.delete(self, **kwds)
         self._delete_fields()
         return result
 
@@ -35,8 +26,7 @@ class Tag(TroveboxObject):
         Updates this tag with the specified parameters.
         Returns the updated tag object.
         """
-        result = self._client.post("/tag/%s/update.json" % quote(self.id),
-                                   **kwds)["result"]
-        self._replace_fields(result)
+        result = self._client.tag.update(self, **kwds)
+        self._replace_fields(result.get_fields())
 
     # def view(self, **kwds):

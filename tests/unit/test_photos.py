@@ -31,8 +31,8 @@ class TestPhotosList(TestPhotos):
         """Check that the photo list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_photos_dict)
 
-        result = self.client.photos.list()
-        mock_get.assert_called_with("/photos/list.json")
+        result = self.client.photos.list(foo="bar")
+        mock_get.assert_called_with("/photos/list.json", foo="bar")
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].id, "1a")
         self.assertEqual(result[0].tags, ["tag1", "tag2"])
@@ -43,16 +43,16 @@ class TestPhotosList(TestPhotos):
     def test_empty_result(self, mock_get):
         """Check that an empty result is transformed into an empty list """
         mock_get.return_value = self._return_value("")
-        result = self.client.photos.list()
-        mock_get.assert_called_with("/photos/list.json")
+        result = self.client.photos.list(foo="bar")
+        mock_get.assert_called_with("/photos/list.json", foo="bar")
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_zero_rows(self, mock_get):
         """Check that totalRows=0 is transformed into an empty list """
         mock_get.return_value = self._return_value([{"totalRows": 0}])
-        result = self.client.photos.list()
-        mock_get.assert_called_with("/photos/list.json")
+        result = self.client.photos.list(foo="bar")
+        mock_get.assert_called_with("/photos/list.json", foo="bar")
         self.assertEqual(result, [])
 
 class TestPhotosUpdate(TestPhotos):
@@ -89,16 +89,18 @@ class TestPhotosDelete(TestPhotos):
     def test_photos_delete(self, mock_post):
         """Check that multiple photos can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.photos.delete(self.test_photos)
-        mock_post.assert_called_with("/photos/delete.json", ids=["1a", "2b"])
+        result = self.client.photos.delete(self.test_photos, foo="bar")
+        mock_post.assert_called_with("/photos/delete.json",
+                                     ids=["1a", "2b"], foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_delete_ids(self, mock_post):
         """Check that multiple photos can be deleted using their IDs"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.photos.delete(["1a", "2b"])
-        mock_post.assert_called_with("/photos/delete.json", ids=["1a", "2b"])
+        result = self.client.photos.delete(["1a", "2b"], foo="bar")
+        mock_post.assert_called_with("/photos/delete.json",
+                                     ids=["1a", "2b"], foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -116,16 +118,16 @@ class TestPhotoDelete(TestPhotos):
     def test_photo_delete(self, mock_post):
         """Check that a photo can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.photo.delete(self.test_photos[0])
-        mock_post.assert_called_with("/photo/1a/delete.json")
+        result = self.client.photo.delete(self.test_photos[0], foo="bar")
+        mock_post.assert_called_with("/photo/1a/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_delete_id(self, mock_post):
         """Check that a photo can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.photo.delete("1a")
-        mock_post.assert_called_with("/photo/1a/delete.json")
+        result = self.client.photo.delete("1a", foo="bar")
+        mock_post.assert_called_with("/photo/1a/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -143,8 +145,8 @@ class TestPhotoDelete(TestPhotos):
         """
         mock_post.return_value = self._return_value(True)
         photo = self.test_photos[0]
-        result = photo.delete()
-        mock_post.assert_called_with("/photo/1a/delete.json")
+        result = photo.delete(foo="bar")
+        mock_post.assert_called_with("/photo/1a/delete.json", foo="bar")
         self.assertEqual(result, True)
         self.assertEqual(photo.get_fields(), {})
         self.assertEqual(photo.id, None)
@@ -309,8 +311,10 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
-        result = self.client.photo.next_previous(self.test_photos[0])
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.client.photo.next_previous(self.test_photos[0],
+                                                 foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
@@ -325,8 +329,9 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
-        result = self.client.photo.next_previous("1a")
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.client.photo.next_previous("1a", foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
@@ -341,8 +346,9 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
-        result = self.test_photos[0].next_previous()
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.test_photos[0].next_previous(foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
@@ -353,8 +359,10 @@ class TestPhotoNextPrevious(TestPhotos):
         """Check that the next photos are returned"""
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]]})
-        result = self.client.photo.next_previous(self.test_photos[0])
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.client.photo.next_previous(self.test_photos[0],
+                                                 foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertNotIn("previous", result)
@@ -364,8 +372,10 @@ class TestPhotoNextPrevious(TestPhotos):
         """Check that the previous photos are returned"""
         mock_get.return_value = self._return_value(
             {"previous": [self.test_photos_dict[1]]})
-        result = self.client.photo.next_previous(self.test_photos[0])
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.client.photo.next_previous(self.test_photos[0],
+                                                 foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["previous"][0].get_fields(),
                          self.test_photos_dict[1])
         self.assertNotIn("next", result)
@@ -376,8 +386,10 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0], self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1], self.test_photos_dict[1]]})
-        result = self.client.photo.next_previous(self.test_photos[0])
-        mock_get.assert_called_with("/photo/1a/nextprevious.json")
+        result = self.client.photo.next_previous(self.test_photos[0],
+                                                 foo="bar")
+        mock_get.assert_called_with("/photo/1a/nextprevious.json",
+                                    foo="bar")
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["next"][1].get_fields(),

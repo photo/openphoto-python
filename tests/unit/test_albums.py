@@ -37,8 +37,8 @@ class TestAlbumsList(TestAlbums):
     def test_albums_list(self, mock_get):
         """Check that the album list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_albums_dict)
-        result = self.client.albums.list()
-        mock_get.assert_called_with("/albums/list.json")
+        result = self.client.albums.list(foo="bar")
+        mock_get.assert_called_with("/albums/list.json", foo="bar")
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].id, "1")
         self.assertEqual(result[0].name, "Album 1")
@@ -49,24 +49,24 @@ class TestAlbumsList(TestAlbums):
     def test_empty_result(self, mock_get):
         """Check that an empty result is transformed into an empty list """
         mock_get.return_value = self._return_value("")
-        result = self.client.albums.list()
-        mock_get.assert_called_with("/albums/list.json")
+        result = self.client.albums.list(foo="bar")
+        mock_get.assert_called_with("/albums/list.json", foo="bar")
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_zero_rows(self, mock_get):
         """Check that totalRows=0 is transformed into an empty list """
         mock_get.return_value = self._return_value([{"totalRows": 0}])
-        result = self.client.albums.list()
-        mock_get.assert_called_with("/albums/list.json")
+        result = self.client.albums.list(foo="bar")
+        mock_get.assert_called_with("/albums/list.json", foo="bar")
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_albums_list_returns_cover_photos(self, mock_get):
         """Check that the album list returns cover photo objects"""
         mock_get.return_value = self._return_value(self.test_albums_dict)
-        result = self.client.albums.list()
-        mock_get.assert_called_with("/albums/list.json")
+        result = self.client.albums.list(foo="bar")
+        mock_get.assert_called_with("/albums/list.json", foo="bar")
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].id, "1")
         self.assertEqual(result[0].name, "Album 1")
@@ -83,7 +83,8 @@ class TestAlbumUpdateCover(TestAlbums):
         """Check that an album cover can be updated"""
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
         result = self.client.album.cover_update(self.test_albums[0],
-                                                self.test_photos[0], foo="bar")
+                                                self.test_photos[0],
+                                                foo="bar")
         mock_post.assert_called_with("/album/1/cover/1a/update.json",
                                      foo="bar")
         self.assertEqual(result.id, "2")
@@ -134,16 +135,16 @@ class TestAlbumDelete(TestAlbums):
     def test_album_delete(self, mock_post):
         """Check that an album can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.album.delete(self.test_albums[0])
-        mock_post.assert_called_with("/album/1/delete.json")
+        result = self.client.album.delete(self.test_albums[0], foo="bar")
+        mock_post.assert_called_with("/album/1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_delete_id(self, mock_post):
         """Check that an album can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.album.delete("1")
-        mock_post.assert_called_with("/album/1/delete.json")
+        result = self.client.album.delete("1", foo="bar")
+        mock_post.assert_called_with("/album/1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -158,8 +159,8 @@ class TestAlbumDelete(TestAlbums):
         """Check that an album can be deleted using the album object directly"""
         mock_post.return_value = self._return_value(True)
         album = self.test_albums[0]
-        result = album.delete()
-        mock_post.assert_called_with("/album/1/delete.json")
+        result = album.delete(foo="bar")
+        mock_post.assert_called_with("/album/1/delete.json", foo="bar")
         self.assertEqual(result, True)
         self.assertEqual(album.get_fields(), {})
         self.assertEqual(album.id, None)
@@ -180,21 +181,23 @@ class TestAlbumAdd(TestAlbums):
     def test_album_add(self, mock_post):
         """ Check that photos can be added to an album """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.client.album.add(self.test_albums[0], self.test_photos,
-                              foo="bar")
+        result = self.client.album.add(self.test_albums[0], self.test_photos,
+                                       foo="bar")
         mock_post.assert_called_with("/album/1/photo/add.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(result.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_add_id(self, mock_post):
         """ Check that photos can be added to an album using IDs """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.client.album.add(self.test_albums[0].id,
-                              objects=["1a", "2b"],
-                              object_type="photo",
-                              foo="bar")
+        result = self.client.album.add(self.test_albums[0].id,
+                                       objects=["1a", "2b"],
+                                       object_type="photo",
+                                       foo="bar")
         mock_post.assert_called_with("/album/1/photo/add.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(result.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_add(self, mock_post):
@@ -203,9 +206,11 @@ class TestAlbumAdd(TestAlbums):
         album object directly
         """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.test_albums[0].add(self.test_photos, foo="bar")
+        album = self.test_albums[0]
+        album.add(self.test_photos, foo="bar")
         mock_post.assert_called_with("/album/1/photo/add.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(album.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_add_single(self, mock_post):
@@ -238,21 +243,23 @@ class TestAlbumRemovePhotos(TestAlbums):
     def test_album_remove(self, mock_post):
         """ Check that photos can be removed from an album """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.client.album.remove(self.test_albums[0], self.test_photos,
-                              foo="bar")
+        result = self.client.album.remove(self.test_albums[0], self.test_photos,
+                                          foo="bar")
         mock_post.assert_called_with("/album/1/photo/remove.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(result.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_remove_id(self, mock_post):
         """ Check that photos can be removed from an album using IDs """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.client.album.remove(self.test_albums[0].id,
-                              objects=["1a", "2b"],
-                              object_type="photo",
-                              foo="bar")
+        result = self.client.album.remove(self.test_albums[0].id,
+                                          objects=["1a", "2b"],
+                                          object_type="photo",
+                                          foo="bar")
         mock_post.assert_called_with("/album/1/photo/remove.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(result.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_remove(self, mock_post):
@@ -261,9 +268,11 @@ class TestAlbumRemovePhotos(TestAlbums):
         album object directly
         """
         mock_post.return_value = self._return_value(self.test_albums_dict[1])
-        self.test_albums[0].remove(self.test_photos, foo="bar")
+        album = self.test_albums[0]
+        album.remove(self.test_photos, foo="bar")
         mock_post.assert_called_with("/album/1/photo/remove.json",
                                      ids=["1a", "2b"], foo="bar")
+        self.assertEqual(album.id, self.test_albums[1].id)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_remove_single(self, mock_post):

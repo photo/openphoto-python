@@ -1,8 +1,6 @@
 """
 Representation of an Activity object
 """
-import json
-
 from .trovebox_object import TroveboxObject
 from .photo import Photo
 
@@ -33,12 +31,7 @@ class Activity(TroveboxObject):
         Requests the full contents of the activity.
         Updates the activity's fields with the response.
         """
-        result = self._client.get("/activity/%s/view.json" %
-                                  self.id, **kwds)["result"]
-
-        # TBD: Why is the result enclosed/encoded like this?
-        result = result["0"]
-        result["data"] = json.loads(result["data"])
-
-        self._replace_fields(result)
+        result = self._client.activity.view(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
+
