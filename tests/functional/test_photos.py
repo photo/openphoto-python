@@ -6,6 +6,22 @@ from tests.functional import test_base
 class TestPhotos(test_base.TestBase):
     testcase_name = "photo API"
 
+    def test_list_filter(self):
+        """
+        Check that the photo list filter parameter works correctly
+        """
+        filter_tag = "Filter"
+        # Assign a photo with a new tag
+        self.photos[0].update(tagsAdd=filter_tag)
+
+        # Check that the photos can be filtered
+        photos = self.client.photos.list(filters={"tags": filter_tag})
+        self.assertEqual(len(photos), 1)
+        self.assertEqual(photos[0].id, self.photos[0].id)
+
+        # Put the environment back the way we found it
+        photos[0].update(tagsRemove=filter_tag)
+
     def test_delete_upload(self):
         """ Test photo deletion and upload """
         # Delete one photo using the Trovebox class, passing in the id

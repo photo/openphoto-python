@@ -55,6 +55,19 @@ class TestPhotosList(TestPhotos):
         mock_get.assert_called_with("/photos/list.json", foo="bar")
         self.assertEqual(result, [])
 
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_filters(self, mock_get):
+        """Check that the activity list filters are applied properly"""
+        mock_get.return_value = self._return_value(self.test_photos_dict)
+        self.client.photos.list(filters={"foo": "bar",
+                                         "test1": "test2"},
+                                foo="bar")
+        # Dict element can be any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photos/foo-bar/test1-test2/list.json",),
+                       ("/photos/test1-test2/foo-bar/list.json",)])
+        self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
+
 class TestPhotosUpdate(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_update(self, mock_post):

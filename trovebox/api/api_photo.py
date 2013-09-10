@@ -9,14 +9,17 @@ from .api_base import ApiBase
 
 class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
-    # TODO: Add options
-    def list(self, **kwds):
+    def list(self, filters=None, **kwds):
         """
-        Endpoint: /photos/list.json
+        Endpoint: /photos/[<filters>]/list.json
 
         Returns a list of Photo objects.
+        The filters parameter can be used to narrow down the list.
+        Eg: filters={"album": <album_id>}
         """
-        photos = self._client.get("/photos/list.json", **kwds)["result"]
+        filter_string = self._build_filter_string(filters)
+        photos = self._client.get("/photos/%slist.json" % filter_string,
+                                  **kwds)["result"]
         photos = self._result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
