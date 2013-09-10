@@ -63,6 +63,7 @@ class TestAlbums(test_base.TestBase):
                      "update_cover was introduced in APIv2")
     def test_update_cover(self):
         """ Test that an album cover can be updated """
+        self.albums[0].cover_update(self.photos[0])
         self.assertNotEqual(self.albums[0].cover.id, self.photos[1].id)
         self.albums[0].cover_update(self.photos[1])
         self.assertEqual(self.albums[0].cover.id, self.photos[1].id)
@@ -102,3 +103,6 @@ class TestAlbums(test_base.TestBase):
         self.assertNotIn(self.photos[0].id, [p.id for p in album.photos])
         self.assertIn(self.photos[1].id, [p.id for p in album.photos])
         self.assertIn(self.photos[2].id, [p.id for p in album.photos])
+
+        # Put the environment back the way we found it
+        album.add(self.photos[0])

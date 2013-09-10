@@ -26,6 +26,10 @@ class TestActivities(test_base.TestBase):
         for activity in activities:
             self.assertIn(activity.data.id, [photo.id for photo in photos])
 
+        # Put the environment back the way we found it
+        for photo in photos:
+            photo.update(tags=self.TEST_TAG)
+
     def test_list_filter(self):
         """
         Check that the activity list filter parameter works correctly
@@ -42,6 +46,10 @@ class TestActivities(test_base.TestBase):
         update_activities = self.client.activities.list(filters={"type": "photo-update"})
         self.assertEqual(len(upload_activities), len(photos))
         self.assertEqual(len(update_activities), 1)
+
+        # Put the environment back the way we found it
+        for photo in photos:
+            photo.update(tags=self.TEST_TAG)
 
     # The purge endpoint currently reports a 500: Internal Server Error
     # PHP Fatal error:
