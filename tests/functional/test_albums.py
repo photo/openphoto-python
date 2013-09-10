@@ -1,3 +1,8 @@
+try:
+    import unittest2 as unittest # Python2.6
+except ImportError:
+    import unittest
+
 from tests.functional import test_base
 from trovebox.objects.album import Album
 
@@ -54,12 +59,16 @@ class TestAlbums(test_base.TestBase):
         self.albums = self.client.albums.list()
         self.assertEqual(self.albums[0].name, self.TEST_ALBUM)
 
+    @unittest.skipIf(test_base.get_test_server_api() == 1,
+                     "update_cover was introduced in APIv2")
     def test_update_cover(self):
         """ Test that an album cover can be updated """
         self.assertNotEqual(self.albums[0].cover.id, self.photos[1].id)
         self.albums[0].cover_update(self.photos[1])
         self.assertEqual(self.albums[0].cover.id, self.photos[1].id)
 
+    @unittest.skipIf(test_base.get_test_server_api() == 1,
+                     "includeElements was introduced in APIv2")
     def test_view(self):
         """ Test the album view """
         # Do a view() with includeElements=False, using a fresh Album object
