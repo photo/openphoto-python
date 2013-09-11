@@ -71,6 +71,18 @@ class ApiPhoto(ApiBase):
                                  self._extract_id(photo),
                                  **kwds)["result"]
 
+    def delete_source(self, photo, **kwds):
+        """
+        Endpoint: /photo/<id>/source/delete.json
+
+        Delete the source files of a photo.
+        Returns True if successful.
+        Raises a TroveboxError if not.
+        """
+        return self._client.post("/photo/%s/source/delete.json" %
+                                 self._extract_id(photo),
+                                 **kwds)["result"]
+
     def replace(self, photo, photo_file, **kwds):
         """ Not yet implemented """
         raise NotImplementedError()

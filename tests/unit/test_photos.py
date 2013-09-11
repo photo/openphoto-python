@@ -149,6 +149,35 @@ class TestPhotoDelete(TestPhotos):
         self.assertEqual(photo.get_fields(), {})
         self.assertEqual(photo.id, None)
 
+class TestPhotoDeleteSource(TestPhotos):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_delete_source(self, mock_post):
+        """Check that photo source files can be deleted"""
+        mock_post.return_value = self._return_value(True)
+        result = self.client.photo.delete_source(self.test_photos[0], foo="bar")
+        mock_post.assert_called_with("/photo/1a/source/delete.json", foo="bar")
+        self.assertEqual(result, True)
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_delete_source_id(self, mock_post):
+        """Check that photo source files can be deleted using its ID"""
+        mock_post.return_value = self._return_value(True)
+        result = self.client.photo.delete_source("1a", foo="bar")
+        mock_post.assert_called_with("/photo/1a/source/delete.json", foo="bar")
+        self.assertEqual(result, True)
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_delete_source(self, mock_post):
+        """
+        Check that photo source files can be deleted when using
+        the photo object directly
+        """
+        mock_post.return_value = self._return_value(True)
+        photo = self.test_photos[0]
+        result = photo.delete_source(foo="bar")
+        mock_post.assert_called_with("/photo/1a/source/delete.json", foo="bar")
+        self.assertEqual(result, True)
+
 class TestPhotoReplace(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_replace(self, _):

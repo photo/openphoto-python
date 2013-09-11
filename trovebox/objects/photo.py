@@ -19,7 +19,15 @@ class Photo(TroveboxObject):
         self._delete_fields()
         return result
 
-    # def delete_source(self, **kwds):
+    def delete_source(self, **kwds):
+        """
+        Endpoint: /photo/<id>/source/delete.json
+
+        Deletes the source files of this photo.
+        Returns True if successful.
+        Raises a TroveboxError if not.
+        """
+        return self._client.photo.delete_source(self, **kwds)
 
     def replace(self, photo_file, **kwds):
         """ Not implemented yet """

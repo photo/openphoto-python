@@ -74,6 +74,22 @@ class TestPhotos(test_base.TestBase):
         self._delete_all()
         self._create_test_photos()
 
+    def test_delete_source(self):
+        """ Test that photo source files can be deleted """
+        # Upload a new (duplicate) photo
+        photo = self.client.photo.upload("tests/data/test_photo1.jpg",
+                                         allowDuplicate=True)
+        # Check that the photo can be downloaded
+        self.client.get("photo/%s/download" % photo.id, process_response=False)
+
+        # Delete the source and check that the source file no longer exists
+        photo.delete_source()
+        with self.assertRaises(trovebox.TroveboxError):
+            self.client.get("photo/%s/download" % photo.id, process_response=False)
+
+        # Put the environment back the way we found it
+        photo.delete()
+
     def test_upload_duplicate(self):
         """ Ensure that duplicate photos are rejected """
         # Attempt to upload a duplicate
