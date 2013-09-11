@@ -39,12 +39,9 @@ class ApiAction(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/action/%s/delete.json" %
-                                   self._extract_id(action),
-                                   **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
-        return result
+        return self._client.post("/action/%s/delete.json" %
+                                 self._extract_id(action),
+                                 **kwds)["result"]
 
     def view(self, action, **kwds):
         """

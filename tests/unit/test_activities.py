@@ -91,13 +91,6 @@ class TestActivitiesPurge(TestActivities):
         mock_get.assert_called_with("/activities/purge.json", foo="bar")
         self.assertEqual(result, True)
 
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_activity_purge_failure(self, mock_post):
-        """Test activity purging """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            result = self.client.activities.purge(foo="bar")
-
 class TestActivityView(TestActivities):
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_activity_view(self, mock_get):

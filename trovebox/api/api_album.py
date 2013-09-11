@@ -60,12 +60,9 @@ class ApiAlbum(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/album/%s/delete.json" %
-                                   self._extract_id(album),
-                                   **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
-        return result
+        return self._client.post("/album/%s/delete.json" %
+                                 self._extract_id(album),
+                                 **kwds)["result"]
 
     def add(self, album, objects, object_type=None, **kwds):
         """

@@ -42,10 +42,8 @@ class ApiPhotos(ApiBase):
         Raises a TroveboxError if not.
         """
         ids = [self._extract_id(photo) for photo in photos]
-        if not self._client.post("/photos/delete.json", ids=ids,
-                                 **kwds)["result"]:
-            raise TroveboxError("Delete response returned False")
-        return True
+        return self._client.post("/photos/delete.json", ids=ids,
+                                 **kwds)["result"]
 
     def update(self, photos, **kwds):
         """
@@ -56,10 +54,8 @@ class ApiPhotos(ApiBase):
         Raises TroveboxError if not.
         """
         ids = [self._extract_id(photo) for photo in photos]
-        if not self._client.post("/photos/update.json", ids=ids,
-                                 **kwds)["result"]:
-            raise TroveboxError("Update response returned False")
-        return True
+        return self._client.post("/photos/update.json", ids=ids,
+                                 **kwds)["result"]
 
 class ApiPhoto(ApiBase):
     """ Definitions of /photo/ API endpoints """
@@ -71,14 +67,9 @@ class ApiPhoto(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/photo/%s/delete.json" %
-                                   self._extract_id(photo),
-                                   **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
-        return result
-
-    # def delete_source(self, photo, **kwds):
+        return self._client.post("/photo/%s/delete.json" %
+                                 self._extract_id(photo),
+                                 **kwds)["result"]
 
     def replace(self, photo, photo_file, **kwds):
         """ Not yet implemented """

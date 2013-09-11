@@ -99,13 +99,6 @@ class TestActionDelete(TestActions):
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_action_delete_failure(self, mock_post):
-        """Check that an exception is raised if an action cannot be deleted"""
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.action.delete(self.test_actions[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_object_delete(self, mock_post):
         """Check that an action can be deleted using the action object directly"""
         mock_post.return_value = self._return_value(True)
@@ -115,16 +108,6 @@ class TestActionDelete(TestActions):
         self.assertEqual(result, True)
         self.assertEqual(action.get_fields(), {})
         self.assertEqual(action.id, None)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_action_object_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if an action cannot be deleted
-        when using the action object directly
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.test_actions[0].delete()
 
 class TestActionView(TestActions):
     @mock.patch.object(trovebox.Trovebox, 'get')

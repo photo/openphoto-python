@@ -42,12 +42,9 @@ class ApiTag(ApiBase):
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._client.post("/tag/%s/delete.json" %
-                                   quote(self._extract_id(tag)),
-                                   **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
-        return result
+        return self._client.post("/tag/%s/delete.json" %
+                                 quote(self._extract_id(tag)),
+                                 **kwds)["result"]
 
     def update(self, tag, **kwds):
         """

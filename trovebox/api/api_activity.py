@@ -27,11 +27,11 @@ class ApiActivities(ApiBase):
         Endpoint: /activities/purge.json
 
         Purges all activities.
-        Currently not working due to frontend issue #1368
+        Returns True if successful.
+        Raises a TroveboxError if not.
+        Currently not working due to frontend issue #1368.
         """
-        if not self._client.post("/activities/purge.json", **kwds)["result"]:
-            raise TroveboxError("Purge response returned False")
-        return True
+        return self._client.post("/activities/purge.json", **kwds)["result"]
 
 class ApiActivity(ApiBase):
     """ Definitions of /activity/ API endpoints """

@@ -148,13 +148,6 @@ class TestAlbumDelete(TestAlbums):
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_album_delete_failure(self, mock_post):
-        """Check that an exception is raised if an album cannot be deleted"""
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.album.delete(self.test_albums[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_album_object_delete(self, mock_post):
         """Check that an album can be deleted using the album object directly"""
         mock_post.return_value = self._return_value(True)
@@ -165,16 +158,6 @@ class TestAlbumDelete(TestAlbums):
         self.assertEqual(album.get_fields(), {})
         self.assertEqual(album.id, None)
         self.assertEqual(album.name, None)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_album_object_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if an album cannot be deleted
-        when using the album object directly
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.test_albums[0].delete()
 
 class TestAlbumAdd(TestAlbums):
     @mock.patch.object(trovebox.Trovebox, 'post')

@@ -79,13 +79,6 @@ class TestTagDelete(TestTags):
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_tag_delete_failure(self, mock_post):
-        """Check that an exception is raised if a tag cannot be deleted"""
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.tag.delete(self.test_tags[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_object_delete(self, mock_post):
         """Check that a tag can be deleted when using the tag object directly"""
         mock_post.return_value = self._return_value(True)
@@ -95,16 +88,6 @@ class TestTagDelete(TestTags):
         self.assertEqual(result, True)
         self.assertEqual(tag.get_fields(), {})
         self.assertEqual(tag.id, None)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_tag_object_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if a tag cannot be deleted
-        when using the tag object directly
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.test_tags[0].delete()
 
 class TestTagUpdate(TestTags):
     @mock.patch.object(trovebox.Trovebox, 'post')

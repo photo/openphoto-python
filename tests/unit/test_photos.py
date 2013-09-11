@@ -99,16 +99,6 @@ class TestPhotosUpdate(TestPhotos):
                                      ids=["1a", "2b"], title="Test")
         self.assertEqual(result, True)
 
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photos_update_failure(self, mock_post):
-        """
-        Check that an exception is raised if multiple photos
-        cannot be updated
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.photos.update(self.test_photos, title="Test")
-
 class TestPhotosDelete(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_delete(self, mock_post):
@@ -128,16 +118,6 @@ class TestPhotosDelete(TestPhotos):
                                      ids=["1a", "2b"], foo="bar")
         self.assertEqual(result, True)
 
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photos_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if multiple photos
-        cannot be deleted
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.photos.delete(self.test_photos)
-
 class TestPhotoDelete(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_delete(self, mock_post):
@@ -156,13 +136,6 @@ class TestPhotoDelete(TestPhotos):
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_delete_failure(self, mock_post):
-        """Check that an exception is raised if a photo cannot be deleted"""
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.photo.delete(self.test_photos[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_object_delete(self, mock_post):
         """
         Check that a photo can be deleted when using
@@ -175,16 +148,6 @@ class TestPhotoDelete(TestPhotos):
         self.assertEqual(result, True)
         self.assertEqual(photo.get_fields(), {})
         self.assertEqual(photo.id, None)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_object_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if a photo cannot be deleted
-        when using the photo object directly
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.test_photos[0].delete()
 
 class TestPhotoReplace(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
