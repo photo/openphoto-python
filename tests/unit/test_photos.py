@@ -68,6 +68,18 @@ class TestPhotosList(TestPhotos):
                        ("/photos/test1-test2/foo-bar/list.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
 
+class TestPhotosList(TestPhotos):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photos_share(self, mock_post):
+        self.client.photos.share(filters={"foo": "bar",
+                                          "test1": "test2"},
+                                 foo="bar")
+        # Dict element can be any order
+        self.assertIn(mock_post.call_args[0],
+                      [("/photos/foo-bar/test1-test2/share.json",),
+                       ("/photos/test1-test2/foo-bar/share.json",)])
+        self.assertEqual(mock_post.call_args[1], {"foo": "bar"})
+
 class TestPhotosUpdate(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_update(self, mock_post):

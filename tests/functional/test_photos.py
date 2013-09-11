@@ -1,5 +1,10 @@
 from __future__ import unicode_literals
 
+try:
+    import unittest2 as unittest # Python2.6
+except ImportError:
+    import unittest
+
 import trovebox
 from tests.functional import test_base
 
@@ -21,6 +26,12 @@ class TestPhotos(test_base.TestBase):
 
         # Put the environment back the way we found it
         photos[0].update(tagsRemove=filter_tag)
+
+    # Photo share endpoint is currently not implemented
+    @unittest.expectedFailure
+    def test_share(self):
+        """ Test photo sharing (currently not implemented) """
+        self.client.photos.share()
 
     def test_delete_upload(self):
         """ Test photo deletion and upload """

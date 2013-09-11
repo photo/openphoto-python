@@ -23,7 +23,15 @@ class ApiPhotos(ApiBase):
         photos = self._result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
-    # def share(self, **kwds):
+    def share(self, filters=None, **kwds):
+        """
+        Endpoint: /photos/[<filters>/share.json
+
+        Not currently implemented.
+        """
+        filter_string = self._build_filter_string(filters)
+        return self._client.post("/photos/%sshare.json" % filter_string,
+                                 **kwds)["result"]
 
     def delete(self, photos, **kwds):
         """
