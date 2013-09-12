@@ -5,6 +5,7 @@ try:
 except ImportError:
     import unittest
 
+import requests
 import trovebox
 from tests.functional import test_base
 
@@ -76,16 +77,16 @@ class TestPhotos(test_base.TestBase):
 
     def test_delete_source(self):
         """ Test that photo source files can be deleted """
-        # Upload a new (duplicate) photo
+        # Upload a new (duplicate) public photo
         photo = self.client.photo.upload("tests/data/test_photo1.jpg",
-                                         allowDuplicate=True)
+                                         allowDuplicate=True,
+                                         permission=True)
         # Check that the photo can be downloaded
-        self.client.get("photo/%s/download" % photo.id, process_response=False)
+        self.assertEqual(requests.get(photo.pathDownload).status_code, 200)
 
         # Delete the source and check that the source file no longer exists
         photo.delete_source()
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.get("photo/%s/download" % photo.id, process_response=False)
+        self.assertEqual(requests.get(photo.pathDownload).status_code, 404)
 
         # Put the environment back the way we found it
         photo.delete()
