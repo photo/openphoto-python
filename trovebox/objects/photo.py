@@ -30,12 +30,24 @@ class Photo(TroveboxObject):
         return self._client.photo.delete_source(self, **kwds)
 
     def replace(self, photo_file, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Uploads the specified photo file to replace this photo.
+        """
+        result = self._client.photo.replace(self, photo_file, **kwds)
+        self._replace_fields(result.get_fields())
 
     def replace_encoded(self, photo_file, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Base64-encodes and uploads the specified photo file to
+        replace this photo.
+        """
+        result = self._client.photo.replace_encoded(self, photo_file,
+                                                    **kwds)
+        self._replace_fields(result.get_fields())
 
     def update(self, **kwds):
         """

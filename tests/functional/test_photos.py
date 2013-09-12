@@ -170,9 +170,18 @@ class TestPhotos(test_base.TestBase):
         self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
     def test_replace(self):
-        """ If photo.replace gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace(None, None)
+        """ Test that a photo can be replaced with another """
+        # Replace the first photo with a copy of the second
+        original_hash = self.photos[0].hash
+        self.assertNotEqual(original_hash, self.photos[1].hash)
+        self.photos[0].replace("tests/data/test_photo2.jpg",
+                               allowDuplicate=True)
+        # Check that its new hash is correct
+        self.assertEqual(self.photos[0].hash, self.photos[1].hash)
+        # Put it back
+        self.photos[0].replace("tests/data/test_photo1.jpg",
+                               allowDuplicate=True)
+        self.assertEqual(self.photos[0].hash, original_hash)
 
     def test_replace_encoded(self):
         """ If photo.replace_encoded gets implemented, write a test! """

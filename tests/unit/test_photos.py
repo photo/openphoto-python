@@ -180,41 +180,107 @@ class TestPhotoDeleteSource(TestPhotos):
 
 class TestPhotoReplace(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_replace(self, _):
-        """ If photo.replace gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace(self.test_photos[0], self.test_file)
+    def test_photo_replace(self, mock_post):
+        """Check that an existing photo can be replaced"""
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace(self.test_photos[1],
+                                           self.test_file, title="Test")
+        # It's not possible to compare the file object,
+        # so check each parameter individually
+        endpoint = mock_post.call_args[0]
+        title = mock_post.call_args[1]["title"]
+        files = mock_post.call_args[1]["files"]
+        self.assertEqual(endpoint,
+                         ("/photo/%s/replace.json" % self.test_photos[1].id,))
+        self.assertEqual(title, "Test")
+        self.assertIn("photo", files)
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_replace_id(self, _):
-        """ If photo.replace gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace("1a", self.test_file)
+    def test_photo_replace_id(self, mock_post):
+        """Check that an existing photo can be replaced using its ID"""
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace(self.test_photos[1].id,
+                                           self.test_file, title="Test")
+        # It's not possible to compare the file object,
+        # so check each parameter individually
+        endpoint = mock_post.call_args[0]
+        title = mock_post.call_args[1]["title"]
+        files = mock_post.call_args[1]["files"]
+        self.assertEqual(endpoint,
+                         ("/photo/%s/replace.json" % self.test_photos[1].id,))
+        self.assertEqual(title, "Test")
+        self.assertIn("photo", files)
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_object_replace(self, _):
-        """ If photo.replace gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.test_photos[0].replace(self.test_file)
+    def test_photo_object_replace(self, mock_post):
+        """
+        Check that an existing photo can be replaced when using the
+        Photo object directly.
+        """
+        photo_id = self.test_photos[1].id
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        self.test_photos[1].replace(self.test_file, title="Test")
+        # It's not possible to compare the file object,
+        # so check each parameter individually
+        endpoint = mock_post.call_args[0]
+        title = mock_post.call_args[1]["title"]
+        files = mock_post.call_args[1]["files"]
+        self.assertEqual(endpoint, ("/photo/%s/replace.json" % photo_id,))
+        self.assertEqual(title, "Test")
+        self.assertIn("photo", files)
+        self.assertEqual(self.test_photos[1].get_fields(),
+                         self.test_photos_dict[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_replace_encoded(self, _):
-        """ If photo.replace_encoded gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace_encoded(self.test_photos[0],
-                                              self.test_file)
+    def test_photo_replace_encoded(self, mock_post):
+        """
+        Check that a photo can be uploaded using Base64 encoding to
+        replace an existing photo.
+        """
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace_encoded(self.test_photos[1],
+                                                   self.test_file, title="Test")
+        with open(self.test_file, "rb") as in_file:
+            encoded_file = base64.b64encode(in_file.read())
+            mock_post.assert_called_with("/photo/%s/replace.json"
+                                         % self.test_photos[1].id,
+                                         photo=encoded_file, title="Test")
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_replace_encoded_id(self, _):
-        """ If photo.replace_encoded gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace_encoded("1a", self.test_file)
+    def test_photo_replace_encoded_id(self, mock_post):
+        """
+        Check that a photo can be uploaded using Base64 encoding to
+        replace an existing photo using its ID.
+        """
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace_encoded(self.test_photos[1].id,
+                                                   self.test_file, title="Test")
+        with open(self.test_file, "rb") as in_file:
+            encoded_file = base64.b64encode(in_file.read())
+            mock_post.assert_called_with("/photo/%s/replace.json"
+                                         % self.test_photos[1].id,
+                                         photo=encoded_file, title="Test")
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_photo_object_replace_encoded(self, _):
-        """ If photo.replace_encoded gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.test_photos[0].replace_encoded(photo_file=self.test_file)
+    def test_photo_object_replace_encoded(self, mock_post):
+        """
+        Check that a photo can be uploaded using Base64 encoding to
+        replace an existing photo when using the Photo object directly.
+        """
+        photo_id = self.test_photos[1].id
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        self.test_photos[1].replace_encoded(self.test_file, title="Test")
+        with open(self.test_file, "rb") as in_file:
+            encoded_file = base64.b64encode(in_file.read())
+            mock_post.assert_called_with("/photo/%s/replace.json"
+                                         % photo_id,
+                                         photo=encoded_file, title="Test")
+        self.assertEqual(self.test_photos[1].get_fields(),
+                         self.test_photos_dict[0])
 
 class TestPhotoUpdate(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')

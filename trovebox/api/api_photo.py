@@ -84,12 +84,34 @@ class ApiPhoto(ApiBase):
                                  **kwds)["result"]
 
     def replace(self, photo, photo_file, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Uploads the specified photo file to replace an existing photo.
+        """
+        with open(photo_file, 'rb') as in_file:
+            result = self._client.post("/photo/%s/replace.json" %
+                                       self._extract_id(photo),
+                                       files={'photo': in_file},
+                                       **kwds)["result"]
+        return Photo(self._client, result)
 
     def replace_encoded(self, photo, photo_file, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Base64-encodes and uploads the specified photo filename to
+        replace an existing photo.
+        """
+        with open(photo_file, "rb") as in_file:
+            encoded_photo = base64.b64encode(in_file.read())
+        result = self._client.post("/photo/%s/replace.json" %
+                                   self._extract_id(photo),
+                                   photo=encoded_photo,
+                                   **kwds)["result"]
+        return Photo(self._client, result)
+
+#    def replace_from_url(self, url, **kwds):
 
     def update(self, photo, **kwds):
         """
@@ -141,6 +163,8 @@ class ApiPhoto(ApiBase):
         result = self._client.post("/photo/upload.json", photo=encoded_photo,
                                    **kwds)["result"]
         return Photo(self._client, result)
+
+#    def upload_from_url(self, url, **kwds):
 
     def dynamic_url(self, photo, **kwds):
         """ Not yet implemented """
