@@ -101,6 +101,23 @@ class TestPhotos(test_base.TestBase):
         self.photos = self.client.photos.list()
         self.assertEqual(len(self.photos), 3)
 
+    def test_upload_from_url(self):
+        """ Ensure that a photo can be imported from a URL """
+        # Make an existing photo public
+        self.photos[0].update(permission=True)
+        # Upload a duplicate of an existing photo
+        self.client.photo.upload_from_url(self.photos[0].pathDownload,
+                                          allowDuplicate=True)
+        # Check there are now four photos
+        photos = self.client.photos.list()
+        self.assertEqual(len(photos), 4)
+        # Check that the new one is a duplicate
+        self.assertEqual(photos[0].hash, photos[1].hash)
+
+        # Put the environment back the way we found it
+        photos[1].delete()
+        self.photos[0].update(permission=False)
+
     def test_update(self):
         """ Update a photo by editing the title """
         title = "\xfcmlaut" # umlauted umlaut
@@ -178,15 +195,10 @@ class TestPhotos(test_base.TestBase):
                                allowDuplicate=True)
         # Check that its new hash is correct
         self.assertEqual(self.photos[0].hash, self.photos[1].hash)
-        # Put it back
-        self.photos[0].replace("tests/data/test_photo1.jpg",
-                               allowDuplicate=True)
+        # Put it back using base64 encoding
+        self.photos[0].replace_encoded("tests/data/test_photo1.jpg",
+                                       allowDuplicate=True)
         self.assertEqual(self.photos[0].hash, original_hash)
-
-    def test_replace_encoded(self):
-        """ If photo.replace_encoded gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.replace_encoded(None, None)
 
     def test_dynamic_url(self):
         """ If photo.dynamic_url gets implemented, write a test! """

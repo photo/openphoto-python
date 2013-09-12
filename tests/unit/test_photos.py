@@ -233,6 +233,7 @@ class TestPhotoReplace(TestPhotos):
         self.assertEqual(self.test_photos[1].get_fields(),
                          self.test_photos_dict[0])
 
+class TestPhotoReplaceEncoded(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_replace_encoded(self, mock_post):
         """
@@ -279,6 +280,50 @@ class TestPhotoReplace(TestPhotos):
             mock_post.assert_called_with("/photo/%s/replace.json"
                                          % photo_id,
                                          photo=encoded_file, title="Test")
+        self.assertEqual(self.test_photos[1].get_fields(),
+                         self.test_photos_dict[0])
+
+class TestPhotoReplaceFromUrl(TestPhotos):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_replace_from_url(self, mock_post):
+        """
+        Check that a photo can be imported from a url to
+        replace an existing photo.
+        """
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace_from_url(self.test_photos[1],
+                                                    "test_url", title="Test")
+        mock_post.assert_called_with("/photo/%s/replace.json"
+                                     % self.test_photos[1].id,
+                                     photo="test_url", title="Test")
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_id_replace_from_url(self, mock_post):
+        """
+        Check that a photo can be imported from a url to
+        replace an existing photo using its ID.
+        """
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.replace_from_url(self.test_photos[1].id,
+                                                    "test_url", title="Test")
+        mock_post.assert_called_with("/photo/%s/replace.json"
+                                     % self.test_photos[1].id,
+                                     photo="test_url", title="Test")
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_replace_from_url(self, mock_post):
+        """
+        Check that a photo can be imported from a url to
+        replace an existing photo when using the Photo object directly.
+        """
+        photo_id = self.test_photos[1].id
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        self.test_photos[1].replace_from_url("test_url", title="Test")
+        mock_post.assert_called_with("/photo/%s/replace.json"
+                                     % photo_id,
+                                     photo="test_url", title="Test")
         self.assertEqual(self.test_photos[1].get_fields(),
                          self.test_photos_dict[0])
 
@@ -357,6 +402,7 @@ class TestPhotoUpload(TestPhotos):
         self.assertIn("photo", files)
         self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
+class TestPhotoUploadEncoded(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_upload_encoded(self, mock_post):
         """Check that a photo can be uploaded using Base64 encoding"""
@@ -366,6 +412,18 @@ class TestPhotoUpload(TestPhotos):
             encoded_file = base64.b64encode(in_file.read())
             mock_post.assert_called_with("/photo/upload.json",
                                          photo=encoded_file, title="Test")
+        self.assertEqual(result.get_fields(), self.test_photos_dict[0])
+
+class TestPhotoUploadFromUrl(TestPhotos):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_upload_from_url(self, mock_post):
+        """
+        Check that a photo can be imported from a url.
+        """
+        mock_post.return_value = self._return_value(self.test_photos_dict[0])
+        result = self.client.photo.upload_from_url("test_url", title="Test")
+        mock_post.assert_called_with("/photo/upload.json",
+                                     photo="test_url", title="Test")
         self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
 class TestPhotoDynamicUrl(TestPhotos):

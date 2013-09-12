@@ -110,7 +110,19 @@ class ApiPhoto(ApiBase):
                                    **kwds)["result"]
         return Photo(self._client, result)
 
-#    def replace_from_url(self, url, **kwds):
+    def replace_from_url(self, photo, url, **kwds):
+        """
+        Endpoint: /photo/<id>replace.json
+
+        Import a photo from the specified URL to replace an existing
+        photo.
+        """
+        result = self._client.post("/photo/%s/replace.json" %
+                                   self._extract_id(photo),
+                                   photo=url,
+                                   **kwds)["result"]
+        return Photo(self._client, result)
+
 
     def update(self, photo, **kwds):
         """
@@ -163,7 +175,15 @@ class ApiPhoto(ApiBase):
                                    **kwds)["result"]
         return Photo(self._client, result)
 
-#    def upload_from_url(self, url, **kwds):
+    def upload_from_url(self, url, **kwds):
+        """
+        Endpoint: /photo/upload.json
+
+        Import a photo from the specified URL
+        """
+        result = self._client.post("/photo/upload.json", photo=url,
+                                   **kwds)["result"]
+        return Photo(self._client, result)
 
     def dynamic_url(self, photo, **kwds):
         """ Not yet implemented """

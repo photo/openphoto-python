@@ -49,6 +49,15 @@ class Photo(TroveboxObject):
                                                     **kwds)
         self._replace_fields(result.get_fields())
 
+    def replace_from_url(self, url, **kwds):
+        """
+        Endpoint: /photo/<id>replace.json
+
+        Import a photo from the specified URL to replace this photo.
+        """
+        result = self._client.photo.replace_from_url(self, url, **kwds)
+        self._replace_fields(result.get_fields())
+
     def update(self, **kwds):
         """
         Endpoint: /photo/<id>/update.json
