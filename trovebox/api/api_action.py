@@ -1,7 +1,6 @@
 """
 api_action.py : Trovebox Action API Classes
 """
-from trovebox.errors import TroveboxError
 from trovebox.objects.action import Action
 from .api_base import ApiBase
 

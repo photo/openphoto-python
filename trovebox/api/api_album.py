@@ -3,7 +3,6 @@ api_album.py : Trovebox Album API Classes
 """
 import collections
 
-from trovebox.errors import TroveboxError
 from trovebox.objects.trovebox_object import TroveboxObject
 from trovebox.objects.album import Album
 from .api_base import ApiBase

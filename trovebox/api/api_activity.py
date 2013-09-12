@@ -2,7 +2,6 @@
 api_activity.py : Trovebox Activity API Classes
 """
 import json
-from trovebox.errors import TroveboxError
 from trovebox.objects.activity import Activity
 from .api_base import ApiBase
 

@@ -6,7 +6,6 @@ try:
 except ImportError:
     from urllib import quote # Python2
 
-from trovebox.errors import TroveboxError
 from trovebox.objects.tag import Tag
 from .api_base import ApiBase
 
