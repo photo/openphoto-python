@@ -141,3 +141,11 @@ class TestActionView(TestActions):
         self.assertEqual(action.target.id, "photo2")
         self.assertEqual(action.target_type, "photo")
 
+class TestActionMisc(TestActions):
+    def test_update_fields_with_no_target(self):
+        """Check that an action object can be updated with no target"""
+        action = self.test_actions[0]
+        action.target = None
+        action.target_type = None
+        # Check that no exception is raised
+        action._update_fields_with_objects()

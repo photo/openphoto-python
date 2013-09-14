@@ -355,3 +355,12 @@ class TestAlbumView(TestAlbums):
         self.assertEqual(album.cover.id, "2b")
         self.assertEqual(album.cover.tags, ["tag3", "tag4"])
         self.assertEqual(album.photos[0].id, self.test_photos[1].id)
+
+class TestAlbumMisc(TestAlbums):
+    def test_update_fields_with_no_cover(self):
+        """Check that an album object can be updated with no cover"""
+        album = self.test_albums[0]
+        album.cover = None
+        album.photos = None
+        # Check that no exception is raised
+        album._update_fields_with_objects()

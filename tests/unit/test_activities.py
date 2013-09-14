@@ -131,3 +131,12 @@ class TestActivityView(TestActivities):
                                 {"data": "", "type": "invalid"}))
         with self.assertRaises(NotImplementedError):
             self.client.activity.view(self.test_activities[0])
+
+class TestActivityMisc(TestActivities):
+    def test_update_fields_with_no_type(self):
+        """Check that an activity object can be updated with no type"""
+        activity = self.test_activities[0]
+        activity.type = None
+        activity.data = None
+        # Check that no exception is raised
+        activity._update_fields_with_objects()
