@@ -82,11 +82,12 @@ class TestPhotos(test_base.TestBase):
                                          allowDuplicate=True,
                                          permission=True)
         # Check that the photo can be downloaded
-        self.assertEqual(requests.get(photo.pathDownload).status_code, 200)
+        self.assertEqual(requests.get(photo.pathOriginal).status_code, 200)
 
         # Delete the source and check that the source file no longer exists
         photo.delete_source()
-        self.assertEqual(requests.get(photo.pathDownload).status_code, 404)
+        self.assertIn(requests.get(photo.pathOriginal).status_code,
+                      [403, 404])
 
         # Put the environment back the way we found it
         photo.delete()
@@ -107,7 +108,7 @@ class TestPhotos(test_base.TestBase):
         # Make an existing photo public
         self.photos[0].update(permission=True)
         # Upload a duplicate of an existing photo
-        self.client.photo.upload_from_url(self.photos[0].pathDownload,
+        self.client.photo.upload_from_url(self.photos[0].pathOriginal,
                                           allowDuplicate=True)
         # Check there are now four photos
         photos = self.client.photos.list()
