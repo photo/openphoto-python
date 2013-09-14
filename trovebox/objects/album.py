@@ -17,11 +17,8 @@ class Album(TroveboxObject):
     def _update_fields_with_objects(self):
         """ Convert dict fields into objects, where appropriate """
         # Update the cover with a photo object
-        try:
-            if isinstance(self.cover, dict):
-                self.cover = Photo(self._client, self.cover)
-        except AttributeError:
-            pass # No cover
+        if isinstance(self.cover, dict):
+            self.cover = Photo(self._client, self.cover)
 
         # Update the photo list with photo objects
         try:
