@@ -105,7 +105,7 @@ class Http(object):
         self._logger.info("GET %s" % url)
         self._logger.info("---")
         self._logger.info(response.text[:1000])
-        if len(response.text) > 1000:
+        if len(response.text) > 1000: # pragma: no cover
             self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
@@ -161,7 +161,7 @@ class Http(object):
             self._logger.info("files:  %s" % repr(files))
         self._logger.info("---")
         self._logger.info(response.text[:1000])
-        if len(response.text) > 1000:
+        if len(response.text) > 1000: # pragma: no cover
             self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
