@@ -56,10 +56,10 @@ class TestPhotosList(TestPhotos):
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_filters(self, mock_get):
-        """Check that the activity list filters are applied properly"""
+    def test_options(self, mock_get):
+        """Check that the activity list options are applied properly"""
         mock_get.return_value = self._return_value(self.test_photos_dict)
-        self.client.photos.list(filters={"foo": "bar",
+        self.client.photos.list(options={"foo": "bar",
                                          "test1": "test2"},
                                 foo="bar")
         # Dict element can be any order
@@ -71,7 +71,7 @@ class TestPhotosList(TestPhotos):
 class TestPhotosShare(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_share(self, mock_post):
-        self.client.photos.share(filters={"foo": "bar",
+        self.client.photos.share(options={"foo": "bar",
                                           "test1": "test2"},
                                  foo="bar")
         # Dict element can be any order
@@ -362,16 +362,30 @@ class TestPhotoView(TestPhotos):
         """Check that a photo can be viewed"""
         mock_get.return_value = self._return_value(self.test_photos_dict[1])
         result = self.client.photo.view(self.test_photos[0],
+                                        options={"foo": "bar",
+                                                 "test1": "test2"},
                                         returnSizes="20x20")
-        mock_get.assert_called_with("/photo/1a/view.json", returnSizes="20x20")
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/foo-bar/test1-test2/view.json",),
+                       ("/photo/1a/test1-test2/foo-bar/view.json",)])
+        self.assertEqual(mock_get.call_args[1], {"returnSizes": "20x20"})
         self.assertEqual(result.get_fields(), self.test_photos_dict[1])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_photo_view_id(self, mock_get):
         """Check that a photo can be viewed using its ID"""
         mock_get.return_value = self._return_value(self.test_photos_dict[1])
-        result = self.client.photo.view("1a", returnSizes="20x20")
-        mock_get.assert_called_with("/photo/1a/view.json", returnSizes="20x20")
+        result = self.client.photo.view("1a",
+                                        options={"foo": "bar",
+                                                 "test1": "test2"},
+                                        returnSizes="20x20")
+
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/foo-bar/test1-test2/view.json",),
+                       ("/photo/1a/test1-test2/foo-bar/view.json",)])
+        self.assertEqual(mock_get.call_args[1], {"returnSizes": "20x20"})
         self.assertEqual(result.get_fields(), self.test_photos_dict[1])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
@@ -382,8 +396,14 @@ class TestPhotoView(TestPhotos):
         """
         mock_get.return_value = self._return_value(self.test_photos_dict[1])
         photo = self.test_photos[0]
-        photo.view(returnSizes="20x20")
-        mock_get.assert_called_with("/photo/1a/view.json", returnSizes="20x20")
+        photo.view(returnSizes="20x20", options={"foo": "bar",
+                                                 "test1": "test2"})
+
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/foo-bar/test1-test2/view.json",),
+                       ("/photo/1a/test1-test2/foo-bar/view.json",)])
+        self.assertEqual(mock_get.call_args[1], {"returnSizes": "20x20"})
         self.assertEqual(photo.get_fields(), self.test_photos_dict[1])
 
 class TestPhotoUpload(TestPhotos):

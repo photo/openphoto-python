@@ -30,9 +30,9 @@ class TestActivities(test_base.TestBase):
         for photo in photos:
             photo.update(tags=self.TEST_TAG)
 
-    def test_list_filter(self):
+    def test_list_option(self):
         """
-        Check that the activity list filter parameter works correctly
+        Check that the activity list options parameter works correctly
         """
         self._delete_all()
         self._create_test_photos(tag=False)
@@ -42,8 +42,8 @@ class TestActivities(test_base.TestBase):
         photos[0].update(tags=photos[0].tags)
 
         # Check that the activities can be filtered
-        upload_activities = self.client.activities.list(filters={"type": "photo-upload"})
-        update_activities = self.client.activities.list(filters={"type": "photo-update"})
+        upload_activities = self.client.activities.list(options={"type": "photo-upload"})
+        update_activities = self.client.activities.list(options={"type": "photo-update"})
         self.assertEqual(len(upload_activities), len(photos))
         self.assertEqual(len(update_activities), 1)
 

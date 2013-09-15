@@ -8,28 +8,28 @@ from .api_base import ApiBase
 
 class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
-    def list(self, filters=None, **kwds):
+    def list(self, options=None, **kwds):
         """
-        Endpoint: /photos/[<filters>]/list.json
+        Endpoint: /photos/[<options>]/list.json
 
         Returns a list of Photo objects.
-        The filters parameter can be used to narrow down the list.
-        Eg: filters={"album": <album_id>}
+        The options parameter can be used to narrow down the list.
+        Eg: options={"album": <album_id>}
         """
-        filter_string = self._build_filter_string(filters)
-        photos = self._client.get("/photos/%slist.json" % filter_string,
+        option_string = self._build_option_string(options)
+        photos = self._client.get("/photos/%slist.json" % option_string,
                                   **kwds)["result"]
         photos = self._result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
-    def share(self, filters=None, **kwds):
+    def share(self, options=None, **kwds):
         """
-        Endpoint: /photos/[<filters>/share.json
+        Endpoint: /photos/[<options>/share.json
 
         Not currently implemented.
         """
-        filter_string = self._build_filter_string(filters)
-        return self._client.post("/photos/%sshare.json" % filter_string,
+        option_string = self._build_option_string(options)
+        return self._client.post("/photos/%sshare.json" % option_string,
                                  **kwds)["result"]
 
     def delete(self, photos, **kwds):
@@ -136,18 +136,20 @@ class ApiPhoto(ApiBase):
                                    **kwds)["result"]
         return Photo(self._client, result)
 
-    # TODO: Add options
-    def view(self, photo, **kwds):
+    def view(self, photo, options=None, **kwds):
         """
-        Endpoint: /photo/<id>/view.json
+        Endpoint: /photo/<id>/[<options>]/view.json
 
         Requests all properties of a photo.
         Can be used to obtain URLs for the photo at a particular size,
           by using the "returnSizes" parameter.
         Returns the requested photo object.
+        The options parameter can be used to pass in additional options.
+        Eg: options={"token": <token_data>}
         """
-        result = self._client.get("/photo/%s/view.json" %
-                                  self._extract_id(photo),
+        option_string = self._build_option_string(options)
+        result = self._client.get("/photo/%s/%sview.json" %
+                                  (self._extract_id(photo), option_string),
                                   **kwds)["result"]
         return Photo(self._client, result)
 

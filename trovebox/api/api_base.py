@@ -8,16 +8,16 @@ class ApiBase(object):
         self._client = client
 
     @staticmethod
-    def _build_filter_string(filters):
+    def _build_option_string(options):
         """
-        :param filters: dictionary containing the filters
-        :returns: filter_string formatted for an API endpoint
+        :param options: dictionary containing the options
+        :returns: option_string formatted for an API endpoint
         """
-        filter_string = ""
-        if filters is not None:
-            for filt in filters:
-                filter_string += "%s-%s/" % (filt, filters[filt])
-        return filter_string
+        option_string = ""
+        if options is not None:
+            for key in options:
+                option_string += "%s-%s/" % (key, options[key])
+        return option_string
 
     @staticmethod
     def _extract_id(obj):

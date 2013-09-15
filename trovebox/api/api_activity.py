@@ -7,16 +7,16 @@ from .api_base import ApiBase
 
 class ApiActivities(ApiBase):
     """ Definitions of /activities/ API endpoints """
-    def list(self, filters=None, **kwds):
+    def list(self, options=None, **kwds):
         """
-        Endpoint: /activities/[<filters>]/list.json
+        Endpoint: /activities/[<options>]/list.json
 
         Returns a list of Activity objects.
-        The filters parameter can be used to narrow down the activities.
-        Eg: filters={"type": "photo-upload"}
+        The options parameter can be used to narrow down the activities.
+        Eg: options={"type": "photo-upload"}
         """
-        filter_string = self._build_filter_string(filters)
-        activities = self._client.get("/activities/%slist.json" % filter_string,
+        option_string = self._build_option_string(options)
+        activities = self._client.get("/activities/%slist.json" % option_string,
                                       **kwds)["result"]
         activities = self._result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]

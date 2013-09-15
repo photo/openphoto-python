@@ -69,10 +69,10 @@ class TestActivitiesList(TestActivities):
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_filters(self, mock_get):
-        """Check that the activity list filters are applied properly"""
+    def test_options(self, mock_get):
+        """Check that the activity list optionss are applied properly"""
         mock_get.return_value = self._return_value(self.test_activities_dict)
-        self.client.activities.list(filters={"foo": "bar",
+        self.client.activities.list(options={"foo": "bar",
                                              "test1": "test2"},
                                     foo="bar")
         # Dict element can be any order
