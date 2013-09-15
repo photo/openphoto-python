@@ -10,26 +10,26 @@ class ApiPhotos(ApiBase):
     """ Definitions of /photos/ API endpoints """
     def list(self, options=None, **kwds):
         """
-        Endpoint: /photos/[<options>]/list.json
+        Endpoint: /photos[/<options>]/list.json
 
         Returns a list of Photo objects.
         The options parameter can be used to narrow down the list.
         Eg: options={"album": <album_id>}
         """
         option_string = self._build_option_string(options)
-        photos = self._client.get("/photos/%slist.json" % option_string,
+        photos = self._client.get("/photos%s/list.json" % option_string,
                                   **kwds)["result"]
         photos = self._result_to_list(photos)
         return [Photo(self._client, photo) for photo in photos]
 
     def share(self, options=None, **kwds):
         """
-        Endpoint: /photos/[<options>/share.json
+        Endpoint: /photos[/<options>/share.json
 
         Not currently implemented.
         """
         option_string = self._build_option_string(options)
-        return self._client.post("/photos/%sshare.json" % option_string,
+        return self._client.post("/photos%s/share.json" % option_string,
                                  **kwds)["result"]
 
     def delete(self, photos, **kwds):
@@ -138,7 +138,7 @@ class ApiPhoto(ApiBase):
 
     def view(self, photo, options=None, **kwds):
         """
-        Endpoint: /photo/<id>/[<options>]/view.json
+        Endpoint: /photo/<id>[/<options>]/view.json
 
         Requests all properties of a photo.
         Can be used to obtain URLs for the photo at a particular size,
@@ -148,7 +148,7 @@ class ApiPhoto(ApiBase):
         Eg: options={"token": <token_data>}
         """
         option_string = self._build_option_string(options)
-        result = self._client.get("/photo/%s/%sview.json" %
+        result = self._client.get("/photo/%s%s/view.json" %
                                   (self._extract_id(photo), option_string),
                                   **kwds)["result"]
         return Photo(self._client, result)
@@ -192,15 +192,18 @@ class ApiPhoto(ApiBase):
         raise NotImplementedError()
 
     # TODO: Add options
-    def next_previous(self, photo, **kwds):
+    def next_previous(self, photo, options=None, **kwds):
         """
-        Endpoint: /photo/<id>/nextprevious.json
+        Endpoint: /photo/<id>/nextprevious[/<options>].json
 
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
+        The options parameter can be used to narrow down the photos
+        Eg: options={"album": <album_id>}
         """
-        result = self._client.get("/photo/%s/nextprevious.json" %
-                                  self._extract_id(photo),
+        option_string = self._build_option_string(options)
+        result = self._client.get("/photo/%s/nextprevious%s.json" %
+                                  (self._extract_id(photo), option_string),
                                   **kwds)["result"]
         value = {}
         if "next" in result:

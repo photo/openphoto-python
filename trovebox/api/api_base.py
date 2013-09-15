@@ -16,7 +16,7 @@ class ApiBase(object):
         option_string = ""
         if options is not None:
             for key in options:
-                option_string += "%s-%s/" % (key, options[key])
+                option_string += "/%s-%s" % (key, options[key])
         return option_string
 
     @staticmethod

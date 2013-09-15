@@ -69,7 +69,7 @@ class Photo(TroveboxObject):
 
     def view(self, options=None, **kwds):
         """
-        Endpoint: /photo/<id>/view.json
+        Endpoint: /photo/<id>[/<options>]/view.json
 
         Requests all properties of this photo.
         Can be used to obtain URLs for the photo at a particular size,
@@ -85,15 +85,14 @@ class Photo(TroveboxObject):
         """ Not implemented yet """
         raise NotImplementedError()
 
-    # TODO: Add options
-    def next_previous(self, **kwds):
+    def next_previous(self, options=None, **kwds):
         """
-        Endpoint: /photo/<id>/nextprevious.json
+        Endpoint: /photo/<id>/nextprevious[/<options>].json
 
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
-        return self._client.photo.next_previous(self, **kwds)
+        return self._client.photo.next_previous(self, options, **kwds)
 
     def transform(self, **kwds):
         """

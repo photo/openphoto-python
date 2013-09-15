@@ -9,14 +9,14 @@ class ApiActivities(ApiBase):
     """ Definitions of /activities/ API endpoints """
     def list(self, options=None, **kwds):
         """
-        Endpoint: /activities/[<options>]/list.json
+        Endpoint: /activities[/<options>]/list.json
 
         Returns a list of Activity objects.
         The options parameter can be used to narrow down the activities.
         Eg: options={"type": "photo-upload"}
         """
         option_string = self._build_option_string(options)
-        activities = self._client.get("/activities/%slist.json" % option_string,
+        activities = self._client.get("/activities%s/list.json" % option_string,
                                       **kwds)["result"]
         activities = self._result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]

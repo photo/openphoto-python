@@ -473,9 +473,14 @@ class TestPhotoNextPrevious(TestPhotos):
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
         result = self.client.photo.next_previous(self.test_photos[0],
+                                                 options={"foo": "bar",
+                                                          "test1": "test2"},
                                                  foo="bar")
-        mock_get.assert_called_with("/photo/1a/nextprevious.json",
-                                    foo="bar")
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
+                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+        self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
@@ -490,9 +495,15 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
-        result = self.client.photo.next_previous("1a", foo="bar")
-        mock_get.assert_called_with("/photo/1a/nextprevious.json",
-                                    foo="bar")
+        result = self.client.photo.next_previous("1a",
+                                                 options={"foo": "bar",
+                                                          "test1": "test2"},
+                                                 foo="bar")
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
+                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+        self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
@@ -507,9 +518,14 @@ class TestPhotoNextPrevious(TestPhotos):
         mock_get.return_value = self._return_value(
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
-        result = self.test_photos[0].next_previous(foo="bar")
-        mock_get.assert_called_with("/photo/1a/nextprevious.json",
-                                    foo="bar")
+        result = self.test_photos[0].next_previous(options={"foo": "bar",
+                                                            "test1": "test2"},
+                                                   foo="bar")
+        # Dict elemet can be in any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
+                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+        self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
         self.assertEqual(result["previous"][0].get_fields(),
