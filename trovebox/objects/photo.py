@@ -67,8 +67,7 @@ class Photo(TroveboxObject):
         result = self._client.photo.update(self, **kwds)
         self._replace_fields(result.get_fields())
 
-    # TODO: Add options
-    def view(self, **kwds):
+    def view(self, options=None, **kwds):
         """
         Endpoint: /photo/<id>/view.json
 
@@ -76,8 +75,10 @@ class Photo(TroveboxObject):
         Can be used to obtain URLs for the photo at a particular size,
           by using the "returnSizes" parameter.
         Updates the photo's fields with the response.
+        The options parameter can be used to pass in additional options.
+        Eg: options={"token": <token_data>}
         """
-        result = self._client.photo.view(self, **kwds)
+        result = self._client.photo.view(self, options, **kwds)
         self._replace_fields(result.get_fields())
 
     def dynamic_url(self, **kwds):
