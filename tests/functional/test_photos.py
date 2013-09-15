@@ -202,11 +202,6 @@ class TestPhotos(test_base.TestBase):
                                        allowDuplicate=True)
         self.assertEqual(self.photos[0].hash, original_hash)
 
-    def test_dynamic_url(self):
-        """ If photo.dynamic_url gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.dynamic_url(None)
-
     def test_transform(self):
         """ Test photo rotation """
         photo = self.photos[0]

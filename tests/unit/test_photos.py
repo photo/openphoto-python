@@ -446,25 +446,6 @@ class TestPhotoUploadFromUrl(TestPhotos):
                                      photo="test_url", title="Test")
         self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
-class TestPhotoDynamicUrl(TestPhotos):
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_dynamic_url(self, _):
-        """ If photo.dynamic_url gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.dynamic_url(self.test_photos[0])
-
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_dynamic_url_id(self, _):
-        """ If photo.dynamic_url gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.photo.dynamic_url("1a")
-
-    @mock.patch.object(trovebox.Trovebox, 'get')
-    def test_photo_object_dynamic_url(self, _):
-        """ If photo.dynamic_url gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.test_photos[0].dynamic_url()
-
 class TestPhotoNextPrevious(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_photo_next_previous(self, mock_get):

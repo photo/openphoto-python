@@ -81,10 +81,6 @@ class Photo(TroveboxObject):
         result = self._client.photo.view(self, options, **kwds)
         self._replace_fields(result.get_fields())
 
-    def dynamic_url(self, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
-
     def next_previous(self, options=None, **kwds):
         """
         Endpoint: /photo/<id>/nextprevious[/<options>].json

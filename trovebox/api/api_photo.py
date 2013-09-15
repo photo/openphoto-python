@@ -187,11 +187,6 @@ class ApiPhoto(ApiBase):
                                    **kwds)["result"]
         return Photo(self._client, result)
 
-    def dynamic_url(self, photo, **kwds):
-        """ Not yet implemented """
-        raise NotImplementedError()
-
-    # TODO: Add options
     def next_previous(self, photo, options=None, **kwds):
         """
         Endpoint: /photo/<id>/nextprevious[/<options>].json
