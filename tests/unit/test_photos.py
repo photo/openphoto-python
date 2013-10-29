@@ -606,7 +606,8 @@ class TestPhotoObject(TestPhotos):
                                                            "name": "Test Name"})
         self.assertEqual(repr(photo), "<Photo name='Test Name'>")
 
-    def test_photo_object_attribute(self):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_create_attribute(self, _):
         """
         Check that attributes are created when creating a
         Photo object
@@ -614,11 +615,66 @@ class TestPhotoObject(TestPhotos):
         photo = trovebox.objects.photo.Photo(self.client, {"attribute": "test"})
         self.assertEqual(photo.attribute, "test")
 
-    def test_photo_object_illegal_attribute(self):
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_delete_attribute(self, _):
+        """
+        Check that attributes are deleted when creating a
+        Photo object
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {"attribute": "test"})
+        photo.delete()
+        with self.assertRaises(AttributeError):
+            value = photo.attribute
+        self.assertEqual(photo.get_fields(), {})
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_update_attribute(self, mock_post):
+        """
+        Check that attributes are updated when creating a
+        Photo object
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {"attribute": "test"})
+        mock_post.return_value = self._return_value({"attribute": "test2"})
+        photo.update()
+        self.assertEqual(photo.attribute, "test2")
+        self.assertEqual(photo.get_fields(), {"attribute": "test2"})
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_create_illegal_attribute(self, _):
         """
         Check that illegal attributes are ignored when creating a
         Photo object
         """
         photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
+        # The object's attribute shouldn't be created
         with self.assertRaises(AttributeError):
             value = photo._illegal_attribute
+        # The field dict gets created correctly, however.
+        self.assertEqual(photo.get_fields(), {"_illegal_attribute": "test"})
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_delete_illegal_attribute(self, _):
+        """
+        Check that illegal attributes are ignored when deleting a
+        Photo object
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
+        photo.delete()
+        with self.assertRaises(AttributeError):
+            value = photo._illegal_attribute
+        self.assertEqual(photo.get_fields(), {})
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_photo_object_update_illegal_attribute(self, mock_post):
+        """
+        Check that illegal attributes are ignored when updating a
+        Photo object
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
+        mock_post.return_value = self._return_value({"_illegal_attribute": "test2"})
+        photo.update()
+        # The object's attribute shouldn't be created
+        with self.assertRaises(AttributeError):
+            value = photo._illegal_attribute
+        # The field dict gets updated correctly, however.
+        self.assertEqual(photo.get_fields(), {"_illegal_attribute": "test2"})

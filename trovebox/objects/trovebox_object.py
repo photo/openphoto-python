@@ -23,7 +23,8 @@ class TroveboxObject(object):
         those in json_dict.
         """
         for key in self._json_dict.keys():
-            delattr(self, key)
+            if not key.startswith("_"):
+                delattr(self, key)
         self._json_dict = json_dict
         self._set_fields(json_dict)
 
@@ -32,7 +33,8 @@ class TroveboxObject(object):
         Delete this object's attributes, including name and id
         """
         for key in self._json_dict.keys():
-            delattr(self, key)
+            if not key.startswith("_"):
+                delattr(self, key)
         self._json_dict = {}
         self.id = None
         self.name = None
