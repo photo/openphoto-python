@@ -14,9 +14,8 @@ class TroveboxObject(object):
     def _set_fields(self, json_dict):
         """ Set this object's attributes specified in json_dict """
         for key, value in json_dict.items():
-            if key.startswith("_"):
-                raise ValueError("Illegal attribute: %s" % key)
-            setattr(self, key, value)
+            if not key.startswith("_"):
+                setattr(self, key, value)
 
     def _replace_fields(self, json_dict):
         """

@@ -606,10 +606,19 @@ class TestPhotoObject(TestPhotos):
                                                            "name": "Test Name"})
         self.assertEqual(repr(photo), "<Photo name='Test Name'>")
 
+    def test_photo_object_attribute(self):
+        """
+        Check that attributes are created when creating a
+        Photo object
+        """
+        photo = trovebox.objects.photo.Photo(self.client, {"attribute": "test"})
+        self.assertEqual(photo.attribute, "test")
+
     def test_photo_object_illegal_attribute(self):
         """
-        Check that an exception is raised when creating an Photo object
-        with an illegal attribute
+        Check that illegal attributes are ignored when creating a
+        Photo object
         """
-        with self.assertRaises(ValueError):
-            photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
+        photo = trovebox.objects.photo.Photo(self.client, {"_illegal_attribute": "test"})
+        with self.assertRaises(AttributeError):
+            value = photo._illegal_attribute
