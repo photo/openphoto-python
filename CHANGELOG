@@ -2,8 +2,13 @@
 Trovebox Python Library Changelog
 =================================
 
+v0.5.1
+======
+ * Use httpretty v0.6.5 for unit tests (#60)
+ * Ignore illegal TroveboxObject attributes (#61)
+
 v0.5
-====
+======
  * Pylint improvements - using .pylint-ignores to waive warnings (#49)
  * Add support for https URLs (#51)
  * Configuration improvements (#53)
@@ -11,7 +16,7 @@ v0.5
  * Test improvements (#54)
 
 v0.4
-====
+======
 
 First release
 
