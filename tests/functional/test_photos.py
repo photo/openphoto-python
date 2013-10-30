@@ -127,12 +127,13 @@ class TestPhotos(test_base.TestBase):
 
     def test_next_previous(self):
         """ Test the next/previous links of the middle photo """
-        next_prev = self.client.photo.next_previous(self.photos[1])
+        next_prev = self.client.photo.next_previous(self.photos[1],
+                                                    sortBy="dateTaken,asc")
         self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
         self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
         # Do the same using the Photo object directly
-        next_prev = self.photos[1].next_previous()
+        next_prev = self.photos[1].next_previous(sortBy="dateTaken,asc")
         self.assertEqual(next_prev["previous"][0].id, self.photos[0].id)
         self.assertEqual(next_prev["next"][0].id, self.photos[2].id)
 
