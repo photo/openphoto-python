@@ -1,28 +1,28 @@
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_activity.py patched/api/api_activity.py
---- original/api/api_activity.py	2013-08-19 17:59:15.592149000 +0100
-+++ patched/api/api_activity.py	2013-08-19 18:08:39.950947589 +0100
-@@ -22,7 +22,7 @@
-             raise TroveboxError("Purge response returned False")
-         return True
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_activity.py patched/api/api_activity.py
+--- original/api/api_activity.py
++++ patched/api/api_activity.py
+@@ -32,7 +32,7 @@
+         """
+         return self._client.post("/activities/purge.json", **kwds)["result"]
  
--class ApiActivity(object):
-+class ApiActivity(object): # pylint: disable=R0903
+-class ApiActivity(ApiBase):
++class ApiActivity(ApiBase): # pylint: disable=too-few-public-methods
      """ Definitions of /activity/ API endpoints """
      def view(self, activity, **kwds):
          """
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_album.py patched/api/api_album.py
---- original/api/api_album.py	2013-08-19 16:09:53.539609000 +0100
-+++ patched/api/api_album.py	2013-08-19 18:08:20.118849270 +0100
-@@ -3,7 +3,7 @@
- """
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_album.py patched/api/api_album.py
+--- original/api/api_album.py
++++ patched/api/api_album.py
+@@ -7,7 +7,7 @@
  from trovebox.objects.album import Album
+ from .api_base import ApiBase
  
--class ApiAlbums(object):
-+class ApiAlbums(object): # pylint: disable=R0903
+-class ApiAlbums(ApiBase):
++class ApiAlbums(ApiBase): # pylint: disable=too-few-public-methods
      """ Definitions of /albums/ API endpoints """
      def list(self, **kwds):
          """
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_base.py patched/api/api_base.py
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_base.py patched/api/api_base.py
 --- original/api/api_base.py
 +++ patched/api/api_base.py
 @@ -2,7 +2,7 @@
@@ -34,10 +34,11 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_ba
      """ Base class for all API objects """
      def __init__(self, client):
          self._client = client
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_tag.py patched/api/api_tag.py
---- original/api/api_tag.py	2013-08-19 16:09:53.539609000 +0100
-+++ patched/api/api_tag.py	2013-08-19 18:08:20.118849270 +0100
-@@ -3,7 +3,7 @@
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_tag.py patched/api/api_tag.py
+--- original/api/api_tag.py
++++ patched/api/api_tag.py
+@@ -2,14 +2,14 @@
+ api_tag.py : Trovebox Tag API Classes
  """
  try:
 -    from urllib.parse import quote # Python3
@@ -45,16 +46,15 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/api/api_ta
  except ImportError:
      from urllib import quote # Python2
  
-@@ -10,7 +10,7 @@
  from trovebox.objects.tag import Tag
  from .api_base import ApiBase
  
--class ApiTags(object):
-+class ApiTags(object): # pylint: disable=R0903
+-class ApiTags(ApiBase):
++class ApiTags(ApiBase): # pylint: disable=too-few-public-methods
      """ Definitions of /tags/ API endpoints """
      def list(self, **kwds):
          """
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/auth.py patched/auth.py
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/auth.py patched/auth.py
 --- original/auth.py
 +++ patched/auth.py
 @@ -4,7 +4,7 @@
@@ -87,10 +87,10 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/auth.py pa
      except AttributeError:
          parser.readfp(buf) # Python2
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py patched/http.py
---- original/http.py	2013-08-19 16:09:53.543609000 +0100
-+++ patched/http.py	2013-08-19 18:08:20.118849270 +0100
-@@ -7,18 +7,18 @@
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/http.py patched/http.py
+--- original/http.py
++++ patched/http.py
+@@ -7,7 +7,7 @@
  import requests_oauthlib
  import logging
  try:
@@ -99,9 +99,7 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py pa
  except ImportError:
      from urlparse import urlparse, urlunparse # Python2
  
- from trovebox.objects.trovebox_object import TroveboxObject
--from .errors import *
-+from .errors import * # pylint: disable=W0401
+@@ -16,9 +16,9 @@
  from .auth import Auth
  
  if sys.version < '3':
@@ -122,19 +120,10 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/http.py pa
                   consumer_key='', consumer_secret='',
                   token='', token_secret='', api_version=None):
  
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.py patched/__init__.py
---- original/__init__.py	2013-08-19 17:02:22.951226000 +0100
-+++ patched/__init__.py	2013-08-19 18:08:36.194928993 +0100
-@@ -2,7 +2,7 @@
- __init__.py : Trovebox package top level
- """
- from .http import Http
--from .errors import *
-+from .errors import * # pylint: disable=W0401
- from ._version import __version__
- from trovebox.api import api_photo
- from trovebox.api import api_tag
-@@ -12,7 +12,7 @@
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/__init__.py patched/__init__.py
+--- original/__init__.py
++++ patched/__init__.py
+@@ -13,7 +13,7 @@
  
  LATEST_API_VERSION = 2
  
@@ -143,7 +132,7 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.p
      """
      Client library for Trovebox
      If no parameters are specified, config is loaded from the default
-@@ -24,7 +24,7 @@
+@@ -25,7 +25,7 @@
      This should be used to ensure that your application will continue to work
          even if the Trovebox API is updated to a new revision.
      """
@@ -152,7 +141,7 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/__init__.p
                   consumer_key='', consumer_secret='',
                   token='', token_secret='',
                   api_version=None):
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py patched/main.py
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/main.py patched/main.py
 --- original/main.py
 +++ patched/main.py
 @@ -26,7 +26,7 @@
@@ -160,11 +149,11 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py pa
  #################################################################
  
 -def main(args=sys.argv[1:]):
-+def main(args=sys.argv[1:]): # pylint: disable=R0912,C0111
++def main(args=sys.argv[1:]): # pylint: disable=too-many-branches
+     """Run the commandline script"""
      usage = "%prog --help"
      parser = OptionParser(usage, add_help_option=False)
-     parser.add_option('-c', '--config', help="Configuration file to use",
-@@ -84,13 +84,13 @@
+@@ -85,11 +85,11 @@
              sys.exit(1)
  
      if options.method == "GET":
@@ -176,34 +165,12 @@ diff --unified --recursive '--exclude=.pylint-ignores.patch' original/main.py pa
 -        result = client.post(options.endpoint, process_response=False,
 +        result = client.post(options.endpoint, process_response=False, # pylint: disable=star-args
                               files=files, **params)
--        for f in files:
-+        for f in files: # pylint: disable=C0103
-             files[f].close()
- 
-     if options.verbose:
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects/tag.py patched/objects/tag.py
---- original/objects/tag.py	2013-08-19 16:09:53.543609000 +0100
-+++ patched/objects/tag.py	2013-08-19 18:08:20.118849270 +0100
-@@ -1,8 +1,8 @@
--"""
-+""" # pylint: disable=R0801
- Representation of a Tag object
- """
- try:
--    from urllib.parse import quote # Python3
-+    from urllib.parse import quote # Python3 # pylint: disable=F0401,E0611
- except ImportError:
-     from urllib import quote # Python2
- 
-diff --unified --recursive '--exclude=.pylint-ignores.patch' original/objects/trovebox_object.py patched/objects/trovebox_object.py
---- original/objects/trovebox_object.py	2013-08-19 16:09:53.543609000 +0100
-+++ patched/objects/trovebox_object.py	2013-08-19 18:08:20.118849270 +0100
-@@ -1,10 +1,10 @@
- """
- Base object supporting the storage of custom fields as attributes
- """
--class TroveboxObject(object):
-+class TroveboxObject(object): # pylint: disable=R0903
+         for file_ in files:
+             files[file_].close()
+diff --unified --recursive '--exclude=.pylint-disable.patch' original/objects/trovebox_object.py patched/objects/trovebox_object.py
+--- original/objects/trovebox_object.py
++++ patched/objects/trovebox_object.py
+@@ -5,7 +5,7 @@
      """ Base object supporting the storage of custom fields as attributes """
      _type = "None"
      def __init__(self, client, json_dict):
