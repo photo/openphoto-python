@@ -113,7 +113,11 @@ class Http(object):
         if process_response:
             return self._process_response(response)
         else:
-            return response.text
+            if 200 <= response.status_code < 300:
+                return response.text
+            else:
+                raise TroveboxError("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
 
     def post(self, endpoint, process_response=True, files=None, **params):
         """
@@ -163,7 +167,11 @@ class Http(object):
         if process_response:
             return self._process_response(response)
         else:
-            return response.text
+            if 200 <= response.status_code < 300:
+                return response.text
+            else:
+                raise TroveboxError("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
 
     def _construct_url(self, endpoint):
         """Return the full URL to the specified endpoint"""

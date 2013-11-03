@@ -8,6 +8,7 @@ from .photo import Photo
 class Album(TroveboxObject):
     """ Representation of an Album object """
     def __init__(self, trovebox, json_dict):
+        self.photos = None
         self.cover = None
         TroveboxObject.__init__(self, trovebox, json_dict)
         self._update_fields_with_objects()
@@ -17,6 +18,11 @@ class Album(TroveboxObject):
         # Update the cover with a photo object
         if isinstance(self.cover, dict):
             self.cover = Photo(self._trovebox, self.cover)
+        # Update the photo list with photo objects
+        if isinstance(self.photos, list):
+            for i, photo in enumerate(self.photos):
+                if isinstance(photo, dict):
+                    self.photos[i] = Photo(self._trovebox, photo)
 
     def delete(self, **kwds):
         """
