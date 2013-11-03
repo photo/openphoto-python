@@ -1,45 +1,60 @@
 """
 api_tag.py : Trovebox Tag API Classes
 """
-from trovebox import http
+try:
+    from urllib.parse import quote # Python3
+except ImportError:
+    from urllib import quote # Python2
+
 from trovebox.objects.tag import Tag
+from .api_base import ApiBase
 
-class ApiTags(object):
+class ApiTags(ApiBase):
     """ Definitions of /tags/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def list(self, **kwds):
-        """ Returns a list of Tag objects """
+        """
+        Endpoint: /tags/list.json
+
+        Returns a list of Tag objects.
+        """
         tags = self._client.get("/tags/list.json", **kwds)["result"]
-        tags = http.result_to_list(tags)
+        tags = self._result_to_list(tags)
         return [Tag(self._client, tag) for tag in tags]
 
-class ApiTag(object):
+class ApiTag(ApiBase):
     """ Definitions of /tag/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def create(self, tag, **kwds):
         """
-        Create a new tag.
-        The API returns true if the tag was sucessfully created
+        Endpoint: /tag/create.json
+
+        Creates a new tag.
+        Returns True if successful.
+        Raises a TroveboxError if not.
         """
         return self._client.post("/tag/create.json", tag=tag, **kwds)["result"]
 
     def delete(self, tag, **kwds):
         """
-        Delete a tag.
+        Endpoint: /tag/<id>/delete.json
+
+        Deletes a tag.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        if not isinstance(tag, Tag):
-            tag = Tag(self._client, {"id": tag})
-        return tag.delete(**kwds)
+        return self._client.post("/tag/%s/delete.json" %
+                                 quote(self._extract_id(tag)),
+                                 **kwds)["result"]
 
     def update(self, tag, **kwds):
-        """ Update a tag """
-        if not isinstance(tag, Tag):
-            tag = Tag(self._client, {"id": tag})
-        tag.update(**kwds)
-        return tag
+        """
+        Endpoint: /tag/<id>/update.json
+
+        Updates a tag with the specified parameters.
+        Returns the updated tag object.
+        """
+        result = self._client.post("/tag/%s/update.json" %
+                                   quote(self._extract_id(tag)),
+                                   **kwds)["result"]
+        return Tag(self._client, result)
+
+    # def view(self, tag, **kwds):

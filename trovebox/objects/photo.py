@@ -1,96 +1,102 @@
 """
 Representation of a Photo object
 """
-from trovebox.errors import TroveboxError
 from .trovebox_object import TroveboxObject
 
 class Photo(TroveboxObject):
     """ Representation of a Photo object """
+    _type = "photo"
+
     def delete(self, **kwds):
         """
-        Delete this photo.
+        Endpoint: /photo/<id>/delete.json
+
+        Deletes this photo.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._trovebox.post("/photo/%s/delete.json" %
-                                     self.id, **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
+        result = self._client.photo.delete(self, **kwds)
         self._delete_fields()
         return result
 
-    def edit(self, **kwds):
-        """ Returns an HTML form to edit the photo """
-        result = self._trovebox.get("/photo/%s/edit.json" %
-                                    self.id, **kwds)["result"]
-        return result["markup"]
+    def delete_source(self, **kwds):
+        """
+        Endpoint: /photo/<id>/source/delete.json
+
+        Deletes the source files of this photo.
+        Returns True if successful.
+        Raises a TroveboxError if not.
+        """
+        return self._client.photo.delete_source(self, **kwds)
 
     def replace(self, photo_file, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Uploads the specified photo file to replace this photo.
+        """
+        result = self._client.photo.replace(self, photo_file, **kwds)
+        self._replace_fields(result.get_fields())
 
     def replace_encoded(self, photo_file, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        """
+        Endpoint: /photo/<id>/replace.json
+
+        Base64-encodes and uploads the specified photo file to
+        replace this photo.
+        """
+        result = self._client.photo.replace_encoded(self, photo_file,
+                                                    **kwds)
+        self._replace_fields(result.get_fields())
+
+    def replace_from_url(self, url, **kwds):
+        """
+        Endpoint: /photo/<id>replace.json
+
+        Import a photo from the specified URL to replace this photo.
+        """
+        result = self._client.photo.replace_from_url(self, url, **kwds)
+        self._replace_fields(result.get_fields())
 
     def update(self, **kwds):
-        """ Update this photo with the specified parameters """
-        result = self._trovebox.post("/photo/%s/update.json" %
-                                     self.id, **kwds)["result"]
-        self._replace_fields(result)
-
-    def view(self, **kwds):
         """
-        Used to view the photo at a particular size.
+        Endpoint: /photo/<id>/update.json
+
+        Updates this photo with the specified parameters.
+        """
+        result = self._client.photo.update(self, **kwds)
+        self._replace_fields(result.get_fields())
+
+    def view(self, options=None, **kwds):
+        """
+        Endpoint: /photo/<id>[/<options>]/view.json
+
+        Requests all properties of this photo.
+        Can be used to obtain URLs for the photo at a particular size,
+          by using the "returnSizes" parameter.
         Updates the photo's fields with the response.
+        The options parameter can be used to pass in additional options.
+        Eg: options={"token": <token_data>}
         """
-        result = self._trovebox.get("/photo/%s/view.json" %
-                                    self.id, **kwds)["result"]
-        self._replace_fields(result)
+        result = self._client.photo.view(self, options, **kwds)
+        self._replace_fields(result.get_fields())
 
-    def dynamic_url(self, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
-
-    def next_previous(self, **kwds):
+    def next_previous(self, options=None, **kwds):
         """
+        Endpoint: /photo/<id>/nextprevious[/<options>].json
+
         Returns a dict containing the next and previous photo lists
         (there may be more than one next/previous photo returned).
         """
-        result = self._trovebox.get("/photo/%s/nextprevious.json" %
-                                     self.id, **kwds)["result"]
-        value = {}
-        if "next" in result:
-            # Workaround for APIv1
-            if not isinstance(result["next"], list): # pragma: no cover
-                result["next"] = [result["next"]]
-
-            value["next"] = []
-            for photo in result["next"]:
-                value["next"].append(Photo(self._trovebox, photo))
-
-        if "previous" in result:
-            # Workaround for APIv1
-            if not isinstance(result["previous"], list): # pragma: no cover
-                result["previous"] = [result["previous"]]
-
-            value["previous"] = []
-            for photo in result["previous"]:
-                value["previous"].append(Photo(self._trovebox, photo))
-
-        return value
+        return self._client.photo.next_previous(self, options, **kwds)
 
     def transform(self, **kwds):
         """
-        Performs transformation specified in **kwds
-        Example: transform(rotate=90)
+        Endpoint: /photo/<id>/transform.json
+
+        Performs the specified transformations.
+          eg. transform(photo, rotate=90)
+        Updates the photo's fields with the response.
         """
-        result = self._trovebox.post("/photo/%s/transform.json" %
-                                     self.id, **kwds)["result"]
-
-        # APIv1 doesn't return the transformed photo (frontend issue #955)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._trovebox.get("/photo/%s/view.json" %
-                                        self.id)["result"]
-
-        self._replace_fields(result)
+        result = self._client.photo.transform(self, **kwds)
+        self._replace_fields(result.get_fields())

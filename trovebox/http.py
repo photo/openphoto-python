@@ -12,7 +12,7 @@ except ImportError:
     from urlparse import urlparse, urlunparse # Python2
 
 from trovebox.objects.trovebox_object import TroveboxObject
-from .errors import *
+from .errors import TroveboxError, Trovebox404Error, TroveboxDuplicateError
 from .auth import Auth
 
 if sys.version < '3':
@@ -104,7 +104,9 @@ class Http(object):
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
         self._logger.info("---")
-        self._logger.info(response.text)
+        self._logger.info(response.text[:1000])
+        if len(response.text) > 1000: # pragma: no cover
+            self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
         self.last_params = params
@@ -158,7 +160,9 @@ class Http(object):
         if files:
             self._logger.info("files:  %s" % repr(files))
         self._logger.info("---")
-        self._logger.info(response.text)
+        self._logger.info(response.text[:1000])
+        if len(response.text) > 1000: # pragma: no cover
+            self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
         self.last_params = params
@@ -249,12 +253,3 @@ class Http(object):
             raise TroveboxDuplicateError("Code %d: %s" % (code, message))
         else:
             raise TroveboxError("Code %d: %s" % (code, message))
-
-def result_to_list(result):
-    """ Handle the case where the result contains no items """
-    if not result:
-        return []
-    if "totalRows" in result[0] and result[0]["totalRows"] == 0:
-        return []
-    else:
-        return result
