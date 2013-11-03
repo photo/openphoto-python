@@ -3,10 +3,6 @@ import json
 import httpretty
 from httpretty import GET
 
-# TEMP: Temporary hack until httpretty string checking is fixed
-if httpretty.compat.PY3:
-    httpretty.core.basestring = (bytes, str)
-
 try:
     import unittest2 as unittest # Python2.6
 except ImportError:
