@@ -1,38 +1,51 @@
 """
 api_activity.py : Trovebox Activity API Classes
 """
-from trovebox import http
-from trovebox.errors import TroveboxError
+import json
 from trovebox.objects.activity import Activity
+from .api_base import ApiBase
 
-class ApiActivities(object):
+class ApiActivities(ApiBase):
     """ Definitions of /activities/ API endpoints """
-    def __init__(self, client):
-        self._client = client
+    def list(self, options=None, **kwds):
+        """
+        Endpoint: /activities[/<options>]/list.json
 
-    def list(self, **kwds):
-        """ Returns a list of Activity objects """
-        activities = self._client.get("/activities/list.json", **kwds)["result"]
-        activities = http.result_to_list(activities)
+        Returns a list of Activity objects.
+        The options parameter can be used to narrow down the activities.
+        Eg: options={"type": "photo-upload"}
+        """
+        option_string = self._build_option_string(options)
+        activities = self._client.get("/activities%s/list.json" % option_string,
+                                      **kwds)["result"]
+        activities = self._result_to_list(activities)
         return [Activity(self._client, activity) for activity in activities]
 
     def purge(self, **kwds):
-        """ Purge all activities """
-        if not self._client.post("/activities/purge.json", **kwds)["result"]:
-            raise TroveboxError("Purge response returned False")
-        return True
+        """
+        Endpoint: /activities/purge.json
 
-class ApiActivity(object):
+        Purges all activities.
+        Returns True if successful.
+        Raises a TroveboxError if not.
+        Currently not working due to frontend issue #1368.
+        """
+        return self._client.post("/activities/purge.json", **kwds)["result"]
+
+class ApiActivity(ApiBase):
     """ Definitions of /activity/ API endpoints """
-    def __init__(self, client):
-        self._client = client
-
     def view(self, activity, **kwds):
         """
-        View an activity's contents.
+        Endpoint: /activity/<id>/view.json
+
+        Requests all properties of an activity.
         Returns the requested activity object.
         """
-        if not isinstance(activity, Activity):
-            activity = Activity(self._client, {"id": activity})
-        activity.view(**kwds)
-        return activity
+        result = self._client.get("/activity/%s/view.json" %
+                                  self._extract_id(activity),
+                                  **kwds)["result"]
+
+        # TBD: Why is the result enclosed/encoded like this?
+        result = result["0"]
+        result["data"] = json.loads(result["data"])
+        return Activity(self._client, result)

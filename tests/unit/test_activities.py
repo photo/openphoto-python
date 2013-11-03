@@ -42,8 +42,8 @@ class TestActivitiesList(TestActivities):
         """Check that the activity list is returned correctly"""
         mock_get.return_value = self._return_value(self.test_activities_dict)
 
-        result = self.client.activities.list()
-        mock_get.assert_called_with("/activities/list.json")
+        result = self.client.activities.list(foo="bar")
+        mock_get.assert_called_with("/activities/list.json", foo="bar")
         self.assertEqual(len(result), 2)
         self.assertEqual(result[0].id, "1")
         self.assertEqual(result[0].type, "photo_upload")
@@ -56,17 +56,30 @@ class TestActivitiesList(TestActivities):
     def test_empty_result(self, mock_get):
         """Check that an empty result is transformed into an empty list """
         mock_get.return_value = self._return_value("")
-        result = self.client.activities.list()
-        mock_get.assert_called_with("/activities/list.json")
+        result = self.client.activities.list(foo="bar")
+        mock_get.assert_called_with("/activities/list.json", foo="bar")
         self.assertEqual(result, [])
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_zero_rows(self, mock_get):
         """Check that totalRows=0 is transformed into an empty list """
         mock_get.return_value = self._return_value([{"totalRows": 0}])
-        result = self.client.activities.list()
-        mock_get.assert_called_with("/activities/list.json")
+        result = self.client.activities.list(foo="bar")
+        mock_get.assert_called_with("/activities/list.json", foo="bar")
         self.assertEqual(result, [])
+
+    @mock.patch.object(trovebox.Trovebox, 'get')
+    def test_options(self, mock_get):
+        """Check that the activity list optionss are applied properly"""
+        mock_get.return_value = self._return_value(self.test_activities_dict)
+        self.client.activities.list(options={"foo": "bar",
+                                             "test1": "test2"},
+                                    foo="bar")
+        # Dict element can be any order
+        self.assertIn(mock_get.call_args[0],
+                      [("/activities/foo-bar/test1-test2/list.json",),
+                       ("/activities/test1-test2/foo-bar/list.json",)])
+        self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
 
 class TestActivitiesPurge(TestActivities):
     @mock.patch.object(trovebox.Trovebox, 'post')
@@ -77,13 +90,6 @@ class TestActivitiesPurge(TestActivities):
         result = self.client.activities.purge(foo="bar")
         mock_get.assert_called_with("/activities/purge.json", foo="bar")
         self.assertEqual(result, True)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_activity_purge_failure(self, mock_post):
-        """Test activity purging """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            result = self.client.activities.purge(foo="bar")
 
 class TestActivityView(TestActivities):
     @mock.patch.object(trovebox.Trovebox, 'get')
@@ -124,4 +130,13 @@ class TestActivityView(TestActivities):
         mock_get.return_value = self._return_value(self._view_wrapper(
                                 {"data": "", "type": "invalid"}))
         with self.assertRaises(NotImplementedError):
-            self.client.activity.view(self.test_activities[0], foo="bar")
+            self.client.activity.view(self.test_activities[0])
+
+class TestActivityMisc(TestActivities):
+    def test_update_fields_with_no_type(self):
+        """Check that an activity object can be updated with no type"""
+        activity = self.test_activities[0]
+        activity.type = None
+        activity.data = None
+        # Check that no exception is raised
+        activity._update_fields_with_objects()

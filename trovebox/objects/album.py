@@ -1,73 +1,101 @@
 """
 Representation of an Album object
 """
-from trovebox.errors import TroveboxError
 from .trovebox_object import TroveboxObject
 from .photo import Photo
 
 class Album(TroveboxObject):
     """ Representation of an Album object """
-    def __init__(self, trovebox, json_dict):
+    _type = "album"
+
+    def __init__(self, client, json_dict):
         self.photos = None
         self.cover = None
-        TroveboxObject.__init__(self, trovebox, json_dict)
+        TroveboxObject.__init__(self, client, json_dict)
         self._update_fields_with_objects()
 
     def _update_fields_with_objects(self):
         """ Convert dict fields into objects, where appropriate """
         # Update the cover with a photo object
         if isinstance(self.cover, dict):
-            self.cover = Photo(self._trovebox, self.cover)
+            self.cover = Photo(self._client, self.cover)
+
         # Update the photo list with photo objects
-        if isinstance(self.photos, list):
+        try:
             for i, photo in enumerate(self.photos):
                 if isinstance(photo, dict):
-                    self.photos[i] = Photo(self._trovebox, photo)
+                    self.photos[i] = Photo(self._client, photo)
+        except (AttributeError, TypeError):
+            pass # No photos, or not a list
+
+    def cover_update(self, photo, **kwds):
+        """
+        Endpoint: /album/<album_id>/cover/<photo_id>/update.json
+
+        Update the cover photo of this album.
+        """
+        result = self._client.album.cover_update(self, photo, **kwds)
+        self._replace_fields(result.get_fields())
+        self._update_fields_with_objects()
 
     def delete(self, **kwds):
         """
-        Delete this album.
+        Endpoint: /album/<id>/delete.json
+
+        Deletes this album.
         Returns True if successful.
         Raises a TroveboxError if not.
         """
-        result = self._trovebox.post("/album/%s/delete.json" %
-                                     self.id, **kwds)["result"]
-        if not result:
-            raise TroveboxError("Delete response returned False")
+        result = self._client.album.delete(self, **kwds)
         self._delete_fields()
         return result
 
-    def form(self, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+    def add(self, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/add.json
 
-    def add_photos(self, photos, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+        Add objects (eg. Photos) to this album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Updates the album's fields with the response.
+        """
+        result = self._client.album.add(self, objects, object_type, **kwds)
+        self._replace_fields(result.get_fields())
+        self._update_fields_with_objects()
 
-    def remove_photos(self, photos, **kwds):
-        """ Not implemented yet """
-        raise NotImplementedError()
+    def remove(self, objects, object_type=None, **kwds):
+        """
+        Endpoint: /album/<id>/<type>/remove.json
+
+        Remove objects (eg. Photos) from this album.
+        The objects are a list of either IDs or Trovebox objects.
+        If Trovebox objects are used, the object type is inferred
+        automatically.
+        Updates the album's fields with the response.
+        """
+        result = self._client.album.remove(self, objects, object_type,
+                                           **kwds)
+        self._replace_fields(result.get_fields())
+        self._update_fields_with_objects()
 
     def update(self, **kwds):
-        """ Update this album with the specified parameters """
-        result = self._trovebox.post("/album/%s/update.json" %
-                                     self.id, **kwds)["result"]
+        """
+        Endpoint: /album/<id>/update.json
 
-        # APIv1 doesn't return the updated album (frontend issue #937)
-        if isinstance(result, bool): # pragma: no cover
-            result = self._trovebox.get("/album/%s/view.json" %
-                                        self.id)["result"]
-
-        self._replace_fields(result)
+        Updates this album with the specified parameters.
+        """
+        result = self._client.album.update(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()
 
     def view(self, **kwds):
         """
-        Requests the full contents of the album.
+        Endpoint: /album/<id>/view.json
+
+        Requests all properties of an album.
         Updates the album's fields with the response.
         """
-        result = self._trovebox.get("/album/%s/view.json" %
-                                    self.id, **kwds)["result"]
-        self._replace_fields(result)
+        result = self._client.album.view(self, **kwds)
+        self._replace_fields(result.get_fields())
         self._update_fields_with_objects()

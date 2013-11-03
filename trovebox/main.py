@@ -27,6 +27,7 @@ To get your credentials:
 #################################################################
 
 def main(args=sys.argv[1:]):
+    """Run the commandline script"""
     usage = "%prog --help"
     parser = OptionParser(usage, add_help_option=False)
     parser.add_option('-c', '--config', help="Configuration file to use",
@@ -90,8 +91,8 @@ def main(args=sys.argv[1:]):
         params, files = extract_files(params)
         result = client.post(options.endpoint, process_response=False,
                              files=files, **params)
-        for f in files:
-            files[f].close()
+        for file_ in files:
+            files[file_].close()
 
     if options.verbose:
         print("==========\nMethod: %s\nHost: %s\nEndpoint: %s" %

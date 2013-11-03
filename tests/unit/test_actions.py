@@ -14,10 +14,12 @@ class TestActions(unittest.TestCase):
     test_actions_dict = [{"id": "1",
                           "target": test_photos_dict[0],
                           "target_type": "photo",
+                          "type": "comment",
                           "totalRows": 2},
                          {"id": "2",
                           "target": test_photos_dict[1],
                           "target_type": "photo",
+                          "type": "comment",
                           "totalRows": 2}]
 
     def setUp(self):
@@ -36,85 +38,76 @@ class TestActionCreate(TestActions):
     def test_action_create(self, mock_post):
         """Check that an action can be created on a photo object"""
         mock_post.return_value = self._return_value(self.test_actions_dict[0])
-        result = self.client.action.create(target=self.test_photos[0], foo="bar")
-        mock_post.assert_called_with("/action/create.json", target=self.test_photos[0].id,
-                                     target_type="photo",
+        result = self.client.action.create(target=self.test_photos[0], type="comment", foo="bar")
+        mock_post.assert_called_with("/action/%s/photo/create.json" %
+                                     self.test_photos[0].id,
+                                     type="comment",
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.target.id, "photo1")
         self.assertEqual(result.target_type, "photo")
+        self.assertEqual(result.type, "comment")
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_id(self, mock_post):
         """Check that an action can be created using a photo id"""
         mock_post.return_value = self._return_value(self.test_actions_dict[0])
-        result = self.client.action.create(target=self.test_photos[0].id, 
-                                           target_type="photo", foo="bar")
-        mock_post.assert_called_with("/action/create.json", target=self.test_photos[0].id,
-                                     target_type="photo",
+        result = self.client.action.create(target=self.test_photos[0].id,
+                                           target_type="photo", type="comment",
+                                           foo="bar")
+        mock_post.assert_called_with("/action/%s/photo/create.json" %
+                                     self.test_photos[0].id,
+                                     type="comment",
                                      foo="bar")
         self.assertEqual(result.id, "1")
         self.assertEqual(result.target.id, "photo1")
         self.assertEqual(result.target_type, "photo")
+        self.assertEqual(result.type, "comment")
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_type(self, mock_post):
-        """Check that an exception is raised if an action is created on a non photo object"""
-        with self.assertRaises(NotImplementedError):
-            self.client.action.create(target=object(), foo="bar")
+        """
+        Check that an exception is raised if an action is created on an
+        invalid object.
+        """
+        with self.assertRaises(AttributeError):
+            self.client.action.create(target=object())
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_create_invalid_return_type(self, mock_post):
-        """Check that an exception is raised if an non photo object is returned"""
+        """Check that an exception is raised if an invalid object is returned"""
         mock_post.return_value = self._return_value({"target": "test",
                                                      "target_type": "invalid"})
         with self.assertRaises(NotImplementedError):
-            self.client.action.create(target=self.test_photos[0], foo="bar")
+            self.client.action.create(target=self.test_photos[0])
 
 class TestActionDelete(TestActions):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_delete(self, mock_post):
         """Check that an action can be deleted"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.action.delete(self.test_actions[0])
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = self.client.action.delete(self.test_actions[0], foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_delete_id(self, mock_post):
         """Check that an action can be deleted using its ID"""
         mock_post.return_value = self._return_value(True)
-        result = self.client.action.delete("1")
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = self.client.action.delete("1", foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_action_delete_failure(self, mock_post):
-        """Check that an exception is raised if an action cannot be deleted"""
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.client.action.delete(self.test_actions[0])
 
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_action_object_delete(self, mock_post):
         """Check that an action can be deleted using the action object directly"""
         mock_post.return_value = self._return_value(True)
         action = self.test_actions[0]
-        result = action.delete()
-        mock_post.assert_called_with("/action/1/delete.json")
+        result = action.delete(foo="bar")
+        mock_post.assert_called_with("/action/1/delete.json", foo="bar")
         self.assertEqual(result, True)
         self.assertEqual(action.get_fields(), {})
         self.assertEqual(action.id, None)
-
-    @mock.patch.object(trovebox.Trovebox, 'post')
-    def test_action_object_delete_failure(self, mock_post):
-        """
-        Check that an exception is raised if an action cannot be deleted
-        when using the action object directly
-        """
-        mock_post.return_value = self._return_value(False)
-        with self.assertRaises(trovebox.TroveboxError):
-            self.test_actions[0].delete()
 
 class TestActionView(TestActions):
     @mock.patch.object(trovebox.Trovebox, 'get')
@@ -148,3 +141,11 @@ class TestActionView(TestActions):
         self.assertEqual(action.target.id, "photo2")
         self.assertEqual(action.target_type, "photo")
 
+class TestActionMisc(TestActions):
+    def test_update_fields_with_no_target(self):
+        """Check that an action object can be updated with no target"""
+        action = self.test_actions[0]
+        action.target = None
+        action.target_type = None
+        # Check that no exception is raised
+        action._update_fields_with_objects()

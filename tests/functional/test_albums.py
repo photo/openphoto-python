@@ -1,4 +1,10 @@
+try:
+    import unittest2 as unittest # Python2.6
+except ImportError:
+    import unittest
+
 from tests.functional import test_base
+from trovebox.objects.album import Album
 
 class TestAlbums(test_base.TestBase):
     testcase_name = "album API"
@@ -53,27 +59,50 @@ class TestAlbums(test_base.TestBase):
         self.albums = self.client.albums.list()
         self.assertEqual(self.albums[0].name, self.TEST_ALBUM)
 
+    @unittest.skipIf(test_base.get_test_server_api() == 1,
+                     "update_cover was introduced in APIv2")
+    def test_update_cover(self):
+        """ Test that an album cover can be updated """
+        self.albums[0].cover_update(self.photos[0])
+        self.assertNotEqual(self.albums[0].cover.id, self.photos[1].id)
+        self.albums[0].cover_update(self.photos[1])
+        self.assertEqual(self.albums[0].cover.id, self.photos[1].id)
+
+    @unittest.skipIf(test_base.get_test_server_api() == 1,
+                     "includeElements was introduced in APIv2")
     def test_view(self):
         """ Test the album view """
-        album = self.albums[0]
+        # Do a view() with includeElements=False, using a fresh Album object
+        album = Album(self.client, {"id": self.albums[0].id})
+        album.view()
+        # Make sure there are no photos reported
+        self.assertEqual(album.photos, None)
 
-        # Get the photos in the album using the Album object directly
+        # Get the photos with includeElements=True
         album.view(includeElements=True)
         # Make sure all photos are in the album
         for photo in self.photos:
             self.assertIn(photo.id, [p.id for p in album.photos])
 
-    def test_form(self):
-        """ If album.form gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.form(None)
+    def test_add_remove(self):
+        """ Test that photos can be added and removed from an album """
+        # Make sure all photos are in the album
+        album = self.albums[0]
+        album.view(includeElements=True)
+        for photo in self.photos:
+            self.assertIn(photo.id, [p.id for p in album.photos])
 
-    def test_add_photos(self):
-        """ If album.add_photos gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.add_photos(None, None)
+        # Remove two photos and check that they're gone
+        album.remove(self.photos[:2])
+        album.view(includeElements=True)
+        self.assertEqual([p.id for p in album.photos], [self.photos[2].id])
 
-    def test_remove_photos(self):
-        """ If album.remove_photos gets implemented, write a test! """
-        with self.assertRaises(NotImplementedError):
-            self.client.album.remove_photos(None, None)
+        # Add a photo and check that it's there
+        album.add(self.photos[1])
+        album.view(includeElements=True)
+        self.assertNotIn(self.photos[0].id, [p.id for p in album.photos])
+        self.assertIn(self.photos[1].id, [p.id for p in album.photos])
+        self.assertIn(self.photos[2].id, [p.id for p in album.photos])
+
+        # Put the environment back the way we found it
+        album.add(self.photos[0])
