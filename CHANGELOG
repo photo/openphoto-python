@@ -2,10 +2,16 @@
 Trovebox Python Library Changelog
 =================================
 
+v0.6
+======
+ * Support for many additional API endpoints (#56, #65)
+ * Code coverage reporting (#57)
+ * Unit test improvements (#58, #63, #64)
+ * Ignore illegal TroveboxObject attributes (#61)
+
 v0.5.1
 ======
  * Use httpretty v0.6.5 for unit tests (#60)
- * Ignore illegal TroveboxObject attributes (#61)
 
 v0.5
 ======
