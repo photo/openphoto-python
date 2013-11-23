@@ -7,12 +7,9 @@ Trovebox Python Library
    :alt: Build Status
    :target: https://travis-ci.org/photo/openphoto-python
 
-.. 
-   (commented out until master is on coveralls.io)
-   .. image:: https://coveralls.io/repos/photo/openphoto-python/badge.png?branch=master
-      :alt: Coverage Status
-      :target: https://coveralls.io/r/photo/openphoto-python?branch=master
-..
+.. image:: https://coveralls.io/repos/photo/openphoto-python/badge.png?branch=master
+   :alt: Coverage Status
+   :target: https://coveralls.io/r/photo/openphoto-python?branch=master
 
 .. image:: https://pypip.in/v/trovebox/badge.png
    :alt: Python Package Index (PyPI)
