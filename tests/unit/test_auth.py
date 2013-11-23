@@ -31,7 +31,8 @@ class TestAuth(unittest.TestCase):
     def create_config(config_file, host):
         """Create a dummy config file"""
         with open(os.path.join(CONFIG_PATH, config_file), "w") as conf:
-            conf.write("host = %s\n" % host)
+            if host is not None:
+                conf.write("host = %s\n" % host)
             conf.write("# Comment\n\n")
             conf.write("consumerKey = \"%s_consumer_key\"\n" % config_file)
             conf.write("\"consumerSecret\"= %s_consumer_secret\n" % config_file)
@@ -97,4 +98,13 @@ class TestAuth(unittest.TestCase):
         with self.assertRaises(ValueError):
             Trovebox(config_file="custom", host="host_override")
 
-
+    def test_partial_config_file(self):
+        """ Test that an incomplete config file causes default values to be set """
+        self.create_config("incomplete", host=None) # Don't write the host line
+        client = Trovebox(config_file="incomplete")
+        auth = client.auth
+        self.assertEqual(auth.host, "localhost")
+        self.assertEqual(auth.consumer_key, "incomplete_consumer_key")
+        self.assertEqual(auth.consumer_secret, "incomplete_consumer_secret")
+        self.assertEqual(auth.token, "incomplete_token")
+        self.assertEqual(auth.token_secret, "incomplete_token_secret")

@@ -11,13 +11,13 @@ try:
 except ImportError:
     from urlparse import urlparse, urlunparse # Python2
 
-from .objects import TroveboxObject
-from .errors import *
+from trovebox.objects.trovebox_object import TroveboxObject
+from .errors import TroveboxError, Trovebox404Error, TroveboxDuplicateError
 from .auth import Auth
 
 if sys.version < '3':
     TEXT_TYPE = unicode
-else:
+else: # pragma: no cover
     TEXT_TYPE = str
 
 DUPLICATE_RESPONSE = {"code": 409,
@@ -25,7 +25,7 @@ DUPLICATE_RESPONSE = {"code": 409,
 
 class Http(object):
     """
-    Base class to handle HTTP requests to an Trovebox server.
+    Base class to handle HTTP requests to a Trovebox server.
     If no parameters are specified, auth config is loaded from the
         default location (~/.config/trovebox/default).
     The config_file parameter is used to specify an alternate config file.
@@ -43,7 +43,7 @@ class Http(object):
 
         self.config = dict(self._CONFIG_DEFAULTS)
 
-        if api_version is not None:
+        if api_version is not None: # pragma: no cover
             print("Deprecation Warning: api_version should be set by "
                   "calling the configure function")
             self.config["api_version"] = api_version
@@ -104,7 +104,9 @@ class Http(object):
         self._logger.info("============================")
         self._logger.info("GET %s" % url)
         self._logger.info("---")
-        self._logger.info(response.text)
+        self._logger.info(response.text[:1000])
+        if len(response.text) > 1000: # pragma: no cover
+            self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
         self.last_params = params
@@ -113,7 +115,11 @@ class Http(object):
         if process_response:
             return self._process_response(response)
         else:
-            return response.text
+            if 200 <= response.status_code < 300:
+                return response.text
+            else:
+                raise TroveboxError("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
 
     def post(self, endpoint, process_response=True, files=None, **params):
         """
@@ -154,7 +160,9 @@ class Http(object):
         if files:
             self._logger.info("files:  %s" % repr(files))
         self._logger.info("---")
-        self._logger.info(response.text)
+        self._logger.info(response.text[:1000])
+        if len(response.text) > 1000: # pragma: no cover
+            self._logger.info("[Response truncated to 1000 characters]")
 
         self.last_url = url
         self.last_params = params
@@ -163,7 +171,11 @@ class Http(object):
         if process_response:
             return self._process_response(response)
         else:
-            return response.text
+            if 200 <= response.status_code < 300:
+                return response.text
+            else:
+                raise TroveboxError("HTTP Error %d: %s" %
+                                    (response.status_code, response.reason))
 
     def _construct_url(self, endpoint):
         """Return the full URL to the specified endpoint"""
@@ -241,12 +253,3 @@ class Http(object):
             raise TroveboxDuplicateError("Code %d: %s" % (code, message))
         else:
             raise TroveboxError("Code %d: %s" % (code, message))
-
-def result_to_list(result):
-    """ Handle the case where the result contains no items """
-    if not result:
-        return []
-    if result[0]["totalRows"] == 0:
-        return []
-    else:
-        return result

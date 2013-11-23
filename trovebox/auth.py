@@ -9,7 +9,7 @@ except ImportError:
     from ConfigParser import SafeConfigParser as ConfigParser # Python2
 try:
     import io # Python3
-except ImportError:
+except ImportError: # pragma: no cover
     import StringIO as io # Python2
 
 class Auth(object):

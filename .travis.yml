@@ -1,15 +1,23 @@
 language: python
 
 install:
+  # Install test dependencies
   - pip install tox --use-mirrors
-  - .travis/install_pylint
+  - pip install coveralls --use-mirrors
 
 script: tox
 
+after_success:
+  # Send coverage results to coveralls.io
+  - coveralls
+
 after_script:
   # Install dependencies for Pylint
-  - pip install requests requests-oauthlib
+  - pip install pylint-patcher --use-mirrors
+  - pip install requests --use-mirrors
+  - pip install requests-oauthlib --use-mirrors
 
   # Run Pylint
+  # Uses pylint-patcher to allow exceptions to be stored in a patchfile
   # (for information only, any errors don't affect the Travis result)
-  - pylint --use-ignore-patch=y trovebox
+  - pylint-patcher trovebox

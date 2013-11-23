@@ -89,7 +89,7 @@ class TestTags(test_base.TestBase):
 
     # TODO: Un-skip this test once issue #919 is resolved -
     #       tags with double-slashes cannot be deleted
-    @unittest.expectedFailure
+    @unittest.skip("Tags with double-slashed cannot be deleted")
     def test_tag_with_double_slashes(self):
         """ Run test_create_delete using a tag containing double-slashes """
         self.test_create_delete("tag//with//double//slashes")

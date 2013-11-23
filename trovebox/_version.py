@@ -1,2 +1,2 @@
-
-__version__ = "0.5.1"
+"""Current version string"""
+__version__ = "0.6"
