@@ -3,14 +3,11 @@ auth.py : OAuth Config File Parser
 """
 from __future__ import unicode_literals
 import os
+import io
 try:
     from configparser import ConfigParser # Python3
 except ImportError:
     from ConfigParser import SafeConfigParser as ConfigParser # Python2
-try:
-    import io # Python3
-except ImportError: # pragma: no cover
-    import StringIO as io # Python2
 
 class Auth(object):
     """OAuth secrets"""
