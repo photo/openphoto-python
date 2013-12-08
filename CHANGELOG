@@ -2,6 +2,12 @@
 Trovebox Python Library Changelog
 =================================
 
+v0.6.1
+======
+ * Perform user expansion when uploading files from the CLI (#59, #70)
+ * Remove redundant import (#67, #69)
+ * Functional test improvements (#68)
+
 v0.6
 ======
  * Support for many additional API endpoints (#56, #65)
