@@ -1,6 +1,7 @@
 from __future__ import unicode_literals
 import os
 import sys
+import shutil
 import mock
 try:
     import StringIO as io # Python2
@@ -76,6 +77,35 @@ class TestCli(unittest.TestCase):
         files = post.call_args[1]["files"]
         self.assertEqual(list(files.keys()), ["photo"])
         self.assertEqual(files["photo"].name, self.test_file)
+
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_post_files_with_user_expansion(self, _, mock_trovebox):
+        """
+        Check that files are posted correctly when specified relative
+        to the '~' user directory
+        """
+        post = mock_trovebox.return_value.post
+        user_file = "~/.trovebox_temporary_file"
+        expanded_file = os.path.expanduser(user_file)
+        shutil.copy(self.test_file, expanded_file)
+        try:
+            main(["-X", "POST", "-F", "photo=@%s" % user_file])
+            # It's not possible to directly compare the file object,
+            # so check it manually
+            files = post.call_args[1]["files"]
+            self.assertEqual(list(files.keys()), ["photo"])
+            self.assertEqual(files["photo"].name, expanded_file)
+        finally:
+            os.remove(expanded_file)
+
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_post_missing_files(self, _, mock_trovebox):
+        """Check that missing files cause an exception"""
+        post = mock_trovebox.return_value.post
+        with self.assertRaises(IOError):
+            main(["-X", "POST", "-F", "photo=@%s.missing" % self.test_file])
 
     @mock.patch.object(sys, "exit", raise_exception)
     @mock.patch('sys.stderr', new_callable=io.StringIO)
