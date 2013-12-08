@@ -122,9 +122,8 @@ def extract_files(params):
     files = {}
     updated_params = {}
     for name in params:
-        if (name == "photo" and params[name].startswith("@") and
-                os.path.isfile(os.path.expanduser(params[name][1:]))):
-            files[name] = open(params[name][1:], 'rb')
+        if name == "photo" and params[name].startswith("@"):
+            files[name] = open(os.path.expanduser(params[name][1:]), 'rb')
         else:
             updated_params[name] = params[name]
 
