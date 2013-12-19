@@ -419,7 +419,7 @@ class TestPhotoUpload(TestPhotos):
         files = mock_post.call_args[1]["files"]
         self.assertEqual(endpoint, ("/photo/upload.json",))
         self.assertEqual(title, "Test")
-        self.assertIn("photo", files)
+        self.assertEqual(files["photo"].name, self.test_file)
         self.assertEqual(result.get_fields(), self.test_photos_dict[0])
 
 class TestPhotoUploadEncoded(TestPhotos):
