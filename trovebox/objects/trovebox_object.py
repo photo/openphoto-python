@@ -1,6 +1,10 @@
 """
 Base object supporting the storage of custom fields as attributes
 """
+
+from __future__ import unicode_literals
+import sys
+
 class TroveboxObject(object):
     """ Base object supporting the storage of custom fields as attributes """
     _type = "None"
@@ -41,11 +45,17 @@ class TroveboxObject(object):
 
     def __repr__(self):
         if self.name is not None:
-            return "<%s name='%s'>" % (self.__class__.__name__, self.name)
+            value = "<%s name='%s'>" % (self.__class__.__name__, self.name)
         elif self.id is not None:
-            return "<%s id='%s'>" % (self.__class__.__name__, self.id)
+            value = "<%s id='%s'>" % (self.__class__.__name__, self.id)
         else:
-            return "<%s>" % (self.__class__.__name__)
+            value = "<%s>" % (self.__class__.__name__)
+
+        # Python2 requires a bytestring
+        if sys.version < '3':
+            return value.encode('utf-8')
+        else: # pragma: no cover
+            return value
 
     def get_fields(self):
         """ Returns this object's attributes """
