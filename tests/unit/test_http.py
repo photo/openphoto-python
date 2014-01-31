@@ -193,7 +193,8 @@ class TestHttp(unittest.TestCase):
         self.client.get(self.test_endpoint,
                         photo=photo, album=album, tag=tag,
                         list_=[photo, album, tag],
-                        list2=["1", "2", "3"],
+                        list2=["1", False, 3],
+                        unicode_list=["1", "2", "\xfcmlaut"],
                         boolean=True,
                         unicode_="\xfcmlaut")
         params = self._last_request().querystring
@@ -201,7 +202,8 @@ class TestHttp(unittest.TestCase):
         self.assertEqual(params["album"], ["album_id"])
         self.assertEqual(params["tag"], ["tag_id"])
         self.assertEqual(params["list_"], ["photo_id,album_id,tag_id"])
-        self.assertEqual(params["list2"], ["1,2,3"])
+        self.assertEqual(params["list2"], ["1,0,3"])
+        self.assertIn(params["unicode_list"], [["1,2,\xc3\xbcmlaut"], ["1,2,\xfcmlaut"]])
         self.assertEqual(params["boolean"], ["1"])
         self.assertIn(params["unicode_"], [["\xc3\xbcmlaut"], ["\xfcmlaut"]])
 

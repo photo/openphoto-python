@@ -193,36 +193,44 @@ class Http(object):
             endpoint = "/v%d%s" % (self.config["api_version"], endpoint)
         return urlunparse((scheme, host, endpoint, '', '', ''))
 
-    @staticmethod
-    def _process_params(params):
+    def _process_params(self, params):
         """ Converts Unicode/lists/booleans inside HTTP parameters """
         processed_params = {}
         for key, value in params.items():
-            # Extract IDs from objects
-            if isinstance(value, TroveboxObject):
-                value = value.id
-
-            # Ensure value is UTF-8 encoded
-            if isinstance(value, TEXT_TYPE):
-                value = value.encode("utf-8")
-
-            # Handle lists
-            if isinstance(value, list):
-                # Make a copy of the list, to avoid overwriting the original
-                new_list = list(value)
-                # Extract IDs from objects in the list
-                for i, item in enumerate(new_list):
-                    if isinstance(item, TroveboxObject):
-                        new_list[i] = item.id
-                # Convert list to string
-                value = ','.join([str(item) for item in new_list])
-
-            # Handle booleans
-            if isinstance(value, bool):
-                value = 1 if value else 0
-            processed_params[key] = value
+            processed_params[key] = self._process_param_value(value)
 
         return processed_params
+
+    def _process_param_value(self, value):
+        """
+        Returns a UTF-8 string representation of the parameter value,
+        recursing into lists.
+        """
+        # Extract IDs from objects
+        if isinstance(value, TroveboxObject):
+            return str(value.id).encode('utf-8')
+
+        # Ensure strings are UTF-8 encoded
+        elif isinstance(value, TEXT_TYPE):
+            return value.encode("utf-8")
+
+        # Handle lists
+        elif isinstance(value, list):
+            # Make a copy of the list, to avoid overwriting the original
+            new_list = list(value)
+            # Process each item in the list
+            for i, item in enumerate(new_list):
+                new_list[i] = self._process_param_value(item)
+            # new_list elements are UTF-8 encoded strings - simply join up
+            return b','.join(new_list)
+
+        # Handle booleans
+        elif isinstance(value, bool):
+            return b"1" if value else b"0"
+
+        # Unknown - just do our best
+        else:
+            return str(value).encode("utf-8")
 
     @staticmethod
     def _process_response(response):
