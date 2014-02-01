@@ -1,11 +1,6 @@
 """
 api_tag.py : Trovebox Tag API Classes
 """
-try:
-    from urllib.parse import quote # Python3
-except ImportError:
-    from urllib import quote # Python2
-
 from trovebox.objects.tag import Tag
 from .api_base import ApiBase
 
@@ -42,7 +37,7 @@ class ApiTag(ApiBase):
         Raises a TroveboxError if not.
         """
         return self._client.post("/tag/%s/delete.json" %
-                                 quote(self._extract_id(tag)),
+                                 self._quote_url(self._extract_id(tag)),
                                  **kwds)["result"]
 
     def update(self, tag, **kwds):
@@ -53,7 +48,7 @@ class ApiTag(ApiBase):
         Returns the updated tag object.
         """
         result = self._client.post("/tag/%s/update.json" %
-                                   quote(self._extract_id(tag)),
+                                   self._quote_url(self._extract_id(tag)),
                                    **kwds)["result"]
         return Tag(self._client, result)
 

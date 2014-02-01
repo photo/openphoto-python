@@ -1,6 +1,11 @@
 """
 api_base.py: Base class for all API classes
 """
+try:
+    from urllib.parse import quote # Python3
+except ImportError:
+    from urllib import quote # Python2
+
 
 class ApiBase(object):
     """ Base class for all API objects """
@@ -26,6 +31,11 @@ class ApiBase(object):
             return obj.id
         except AttributeError:
             return obj
+
+    @staticmethod
+    def _quote_url(string):
+        """ Make a string suitable for insertion into a URL """
+        return quote(string.encode('utf-8'))
 
     @staticmethod
     def _result_to_list(result):
