@@ -70,15 +70,15 @@ class TestActivitiesList(TestActivities):
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_options(self, mock_get):
-        """Check that the activity list optionss are applied properly"""
+        """Check that the activity list options are applied properly"""
         mock_get.return_value = self._return_value(self.test_activities_dict)
         self.client.activities.list(options={"foo": "bar",
-                                             "test1": "test2"},
+                                             "test1": "\xfcmlaut"},
                                     foo="bar")
         # Dict element can be any order
         self.assertIn(mock_get.call_args[0],
-                      [("/activities/foo-bar/test1-test2/list.json",),
-                       ("/activities/test1-test2/foo-bar/list.json",)])
+                      [("/activities/foo-bar/test1-%C3%BCmlaut/list.json",),
+                       ("/activities/test1-%C3%BCmlaut/foo-bar/list.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
 
 class TestActivitiesPurge(TestActivities):

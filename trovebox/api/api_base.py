@@ -1,14 +1,18 @@
 """
 api_base.py: Base class for all API classes
 """
+try:
+    from urllib.parse import quote # Python3
+except ImportError:
+    from urllib import quote # Python2
+
 
 class ApiBase(object):
     """ Base class for all API objects """
     def __init__(self, client):
         self._client = client
 
-    @staticmethod
-    def _build_option_string(options):
+    def _build_option_string(self, options):
         """
         :param options: dictionary containing the options
         :returns: option_string formatted for an API endpoint
@@ -17,7 +21,7 @@ class ApiBase(object):
         if options is not None:
             for key in options:
                 option_string += "/%s-%s" % (key, options[key])
-        return option_string
+        return self._quote_url(option_string)
 
     @staticmethod
     def _extract_id(obj):
@@ -26,6 +30,11 @@ class ApiBase(object):
             return obj.id
         except AttributeError:
             return obj
+
+    @staticmethod
+    def _quote_url(string):
+        """ Make a string suitable for insertion into a URL """
+        return quote(string.encode('utf-8'))
 
     @staticmethod
     def _result_to_list(result):

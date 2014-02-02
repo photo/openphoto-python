@@ -10,13 +10,17 @@ import trovebox
 class TestTags(unittest.TestCase):
     test_host = "test.example.com"
     test_tags = None
-    test_tags_dict = [{"count": 11, "id":"tag1"},
-                      {"count": 5, "id":"tag2"}]
+    test_tags_dict = [{"count": 11, "id": "tag1"},
+                      {"count": 5, "id": "tag2"}]
+
+    test_tag_unicode_dict = {"id": "\xfcmlaut"}
 
     def setUp(self):
         self.client = trovebox.Trovebox(host=self.test_host)
         self.test_tags = [trovebox.objects.tag.Tag(self.client, tag)
                           for tag in self.test_tags_dict]
+        self.test_tag_unicode = trovebox.objects.tag.Tag(self.client,
+                                    self.test_tag_unicode_dict)
 
     @staticmethod
     def _return_value(result, message="", code=200):
@@ -89,6 +93,14 @@ class TestTagDelete(TestTags):
         self.assertEqual(tag.get_fields(), {})
         self.assertEqual(tag.id, None)
 
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_tag_object_delete_unicode(self, mock_post):
+        """Check that a unicode tag can be deleted using its ID"""
+        mock_post.return_value = self._return_value(True)
+        result = self.client.tag.delete(self.test_tag_unicode)
+        mock_post.assert_called_with("/tag/%C3%BCmlaut/delete.json")
+        self.assertEqual(result, True)
+
 class TestTagUpdate(TestTags):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_tag_update(self, mock_post):
@@ -117,4 +129,12 @@ class TestTagUpdate(TestTags):
         mock_post.assert_called_with("/tag/tag1/update.json", name="Test")
         self.assertEqual(tag.id, "tag2")
         self.assertEqual(tag.count, 5)
+
+    @mock.patch.object(trovebox.Trovebox, 'post')
+    def test_tag_object_update_unicode(self, mock_post):
+        """Check that a unicode tag can be updated using its ID"""
+        mock_post.return_value = self._return_value(self.test_tag_unicode_dict)
+        result = self.client.tag.update(self.test_tag_unicode, name="Test")
+        mock_post.assert_called_with("/tag/%C3%BCmlaut/update.json", name="Test")
+        self.assertEqual(result.id, "\xfcmlaut")
 
