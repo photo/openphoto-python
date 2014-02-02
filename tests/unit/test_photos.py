@@ -606,6 +606,11 @@ class TestPhotoObject(TestPhotos):
                                                            "name": "Test Name"})
         self.assertEqual(repr(photo), "<Photo name='Test Name'>")
 
+    def test_photo_object_repr_with_unicode_id(self):
+        """ Ensure that a unicode id is correctly represented """
+        photo = trovebox.objects.photo.Photo(self.client, {"id": "\xfcmlaut"})
+        self.assertIn(repr(photo), [b"<Photo id='\xc3\xbcmlaut'>", "<Photo id='\xfcmlaut'>"])
+
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photo_object_create_attribute(self, _):
         """
