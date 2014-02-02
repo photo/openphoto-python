@@ -57,27 +57,27 @@ class TestPhotosList(TestPhotos):
 
     @mock.patch.object(trovebox.Trovebox, 'get')
     def test_options(self, mock_get):
-        """Check that the activity list options are applied properly"""
+        """Check that the photo list options are applied properly"""
         mock_get.return_value = self._return_value(self.test_photos_dict)
         self.client.photos.list(options={"foo": "bar",
-                                         "test1": "test2"},
+                                         "test1": "\xfcmlaut"},
                                 foo="bar")
         # Dict element can be any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photos/foo-bar/test1-test2/list.json",),
-                       ("/photos/test1-test2/foo-bar/list.json",)])
+                      [("/photos/foo-bar/test1-%C3%BCmlaut/list.json",),
+                       ("/photos/test1-%C3%BCmlaut/foo-bar/list.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
 
 class TestPhotosShare(TestPhotos):
     @mock.patch.object(trovebox.Trovebox, 'post')
     def test_photos_share(self, mock_post):
         self.client.photos.share(options={"foo": "bar",
-                                          "test1": "test2"},
+                                          "test1": "\xfcmlaut"},
                                  foo="bar")
         # Dict element can be any order
         self.assertIn(mock_post.call_args[0],
-                      [("/photos/foo-bar/test1-test2/share.json",),
-                       ("/photos/test1-test2/foo-bar/share.json",)])
+                      [("/photos/foo-bar/test1-%C3%BCmlaut/share.json",),
+                       ("/photos/test1-%C3%BCmlaut/foo-bar/share.json",)])
         self.assertEqual(mock_post.call_args[1], {"foo": "bar"})
 
 class TestPhotosUpdate(TestPhotos):
@@ -363,12 +363,12 @@ class TestPhotoView(TestPhotos):
         mock_get.return_value = self._return_value(self.test_photos_dict[1])
         result = self.client.photo.view(self.test_photos[0],
                                         options={"foo": "bar",
-                                                 "test1": "test2"},
+                                                 "test1": "\xfcmlaut"},
                                         returnSizes="20x20")
         # Dict elemet can be in any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photo/1a/foo-bar/test1-test2/view.json",),
-                       ("/photo/1a/test1-test2/foo-bar/view.json",)])
+                      [("/photo/1a/foo-bar/test1-%C3%BCmlaut/view.json",),
+                       ("/photo/1a/test1-%C3%BCmlaut/foo-bar/view.json",)])
         self.assertEqual(mock_get.call_args[1], {"returnSizes": "20x20"})
         self.assertEqual(result.get_fields(), self.test_photos_dict[1])
 
@@ -378,13 +378,13 @@ class TestPhotoView(TestPhotos):
         mock_get.return_value = self._return_value(self.test_photos_dict[1])
         result = self.client.photo.view("1a",
                                         options={"foo": "bar",
-                                                 "test1": "test2"},
+                                                 "test1": "\xfcmlaut"},
                                         returnSizes="20x20")
 
         # Dict elemet can be in any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photo/1a/foo-bar/test1-test2/view.json",),
-                       ("/photo/1a/test1-test2/foo-bar/view.json",)])
+                      [("/photo/1a/foo-bar/test1-%C3%BCmlaut/view.json",),
+                       ("/photo/1a/test1-%C3%BCmlaut/foo-bar/view.json",)])
         self.assertEqual(mock_get.call_args[1], {"returnSizes": "20x20"})
         self.assertEqual(result.get_fields(), self.test_photos_dict[1])
 
@@ -455,12 +455,12 @@ class TestPhotoNextPrevious(TestPhotos):
              "previous": [self.test_photos_dict[1]]})
         result = self.client.photo.next_previous(self.test_photos[0],
                                                  options={"foo": "bar",
-                                                          "test1": "test2"},
+                                                          "test1": "\xfcmlaut"},
                                                  foo="bar")
         # Dict elemet can be in any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
-                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+                      [("/photo/1a/nextprevious/foo-bar/test1-%C3%BCmlaut.json",),
+                       ("/photo/1a/nextprevious/test1-%C3%BCmlaut/foo-bar.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
@@ -478,12 +478,12 @@ class TestPhotoNextPrevious(TestPhotos):
              "previous": [self.test_photos_dict[1]]})
         result = self.client.photo.next_previous("1a",
                                                  options={"foo": "bar",
-                                                          "test1": "test2"},
+                                                          "test1": "\xfcmlaut"},
                                                  foo="bar")
         # Dict elemet can be in any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
-                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+                      [("/photo/1a/nextprevious/foo-bar/test1-%C3%BCmlaut.json",),
+                       ("/photo/1a/nextprevious/test1-%C3%BCmlaut/foo-bar.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])
@@ -500,12 +500,12 @@ class TestPhotoNextPrevious(TestPhotos):
             {"next": [self.test_photos_dict[0]],
              "previous": [self.test_photos_dict[1]]})
         result = self.test_photos[0].next_previous(options={"foo": "bar",
-                                                            "test1": "test2"},
+                                                            "test1": "\xfcmlaut"},
                                                    foo="bar")
         # Dict elemet can be in any order
         self.assertIn(mock_get.call_args[0],
-                      [("/photo/1a/nextprevious/foo-bar/test1-test2.json",),
-                       ("/photo/1a/nextprevious/test1-test2/foo-bar.json",)])
+                      [("/photo/1a/nextprevious/foo-bar/test1-%C3%BCmlaut.json",),
+                       ("/photo/1a/nextprevious/test1-%C3%BCmlaut/foo-bar.json",)])
         self.assertEqual(mock_get.call_args[1], {"foo": "bar"})
         self.assertEqual(result["next"][0].get_fields(),
                          self.test_photos_dict[0])

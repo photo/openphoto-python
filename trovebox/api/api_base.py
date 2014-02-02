@@ -12,8 +12,7 @@ class ApiBase(object):
     def __init__(self, client):
         self._client = client
 
-    @staticmethod
-    def _build_option_string(options):
+    def _build_option_string(self, options):
         """
         :param options: dictionary containing the options
         :returns: option_string formatted for an API endpoint
@@ -22,7 +21,7 @@ class ApiBase(object):
         if options is not None:
             for key in options:
                 option_string += "/%s-%s" % (key, options[key])
-        return option_string
+        return self._quote_url(option_string)
 
     @staticmethod
     def _extract_id(obj):
