@@ -123,7 +123,14 @@ def extract_files(params):
     updated_params = {}
     for name in params:
         if name == "photo" and params[name].startswith("@"):
-            files[name] = open(os.path.expanduser(params[name][1:]), 'rb')
+            filename = params[name][1:]
+
+            # Python2 uses encoded commandline parameters.
+            # Decode to Unicode if necessary.
+            if isinstance(filename, bytes):
+                filename = filename.decode(sys.getfilesystemencoding())
+
+            files[name] = open(os.path.expanduser(filename), 'rb')
         else:
             updated_params[name] = params[name]
 

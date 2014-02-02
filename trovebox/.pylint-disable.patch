@@ -25,9 +25,15 @@ diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_al
 diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_base.py patched/api/api_base.py
 --- original/api/api_base.py
 +++ patched/api/api_base.py
-@@ -2,7 +2,7 @@
+@@ -2,12 +2,12 @@
  api_base.py: Base class for all API classes
  """
+ try:
+-    from urllib.parse import quote # Python3
++    from urllib.parse import quote # Python3 # pylint: disable=import-error,no-name-in-module
+ except ImportError:
+     from urllib import quote # Python2
+ 
  
 -class ApiBase(object):
 +class ApiBase(object): # pylint: disable=too-few-public-methods
@@ -37,15 +43,7 @@ diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_ba
 diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_tag.py patched/api/api_tag.py
 --- original/api/api_tag.py
 +++ patched/api/api_tag.py
-@@ -2,14 +2,14 @@
- api_tag.py : Trovebox Tag API Classes
- """
- try:
--    from urllib.parse import quote # Python3
-+    from urllib.parse import quote # Python3 # pylint: disable=import-error,no-name-in-module
- except ImportError:
-     from urllib import quote # Python2
- 
+@@ -4,7 +4,7 @@
  from trovebox.objects.tag import Tag
  from .api_base import ApiBase
  
@@ -54,21 +52,18 @@ diff --unified --recursive '--exclude=.pylint-disable.patch' original/api/api_ta
      """ Definitions of /tags/ API endpoints """
      def list(self, **kwds):
          """
+Only in patched/api: api_tag.py.~5~
 diff --unified --recursive '--exclude=.pylint-disable.patch' original/auth.py patched/auth.py
 --- original/auth.py
 +++ patched/auth.py
-@@ -4,7 +4,7 @@
- from __future__ import unicode_literals
+@@ -5,13 +5,13 @@
  import os
+ import io
  try:
 -    from configparser import ConfigParser # Python3
 +    from configparser import ConfigParser # Python3 # pylint: disable=import-error
  except ImportError:
      from ConfigParser import SafeConfigParser as ConfigParser # Python2
- try:
-@@ -12,9 +12,9 @@
- except ImportError: # pragma: no cover
-     import StringIO as io # Python2
  
 -class Auth(object):
 +class Auth(object): # pylint: disable=too-few-public-methods
@@ -78,7 +73,7 @@ diff --unified --recursive '--exclude=.pylint-disable.patch' original/auth.py pa
                   consumer_key, consumer_secret,
                   token, token_secret):
          if host is None:
-@@ -69,7 +69,7 @@
+@@ -66,7 +66,7 @@
      parser = ConfigParser()
      parser.optionxform = str # Case-sensitive options
      try:
@@ -170,7 +165,7 @@ diff --unified --recursive '--exclude=.pylint-disable.patch' original/main.py pa
 diff --unified --recursive '--exclude=.pylint-disable.patch' original/objects/trovebox_object.py patched/objects/trovebox_object.py
 --- original/objects/trovebox_object.py
 +++ patched/objects/trovebox_object.py
-@@ -5,7 +5,7 @@
+@@ -9,7 +9,7 @@
      """ Base object supporting the storage of custom fields as attributes """
      _type = "None"
      def __init__(self, client, json_dict):

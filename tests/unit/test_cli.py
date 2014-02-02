@@ -23,6 +23,8 @@ def raise_exception(_):
 
 class TestCli(unittest.TestCase):
     test_file = os.path.join("tests", "unit", "data", "test_file.txt")
+    test_unicode_file = os.path.join("tests", "unit", "data",
+                                     "\xfcnicode_test_file.txt")
 
     @mock.patch.object(trovebox.main.trovebox, "Trovebox")
     @mock.patch('sys.stdout', new_callable=io.StringIO)
@@ -106,6 +108,45 @@ class TestCli(unittest.TestCase):
         post = mock_trovebox.return_value.post
         with self.assertRaises(IOError):
             main(["-X", "POST", "-F", "photo=@%s.missing" % self.test_file])
+
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_post_unicode_files(self, _, mock_trovebox):
+        """Check that unicode filenames are posted correctly"""
+        post = mock_trovebox.return_value.post
+
+        # Python 2.x provides encoded commandline arguments
+        file_param = "photo=@%s" % self.test_unicode_file
+        if sys.version < '3':
+            file_param = file_param.encode(sys.getfilesystemencoding())
+
+        main(["-X", "POST", "-F", "photo=@%s" % self.test_unicode_file])
+        # It's not possible to directly compare the file object,
+        # so check it manually
+        files = post.call_args[1]["files"]
+        self.assertEqual(list(files.keys()), ["photo"])
+        self.assertEqual(files["photo"].name, self.test_unicode_file)
+
+    @unittest.skipIf(sys.version >= '3',
+                     "Python3 only uses unicode commandline arguments")
+    @mock.patch('trovebox.main.sys.getfilesystemencoding')
+    @mock.patch.object(trovebox.main.trovebox, "Trovebox")
+    @mock.patch('sys.stdout', new_callable=io.StringIO)
+    def test_post_utf8_files(self, _, mock_trovebox, mock_getfilesystemencoding):
+        """Check that utf-8 encoded filenames are posted correctly"""
+        post = mock_trovebox.return_value.post
+        # Make the system think its filesystemencoding is utf-8
+        mock_getfilesystemencoding.return_value = "utf-8"
+
+        file_param = "photo=@%s" % self.test_unicode_file
+        file_param = file_param.encode("utf-8")
+
+        main(["-X", "POST", "-F", file_param])
+        # It's not possible to directly compare the file object,
+        # so check it manually
+        files = post.call_args[1]["files"]
+        self.assertEqual(list(files.keys()), ["photo"])
+        self.assertEqual(files["photo"].name, self.test_unicode_file)
 
     @mock.patch.object(sys, "exit", raise_exception)
     @mock.patch('sys.stderr', new_callable=io.StringIO)
