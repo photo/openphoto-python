@@ -2,6 +2,14 @@
 Trovebox Python Library Changelog
 =================================
 
+v0.6.2
+======
+ * Support Unicode tags (#74, #77)
+ * Ensure lists inside parameters are UTF-8 encoded (#74, #77)
+ * Fix repr unicode handling (#75)
+ * Support unicode filenames (#72, #73)
+ * Add Pypy to unit testing list (#78)
+
 v0.6.1
 ======
  * Perform user expansion when uploading files from the CLI (#59, #70)
