@@ -121,6 +121,27 @@ class TestPhotos(test_base.TestBase):
         photos[1].delete()
         self.photos[0].update(permission=False)
 
+    # Unicode filename upload not working due to frontend bug 1433
+    @unittest.expectedFailure
+    def test_upload_unicode_filename(self):
+        """Test that a photo with a unicode filename can be uploaded"""
+        ret_val = self.client.photo.upload(u"tests/data/test_\xfcnicode_photo.jpg",
+                                           title=self.TEST_TITLE)
+        # Check that there are now four photos
+        self.photos = self.client.photos.list()
+        self.assertEqual(len(self.photos), 4)
+
+        # Check that the upload return value was correct
+        pathOriginals = [photo.pathOriginal for photo in self.photos]
+        self.assertIn(ret_val.pathOriginal, pathOriginals)
+
+        # Delete the photo
+        ret_val.delete()
+
+        # Check that it's gone
+        self.photos = self.client.photos.list()
+        self.assertEqual(len(self.photos), 3)
+
     def test_update(self):
         """ Update a photo by editing the title """
         title = "\xfcmlaut" # umlauted umlaut
