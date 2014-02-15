@@ -2,6 +2,7 @@
 """
 main.py : Trovebox Console Script
 """
+from __future__ import print_function
 import os
 import sys
 import json
@@ -105,7 +106,7 @@ def main(args=sys.argv[1:]):
 
     if options.pretty:
         print(json.dumps(json.loads(result), sort_keys=True,
-                         indent=4, separators=(',',':')))
+                         indent=4, separators=(',', ':')))
     else:
         print(result)
 
