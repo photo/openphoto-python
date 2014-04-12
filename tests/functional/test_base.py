@@ -84,9 +84,11 @@ class TestBase(unittest.TestCase):
             self.photos = self.client.photos.list()
 
         self.tags = self.client.tags.list()
-        if (len(self.tags) != 1 or
-                self.tags[0].id != self.TEST_TAG or
-                str(self.tags[0].count) != "3"):
+        tag_ids = [tag.id for tag in self.tags]
+        tag_counts = [tag.count for tag in self.tags]
+        if (len(tag_ids) != 3 or
+                self.TEST_TAG not in tag_ids or
+                tag_counts != [3, 3, 3]):
             if self.debug:
                 print("[Regenerating Tags]")
             else:
@@ -96,7 +98,7 @@ class TestBase(unittest.TestCase):
             self._create_test_photos()
             self.photos = self.client.photos.list()
             self.tags = self.client.tags.list()
-        if len(self.tags) != 1:
+        if len(self.tags) != 3:
             print("Tags: %s" % self.tags)
             raise Exception("Tag creation failed")
 
